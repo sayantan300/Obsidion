@@ -1,0 +1,8 @@
+{
+    "setup": {
+        "cogs": [
+            "info"
+        ],
+        "token": ""
+    }
+}
