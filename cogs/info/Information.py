@@ -3,6 +3,7 @@ from random import choice
 import discord
 import aiohttp
 import requests
+from datetime import datetime
 
 def get(url):
     r = requests.get(url)
@@ -32,25 +33,25 @@ class Information(commands.Cog, name="Information"):
 
         uuid = get_uuid(username)
         if uuid:
-            long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16-20]}-{uuid[20:]}"
+            long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
 
             names = get(f"https://api.mojang.com/user/profiles/{uuid}/names")
 
             name_list=""
             for name in names[::-1][:-1]:
                 name1 = name["name"]
-                date = name["changedToAt"]
-                name_list = f"**{names.index(name)+1}.** `{name1}` - {date} "+ "\n" + name_list
+                date = datetime.utcfromtimestamp(int(str(name["changedToAt"])[:-3])).strftime("%Y-%m-%d %H:%M:%S (UTC)") # Prettify and give actual month and time passed @Cubic_dd#9976
+                name_list += f"**{names.index(name)+1}.** `{name1}` - {date} "+ "\n"
             original = names[0]["name"]
-            name_list=f"**1.** `{original}` - First Username" + "\n" + name_list
+            name_list+=f"**1.** `{original}` - First Username"
 
             uuids = "Short UUID: `" + uuid + "\n" + "`Long UUID: `" + long_uuid + "`"
 
             embed = discord.Embed(title=f"Minecraft profile for {username}", color=0x00ff00)
 
             embed.add_field(name="UUID's", inline=False, value=uuids)
-            embed.add_field(name="Textures", inline=True, value=f"Skin: https://visage.surgeplay.com/bust/{uuid}" )
-            embed.add_field(name="Information", inline=True, value=f"Username Changes: {len(names)}")
+            embed.add_field(name="Textures", inline=True, value=f"Skin: [Open Skin](https://visage.surgeplay.com/bust/{uuid})")
+            embed.add_field(name="Information", inline=True, value=f"Username Changes: {len(names)-1}")
             embed.add_field(name="Name History", inline=False, value=name_list)
             embed.set_thumbnail(url=(f"https://visage.surgeplay.com/bust/{uuid}"))
 
