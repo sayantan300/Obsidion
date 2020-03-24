@@ -4,6 +4,7 @@ import discord
 import aiohttp
 import requests
 from datetime import datetime
+import base64
 
 def get(url):
     r = requests.get(url)
@@ -81,27 +82,44 @@ class Information(commands.Cog, name="Information"):
         if uuid:
             long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16-20]}-{uuid[20:]}"
             embed = discord.Embed(title=f"Showing {username}'s Minecraft UUID", color=0x00ff00)
-            embed.add_field(name=f"{username}'s UUID", value=f"Short UUID: `{uuid}` \n Long UUID:`{long_uuid}`")
+            embed.add_field(name=f"{username}'s UUID", value=f"Short UUID: `{uuid}` \n Long UUID:  `{long_uuid}`")
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: the user: `{username}` does not exist!")
 
+
+    ######################
+    ## WORK IN PROGRESS ##
+    ######################
+    
     @commands.command()
     async def server(self, ctx, server):
         """Request a JAVA Minecraft server for information such as online player count, MOTD and more."""
 
         data = get(f"https://mcapi.us/server/status?ip={server}")
 
-        if data["online"] == "True":
-            await ctx.send("Still in progress")
+        if data["online"] == True:
+            embed = discord.Embed(title=f"Java Server: {server}", color=0x00ff00)
+
+            embed.add_field(name="Description", value=data["motd"]) # need to fix encoding issues
+            if data["players"]["now"] > 10:
+                now = data["players"]["now"]
+                max = data["players"]["max"]
+                embed.add_field(name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
+            else:
+                embed.add_field(name="Players")
+            
+            #imagedata = base64.b64decode(data["favicon"][22:])
+            #filename = 'favicon.png'  # I assume you have a way of picking unique filenames
+            #with open(filename, 'wb') as f:
+            #    f.write(imagedata)
+            #embed.set_thumbnail(url=("attachment://favicon.png"))
+            embed.add_field(name="Version", value=data["server"]["name"])
+
+            await ctx.send(embed=embed)
         else:
-            await ctx.send(f"The server {server} is currently offline")
-
-    @commands.command()
-    async def serverPE(self, ctx, server):
-        """request a BEDROCK Minecraft server for information such as online player count, MOTD and more."""
-
-        await ctx.send("Still in progress")
+            print(data["online"])
+            await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
 
     @commands.command()
     async def status(self, ctx):
@@ -111,6 +129,7 @@ class Information(commands.Cog, name="Information"):
 
 
         embed = discord.Embed(title=f"Minecraft Service Status", color=0x00ff00)
+        print(data[0][0])
 
         for state in data:
             if state[state.keys()[0]] == "red":
