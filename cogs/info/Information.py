@@ -1,9 +1,27 @@
 from discord.ext import commands
 from random import choice
-import requests
 import discord
+import aiohttp
+import requests
 
-from cogs.info.library import *
+def get(url):
+    r = requests.get(url)
+
+    if r.status_code == 200:
+        data = r.json()
+        return data
+    else:
+        return False
+
+def get_uuid(username):
+    r = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
+
+    if r.status_code == 200:
+        data = r.json()
+        uuid = data["id"]
+        return uuid
+    else:
+        return False
 
 
 class Information(commands.Cog, name="Information"):
@@ -16,14 +34,24 @@ class Information(commands.Cog, name="Information"):
         if uuid:
             long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16-20]}-{uuid[20:]}"
 
-            usernames = names(uuid)[0:]
+            names = get(f"https://api.mojang.com/user/profiles/{uuid}/names")
+
+            name_list=""
+            for name in names[::-1][:-1]:
+                name1 = name["name"]
+                date = name["changedToAt"]
+                name_list = f"**{names.index(name)+1}.** `{name1}` - {date} "+ "\n" + name_list
+            original = names[0]["name"]
+            name_list=f"**1.** `{original}` - First Username" + "\n" + name_list
+
+            uuids = "Short UUID: `" + uuid + "\n" + "`Long UUID: `" + long_uuid + "`"
 
             embed = discord.Embed(title=f"Minecraft profile for {username}", color=0x00ff00)
 
-            embed.add_field(name="Short UUID:", value=uuid)
-            embed.add_field(name="Long UUID:", value=long_uuid)
-            embed.add_field(name="Information", value=f"Username Changes:{len(names)}")
-            embed.add_field(name="Name History", value="IN PROGRESS")
+            embed.add_field(name="UUID's", inline=False, value=uuids)
+            embed.add_field(name="Textures", inline=True, value=f"Skin: https://visage.surgeplay.com/bust/{uuid}" )
+            embed.add_field(name="Information", inline=True, value=f"Username Changes: {len(names)}")
+            embed.add_field(name="Name History", inline=False, value=name_list)
             embed.set_thumbnail(url=(f"https://visage.surgeplay.com/bust/{uuid}"))
 
             await ctx.send(embed=embed)
@@ -51,7 +79,7 @@ class Information(commands.Cog, name="Information"):
         uuid = get_uuid(username)
         if uuid:
             long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16-20]}-{uuid[20:]}"
-            embed = discord.Embed(title=f"Showing {username}'s Minecraft UUID")
+            embed = discord.Embed(title=f"Showing {username}'s Minecraft UUID", color=0x00ff00)
             embed.add_field(name=f"{username}'s UUID", value=f"Short UUID: `{uuid}` \n Long UUID:`{long_uuid}`")
             await ctx.send(embed=embed)
         else:
@@ -61,17 +89,16 @@ class Information(commands.Cog, name="Information"):
     async def server(self, ctx, server):
         """Request a JAVA Minecraft server for information such as online player count, MOTD and more."""
 
-        resposne = requests.get(f"https://mcapi.us/server/status?ip={server}")
-        data = resposne.json()
+        data = get(f"https://mcapi.us/server/status?ip={server}")
 
-        if data["online"] == "true":
+        if data["online"] == "True":
             await ctx.send("Still in progress")
         else:
             await ctx.send(f"The server {server} is currently offline")
 
     @commands.command()
     async def serverPE(self, ctx, server):
-        """equest a BEDROCK Minecraft server for information such as online player count, MOTD and more."""
+        """request a BEDROCK Minecraft server for information such as online player count, MOTD and more."""
 
         await ctx.send("Still in progress")
 
@@ -79,15 +106,28 @@ class Information(commands.Cog, name="Information"):
     async def status(self, ctx):
         """Check the status of all the Mojang services"""
 
-        response = requests.get(url="https://status.mojang.com/check")
-        data = response.json()
+        data = get("https://status.mojang.com/check")
+
 
         embed = discord.Embed(title=f"Minecraft Service Status", color=0x00ff00)
 
         for state in data:
-            embed.add_field(name=state[0], value=state[1])
+            if state[state.keys()[0]] == "red":
+                embed.add_field(name=state[0], value=state[1])
 
-        await ctx.send(embed=embed)
+        #embed.add_field(name=state[0], value=state[1])
+        #embed.add_field(name=state[0], value=state[1])
+        #embed.add_field(name=state[0], value=state[1])
+        #embed.add_field(name=state[0], value=state[1])
+        #embed.add_field(name=state[0], value=state[1])
+        #embed.add_field(name=state[0], value=state[1])
+        #embed.add_field(name=state[0], value=state[1])
+        #embed.add_field(name=state[0], value=state[1])
+
+        #for state in data:
+            #embed.add_field(name=state[0], value=state[1])
+
+        await ctx.send("Still in progress")
 
     @commands.command()
     async def version(self, ctx, username):
@@ -133,12 +173,7 @@ class Information(commands.Cog, name="Information"):
         await ctx.send("Still in progress")
 
     @commands.command()
-    async def sales(self, ctx):
-        """View the amount of copies of Minecraft that have been sold"""
-
-        payload = {
-            'metricKeys': ["item_sold_minecraft"]
-        }
-        response = requests.get("https://api.mojang.com/orders/statistics", json=payload)
+    async def mcseen(self, ctx, username):
+        """last seen"""
 
         await ctx.send("Still in progress")

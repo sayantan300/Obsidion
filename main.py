@@ -34,11 +34,10 @@ def extensions():
     return cogs
 
 
-bot = commands.Bot(command_prefix="/", description="Testing")
+bot = commands.Bot(command_prefix="?", description="Testing")
 
 if __name__ == "__main__":
     for extension in extensions():
-        print(extension)
         try:
             bot.load_extension(f"cogs.{extension}")
         except Exception as e:
