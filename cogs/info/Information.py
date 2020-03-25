@@ -28,7 +28,7 @@ def get_uuid(username):
 
 class Information(commands.Cog, name="Information"):
 
-    @commands.command(aliases=['nameHistory', 'namehistory'])
+    @commands.command(aliases=['whois', 'p', "names", "namehistory", "pastnames", "namehis"])
     async def profile(self, ctx, username):
         """View a players Minecraft UUID, Username history and skin."""
 
@@ -60,7 +60,7 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send("That username is not been used.")
 
-    @commands.command()
+    @commands.command(aliases=["available", "availability", "namecheck"])
     async def checkName(self, ctx, username):
         """Check weather a username is currently in use."""
 
@@ -150,19 +150,19 @@ class Information(commands.Cog, name="Information"):
         await ctx.send("Still in progress")
 
     @commands.command()
-    async def version(self, ctx, username):
+    async def version(self, ctx, version):
         """View all of Minecraft Java edition versions or a specific version."""
         
         await ctx.send("Still in progress")
 
-    @commands.command()
-    async def latestVersion(self, ctx, username):
+    @commands.command(aliases=["latestver", "latestversion"])
+    async def latest(self, ctx, snapshot):
         """View the latest version or snapshot within the Minecraft Java launcher."""
 
         await ctx.send("Still in progress")
 
     @commands.command()
-    async def colors(self, ctx, username):
+    async def colors(self, ctx):
         """View all the text colors in Minecraft."""
 
         colors_list = {
@@ -186,8 +186,8 @@ class Information(commands.Cog, name="Information"):
 
         await ctx.send("Still in progress")
 
-    @commands.command()
-    async def news(self, ctx, username):
+    @commands.command(aliases=["latestarticle", "minecraftnews", "latestnews"])
+    async def news(self, ctx):
         """See the latest post on Minecraft.net."""
 
         await ctx.send("Still in progress")

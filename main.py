@@ -7,12 +7,14 @@ import json
 
 
 def token():
+    # load token from json file
     with open("data.json", "r") as f:
         setup = json.load(f)
     return setup["setup"]["token"]
 
 
 def get_prefix(guild_id, message):
+    # get custotm prefect per server
     with open("data.json", "r+") as f:
         json_data = json.load(f)
     try:
@@ -34,20 +36,10 @@ def extensions():
     return cogs
 
 
-bot = commands.Bot(command_prefix="?", description="Testing")
-
-if __name__ == "__main__":
-    for extension in extensions():
-        try:
-            bot.load_extension(f"cogs.{extension}")
-        except Exception as e:
-            print(f"Failed to load extension {extension}.", file=sys.stderr)
-            traceback.print_exc()
-
+bot = commands.Bot(command_prefix="?", description="Testing", case_insensitive=True)
 
 @bot.event
 async def on_ready():
-
     print(f"\n\nSuccessfully logged in and booted...!")
     print(
         f"Logged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n")
@@ -55,5 +47,17 @@ async def on_ready():
     # Sets our bots status to wether operational or testing
     game = discord.Game("Testing")
     await bot.change_presence(status=discord.Status.online, activity=game)
+
+if __name__ == "__main__":
+    # remove default help command so we can use our own
+    #bot.remove_command('help')
+
+    # load all our cogs
+    for extension in extensions():
+        try:
+            bot.load_extension(f"cogs.{extension}")
+        except Exception as e:
+            print(f"Failed to load extension {extension}.", file=sys.stderr)
+            traceback.print_exc()
 
 bot.run(token(), bot=True, reconnect=True)
