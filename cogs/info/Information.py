@@ -161,39 +161,8 @@ class Information(commands.Cog, name="Information"):
 
         await ctx.send("Still in progress")
 
-    @commands.command()
-    async def colors(self, ctx):
-        """View all the text colors in Minecraft."""
-
-        colors_list = {
-            "Red":        {"id": 14, "hex": "#b02e26"},
-            "Orange":     {"id": 1,  "hex": "#f9801d"},
-            "Yellow":     {"id": 4,  "hex": "#fed83d"},
-            "Lime":       {"id": 5,  "hex": "#80c71f"},
-            "Green":      {"id": 13, "hex": "#5e7c16"},
-            "Light Blue": {"id": 3,  "hex": "#3ab3da"},
-            "Cyan":       {"id": 9,  "hex": "#169c9c"},
-            "Blue":       {"id": 11, "hex": "#3c44aa"},
-            "Purple":     {"id": 10, "hex": ""},
-            "Magenta":    {"id": 2,  "hex": ""},
-            "Pink":       {"id": 6,  "hex": ""},
-            "White":      {"id": 0,  "hex": ""},
-            "Light_Gray": {"id": 8,  "hex": ""},
-            "Gray":       {"id": 7,  "hex": ""},
-            "Black":      {"id": 15, "hex": ""},
-            "Brown":      {"id": 12, "hex": ""}
-        }
-
-        await ctx.send("Still in progress")
-
     @commands.command(aliases=["latestarticle", "minecraftnews", "latestnews"])
     async def news(self, ctx):
         """See the latest post on Minecraft.net."""
-
-        await ctx.send("Still in progress")
-
-    @commands.command()
-    async def mcseen(self, ctx, username):
-        """last seen"""
 
         await ctx.send("Still in progress")

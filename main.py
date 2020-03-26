@@ -8,7 +8,7 @@ import json
 
 def token():
     # load token from json file
-    with open("data.json", "r") as f:
+    with open("config.json", "r") as f:
         setup = json.load(f)
     return setup["setup"]["token"]
 
@@ -18,11 +18,12 @@ def get_prefix(guild_id, message):
     with open("data.json", "r+") as f:
         json_data = json.load(f)
     try:
-        return json_data["server"][str(message.guild.id)]["prefix"]
+        return json_data["server"][str(message.guild.id)]
     except:
+        print("error")
         with open("data.json", "r+") as f:
             json_data = json.load(f)
-            json_data[str(message.guild.id)] = {"prefix": "/"}
+            json_data["server"][str(message.guild.id)] = "/"
             f.seek(0)
             json.dump(json_data, f, indent=4)
             f.truncate()
@@ -30,19 +31,20 @@ def get_prefix(guild_id, message):
 
 
 def extensions():
-    with open("data.json", "r") as f:
+    with open("config.json", "r") as f:
         json_data = json.load(f)
     cogs = json_data["setup"]["cogs"]
     return cogs
 
 
-bot = commands.Bot(command_prefix="?", description="Testing", case_insensitive=True)
+bot = commands.Bot(command_prefix=get_prefix, description="Testing", case_insensitive=True)
 
 @bot.event
 async def on_ready():
     print(f"\n\nSuccessfully logged in and booted...!")
-    print(
-        f"Logged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n")
+    print(f"Logged in as: {bot.user.name} - {bot.user.id}")
+    print(f"Invite link: https://discordapp.com/oauth2/authorize?client_id={bot.user.id}&scope=bot")
+    print(f"Version: {discord.__version__}\n")
 
     # Sets our bots status to wether operational or testing
     game = discord.Game("Testing")
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     # remove default help command so we can use our own
     #bot.remove_command('help')
 
-    # load all our cogs
+    # load all the cogs
     for extension in extensions():
         try:
             bot.load_extension(f"cogs.{extension}")
