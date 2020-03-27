@@ -107,8 +107,8 @@ class Information(commands.Cog, name="Information"):
                 max = data["players"]["max"]
                 embed.add_field(name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
             else:
-                embed.add_field(name="Players")
-            
+                #embed.add_field(name="Players: ", value=)
+                pass
             #imagedata = base64.b64decode(data["favicon"][22:])
             #filename = 'favicon.png'  # I assume you have a way of picking unique filenames
             #with open(filename, 'wb') as f:
@@ -121,20 +121,20 @@ class Information(commands.Cog, name="Information"):
             print(data["online"])
             await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
 
-    @commands.command()
-    async def status(self, ctx):
-        """Check the status of all the Mojang services"""
+    #@commands.command()
+    #async def status(self, ctx):
+    #    """Check the status of all the Mojang services"""
 
-        data = get("https://status.mojang.com/check")
+    #    data = get("https://status.mojang.com/check")
 
 
-        embed = discord.Embed(title=f"Minecraft Service Status", color=0x00ff00)
-        print(data[0][0])
+    #    embed = discord.Embed(title=f"Minecraft Service Status", color=0x00ff00)
+    #    print(data[0][0])
 
-        for state in data:
-            if state[state.keys()[0]] == "red":
-                embed.add_field(name=state[0], value=state[1])
-
+    #    for state in data:
+    #        if state[state.keys()[0]] == "red":
+    #            embed.add_field(name=state[0], value=state[1])
+    #
         #embed.add_field(name=state[0], value=state[1])
         #embed.add_field(name=state[0], value=state[1])
         #embed.add_field(name=state[0], value=state[1])
@@ -147,22 +147,22 @@ class Information(commands.Cog, name="Information"):
         #for state in data:
             #embed.add_field(name=state[0], value=state[1])
 
-        await ctx.send("Still in progress")
+    #    await ctx.send("Still in progress")
 
-    @commands.command()
-    async def version(self, ctx, version):
-        """View all of Minecraft Java edition versions or a specific version."""
-        
-        await ctx.send("Still in progress")
+    #@commands.command()
+    #async def version(self, ctx, version):
+    #    """View all of Minecraft Java edition versions or a specific version."""
+    #    
+    #    await ctx.send("Still in progress")
 
-    @commands.command(aliases=["latestver", "latestversion"])
-    async def latest(self, ctx, snapshot):
-        """View the latest version or snapshot within the Minecraft Java launcher."""
+    #@commands.command(aliases=["latestver", "latestversion"])
+    #async def latest(self, ctx, snapshot):
+    #    """View the latest version or snapshot within the Minecraft Java launcher."""
+    #
+     #   await ctx.send("Still in progress")
 
-        await ctx.send("Still in progress")
-
-    @commands.command(aliases=["latestarticle", "minecraftnews", "latestnews"])
-    async def news(self, ctx):
-        """See the latest post on Minecraft.net."""
-
-        await ctx.send("Still in progress")
+    #@commands.command(aliases=["latestarticle", "minecraftnews", "latestnews"])
+    #async def news(self, ctx):
+    #    """See the latest post on Minecraft.net."""
+    #
+    #    await ctx.send("Still in progress")

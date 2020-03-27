@@ -52,7 +52,7 @@ async def on_ready():
 
 if __name__ == "__main__":
     # remove default help command so we can use our own
-    #bot.remove_command('help')
+    bot.remove_command('help')
 
     # load all the cogs
     for extension in extensions():
