@@ -13,7 +13,6 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         """Provied the link to invite the bot to your server"""
         embed = discord.Embed(description="**[Add the bot To Your Discord Server](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot)**", color=0x00ff00)
         await ctx.send(embed=embed)
-        pass
 
     @commands.command()
     async def ping(self, ctx):

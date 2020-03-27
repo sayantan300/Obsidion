@@ -87,79 +87,124 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: the user: `{username}` does not exist!")
 
-
-    ######################
-    ## WORK IN PROGRESS ##
-    ######################
     
     @commands.command()
     async def server(self, ctx, server):
         """Request a JAVA Minecraft server for information such as online player count, MOTD and more."""
 
-        data = get(f"https://mcapi.us/server/status?ip={server}")
-
+        data = get(f"https://api.mcsrvstat.us/2/{server}")
         if data["online"] == True:
             embed = discord.Embed(title=f"Java Server: {server}", color=0x00ff00)
-
-            embed.add_field(name="Description", value=data["motd"]) # need to fix encoding issues
-            if data["players"]["now"] > 10:
-                now = data["players"]["now"]
-                max = data["players"]["max"]
-                embed.add_field(name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
-            else:
-                #embed.add_field(name="Players: ", value=)
+            embed.add_field(name="Description", value=data["motd"]["raw"][0]) # need to fix encoding issues
+            now = data["players"]["online"]
+            max = data["players"]["max"]
+            embed.add_field(name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
+            if now > 10 or now == 0:
                 pass
+            else:
+                names = "\n".join(data["players"]["list"])
+                embed.add_field(name="Player names", value=names)
             #imagedata = base64.b64decode(data["favicon"][22:])
             #filename = 'favicon.png'  # I assume you have a way of picking unique filenames
             #with open(filename, 'wb') as f:
             #    f.write(imagedata)
             #embed.set_thumbnail(url=("attachment://favicon.png"))
-            embed.add_field(name="Version", value=data["server"]["name"])
+            embed.add_field(name="Version", value=data['version'])
 
             await ctx.send(embed=embed)
         else:
             print(data["online"])
             await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
 
-    #@commands.command()
-    #async def status(self, ctx):
-    #    """Check the status of all the Mojang services"""
+    @commands.command()
+    async def status(self, ctx):
+        """Check the status of all the Mojang services"""
 
-    #    data = get("https://status.mojang.com/check")
+        data = get("https://status.mojang.com/check")
+
+        sales_mapping = {
+        'item_sold_minecraft': True,
+        'prepaid_card_redeemed_minecraft': True,
+        'item_sold_cobalt': False,
+        'item_sold_scrolls': False
+        }
+        payload = {
+            'metricKeys': [k for (k, v) in sales_mapping.items() if v]
+        }
+
+        sales_data = requests.post("https://api.mojang.com/orders/statistics", json=payload).json()
 
 
-    #    embed = discord.Embed(title=f"Minecraft Service Status", color=0x00ff00)
-    #    print(data[0][0])
+        embed = discord.Embed(title=f"Minecraft Service Status", color=0x00ff00)
+        embed.add_field(name="Minecraft Game Sales", value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**")
 
-    #    for state in data:
-    #        if state[state.keys()[0]] == "red":
-    #            embed.add_field(name=state[0], value=state[1])
-    #
-        #embed.add_field(name=state[0], value=state[1])
-        #embed.add_field(name=state[0], value=state[1])
-        #embed.add_field(name=state[0], value=state[1])
-        #embed.add_field(name=state[0], value=state[1])
-        #embed.add_field(name=state[0], value=state[1])
-        #embed.add_field(name=state[0], value=state[1])
-        #embed.add_field(name=state[0], value=state[1])
-        #embed.add_field(name=state[0], value=state[1])
 
-        #for state in data:
-            #embed.add_field(name=state[0], value=state[1])
+        services = ""
+        for service in data:
+            if service[next(iter(service))] == "green":
+                services += f":green_heart: - {next(iter(service)).title()}: **This service is healthy.** \n"
+            elif service[next(iter(service))] == "yellow":
+                services += f":yellow_heart: - {next(iter(service)).title()}: **This service has some issues.** \n"
+            else:
+                services +=f":heart: - {next(iter(service)).title()}: **This service is offline.** \n"
+        embed.add_field(name="Minecraft Services:", value=services, inline=False)
 
-    #    await ctx.send("Still in progress")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def sales(self, ctx):
+        """See the total sales of Minecraft"""
+        sales_mapping = {
+            'item_sold_minecraft': True,
+            'prepaid_card_redeemed_minecraft': True,
+            'item_sold_cobalt': False,
+            'item_sold_scrolls': False
+        }
+        payload = {
+            'metricKeys': [k for (k, v) in sales_mapping.items() if v]
+        }
+
+        sales_data = requests.post("https://api.mojang.com/orders/statistics", json=payload).json()
+
+        embed = discord.Embed(color=0x00ff00)
+
+        sale = f"Total Sales: `{sales_data['total']:,}`\n"
+        sale += f"Sales in the last 24 hours: `{sales_data['last24h']:,}`\n"
+        sale += f"Sales per second: `{sales_data['saleVelocityPerSeconds']}`\n"
+        sale += "[BUY MINECRAFT](https://my.minecraft.net/en-us/store/minecraft/)"
+
+        embed.add_field(name="Minecraft Sales", value=sale)
+
+        await ctx.send(embed=embed)
+
+
 
     #@commands.command()
     #async def version(self, ctx, version):
-    #    """View all of Minecraft Java edition versions or a specific version."""
-    #    
-    #    await ctx.send("Still in progress")
+        #"""View all of Minecraft Java edition versions or a specific version."""
+
+        #await ctx.send("Still in progress")
 
     #@commands.command(aliases=["latestver", "latestversion"])
     #async def latest(self, ctx, snapshot):
     #    """View the latest version or snapshot within the Minecraft Java launcher."""
-    #
-     #   await ctx.send("Still in progress")
+
+    #    embed = discord.Embed(title="Latest JAVA release", color=0x00ff00)
+
+    #    current = ""
+    #    current += f"Version: `{}`\n"
+    #    current += f"Latest Snapshot: `{}`"
+    #    embed.add_field(name="Current Release", value="")
+
+    #    latest = 0
+    #    latest += f"{}\n"
+    #    latest += f"Time Published: `{}`\n"
+    #    latest += f"Type: `{}`\n"
+    #    latest += f"URL: [{} | snapshot]({})"
+
+    #    embed.add_field(name="Latest Version", value=latest)
+        
+    #    await ctx.send(embed=embed)
 
     #@commands.command(aliases=["latestarticle", "minecraftnews", "latestnews"])
     #async def news(self, ctx):

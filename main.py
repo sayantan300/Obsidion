@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import CommandNotFound
 
 import sys
 import traceback
@@ -49,6 +50,13 @@ async def on_ready():
     # Sets our bots status to wether operational or testing
     game = discord.Game("Testing")
     await bot.change_presence(status=discord.Status.online, activity=game)
+
+# silence command not found
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, CommandNotFound):
+        return
+    raise error
 
 if __name__ == "__main__":
     # remove default help command so we can use our own
