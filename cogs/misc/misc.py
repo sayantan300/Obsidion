@@ -72,17 +72,34 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
                 if not found:
                     await ctx.send(f"{ctx.message.author.mention}, :x: That command is not found please try again")
         else:
-            with open("data.json", "r+") as f:
-                json_data = json.load(f)
-            prefix = json_data["server"][str(ctx.guild.id)]
-            embed = discord.Embed(description=f"Below is a list of commands you can use\n To get more information about a command type: `{prefix}help command`", color=0x00ff00)
+            if ctx.guild is None:
+                prefix = "/"
+            else:
+                with open("data.json", "r+") as f:
+                    json_data = json.load(f)
+                prefix = json_data["server"][str(ctx.guild.id)]
+            embed = discord.Embed(description=f"Below is a list of commands you can use\n To use commands type `{prefix}command` or <@{self.bot.user.id}> command \n To get more information about a command type: `{prefix}help command`", color=0x00ff00)
             embed.set_author(name="Bot's Commands")
             # General help command
             for cog in self.bot.cogs:
                 cogs=[]
                 cog_commands = self.bot.get_cog(cog).get_commands()
                 for c in cog_commands:
-                    cogs.append(c.name)
+                    if not c.hidden:
+                        cogs.append(c.name)
                 embed.add_field(name=cog, value=f"`{'`, `'.join(cogs)}`", inline=False)
             embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
             await ctx.send(embed=embed)
+
+
+    #@commands.command()
+    #async def aliases(self, ctx, command_name=None):
+    #    pass
+
+    #@commands.command()
+    #async def credits(self, ctx):
+    #    pass
+
+    #@commands.command()
+    #async def tutorial(self, ctx):
+    #    pass
