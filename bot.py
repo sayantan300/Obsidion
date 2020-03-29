@@ -143,17 +143,7 @@ class MinecraftDiscord(commands.AutoShardedBot):
         await self.session.close()
 
     def run(self):
-        try:
-            super().run(token(), reconnect=True)
-        finally:
-            with open('prev_events.log', 'w', encoding='utf-8') as fp:
-                for data in self._prev_events:
-                    try:
-                        x = json.dumps(data, ensure_ascii=True, indent=4)
-                    except:
-                        fp.write(f'{data}\n')
-                    else:
-                        fp.write(f'{x}\n')
+        super().run(token(), reconnect=True)
 
 
 
