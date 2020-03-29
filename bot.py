@@ -40,44 +40,14 @@ def extensions():
     cogs = json_data["setup"]["cogs"]
     return cogs
 
-"""
-bot = commands.Bot(command_prefix=prefix_callable, description="Testing", case_insensitive=True, help_command=None)
 
-@bot.event
-async def on_ready():
-    print(f"\n\nSuccessfully logged in and booted...!")
-    print(f"Logged in as: {bot.user.name} - {bot.user.id}")
-    print(f"Invite link: https://discordapp.com/oauth2/authorize?client_id={bot.user.id}&scope=bot")
-    print(f"Version: {discord.__version__}\n")
-
-    # Sets our bots status to wether operational or testing
-    game = discord.Game("Testing")
-    await bot.change_presence(status=discord.Status.online, activity=game)
-
-# silence command not found
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, CommandNotFound):
-        return
-    raise error
-
-
-if __name__ == "__main__":
-    # load all the cogs
-    for extension in extensions():
-        try:
-            bot.load_extension(f"cogs.{extension}")
-        except Exception as e:
-            print(f"Failed to load extension {extension}.", file=sys.stderr)
-            traceback.print_exc()
-
-bot.run(token(), bot=True, reconnect=True)
-"""
 description = "testing"
+
 
 class MinecraftDiscord(commands.AutoShardedBot):
     def __init__(self):
-        super().__init__(command_prefix=_prefix_callable, description=description,  case_insensitive=True, help_command=None)
+        super().__init__(command_prefix=_prefix_callable,
+                         description=description,  case_insensitive=True, help_command=None)
 
         self.session = aiohttp.ClientSession(loop=self.loop)
 
@@ -85,7 +55,8 @@ class MinecraftDiscord(commands.AutoShardedBot):
             try:
                 self.load_extension(f"cogs.{extension}")
             except Exception as e:
-                print(f'Failed to load extension {extension}.', file=sys.stderr)
+                print(
+                    f'Failed to load extension {extension}.', file=sys.stderr)
                 traceback.print_exc()
 
     async def on_command_error(self, ctx, error):
@@ -98,7 +69,8 @@ class MinecraftDiscord(commands.AutoShardedBot):
             if not isinstance(original, discord.HTTPException):
                 print(f'In {ctx.command.qualified_name}:', file=sys.stderr)
                 traceback.print_tb(original.__traceback__)
-                print(f'{original.__class__.__name__}: {original}', file=sys.stderr)
+                print(f'{original.__class__.__name__}: {original}',
+                      file=sys.stderr)
         elif isinstance(error, commands.ArgumentParsingError):
             await ctx.send(error)
 
@@ -121,7 +93,7 @@ class MinecraftDiscord(commands.AutoShardedBot):
     async def on_ready(self):
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.utcnow()
-        
+
         print(f"\n\nSuccessfully logged in and booted...!")
         print(f'Ready: {self.user} (ID: {self.user.id})')
         print(f"Version: {discord.__version__}\n")
@@ -133,7 +105,6 @@ class MinecraftDiscord(commands.AutoShardedBot):
     async def on_resumed(self):
         print('resumed...')
 
-
     async def on_guild_join(self, guild):
         if guild.id in self.blacklist:
             await guild.leave()
@@ -144,8 +115,3 @@ class MinecraftDiscord(commands.AutoShardedBot):
 
     def run(self):
         super().run(token(), reconnect=True)
-
-
-
-
-

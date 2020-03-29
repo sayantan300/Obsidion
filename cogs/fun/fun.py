@@ -2,19 +2,21 @@ from discord.ext import commands
 from random import choice
 import discord
 
+minecraft = "ᔑʖᓵ↸ᒷ⎓⊣⍑╎⋮ꖌꖎᒲリ𝙹!¡ᑑ∷ᓭℸ ̣ ⚍⍊∴ ̇/||⨅"
+alphabet = "abcdefghijklmnopqrstuvwxyz"
+
 class Fun(commands.Cog, name="Fun"):
 
-    #@commands.command()
-    #async def enchant(self, ctx):
-    #    pass
-
-    #@commands.command()
-    #async def fact(self, ctx):
-    #    pass
-
-    #@commands.command()
-    #async def trivia(self, ctx):
-    #    pass
+    @commands.command()
+    async def enchant(self, ctx, *, msg):
+        """Enchant a message"""
+        response = ""
+        for letter in msg:
+            if letter in alphabet:
+                response += minecraft[alphabet.index(letter)]
+            else:
+                response += letter
+        await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
     #@commands.command()
     #async def tntsweeper(self, ctx):

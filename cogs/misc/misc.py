@@ -52,7 +52,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def help(self, ctx, *cog_name):
         """Gets all cogs and commands of mine."""
         if cog_name:
