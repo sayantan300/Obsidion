@@ -2,7 +2,7 @@ from discord.ext import commands
 from random import choice
 import discord
 
-minecraft = "ᔑʖᓵ↸ᒷ⎓⊣⍑╎⋮ꖌꖎᒲリ𝙹!¡ᑑ∷ᓭℸ ̣ ⚍⍊∴ ̇/||⨅"
+minecraft = "ᔑʖᓵ↸ᒷ⎓⊣⍑╎⋮ꖌꖎᒲリ𝙹!¡ᑑ∷ᓭℸ ̣⚍⍊∴ ̇/||⨅"
 alphabet = "abcdefghijklmnopqrstuvwxyz"
 
 class Fun(commands.Cog, name="Fun"):

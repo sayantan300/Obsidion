@@ -41,13 +41,9 @@ def extensions():
     return cogs
 
 
-description = "testing"
-
-
 class MinecraftDiscord(commands.AutoShardedBot):
     def __init__(self):
-        super().__init__(command_prefix=_prefix_callable,
-                         description=description,  case_insensitive=True, help_command=None)
+        super().__init__(command_prefix=_prefix_callable, case_insensitive=True, help_command=None)
 
         self.session = aiohttp.ClientSession(loop=self.loop)
 
@@ -99,8 +95,8 @@ class MinecraftDiscord(commands.AutoShardedBot):
         print(f"Version: {discord.__version__}\n")
 
         # Sets our bots status to wether operational or testing
-        game = discord.Game("Testing")
-        await self.change_presence(status=discord.Status.online, activity=game)
+        activity = discord.Activity(name=f"For @{self.user.name} help", type=discord.ActivityType.watching)
+        await self.change_presence(status=discord.Status.online, activity=activity)
 
     async def on_resumed(self):
         print('resumed...')

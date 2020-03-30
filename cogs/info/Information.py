@@ -190,7 +190,7 @@ class Information(commands.Cog, name="Information"):
             'metricKeys': [k for (k, v) in sales_mapping.items() if v]
         }
 
-        url = f"https://api.mojang.com/user/profiles/{uuid}/names"
+        url = f"https://api.mojang.com/orders/statistics"
         async with self.session.post(url, json=payload) as resp:
             if resp.status == 200:
                 sales_data = await resp.json()
@@ -205,6 +205,40 @@ class Information(commands.Cog, name="Information"):
         embed.add_field(name="Minecraft Sales", value=sale)
 
         await ctx.send(embed=embed)
+
+    @commands.command(aliases=["uhcgg", "uhc.gg"])
+    async def uhc(self, ctx, command, info=None):
+        """View info about uhc matches"""
+        if command == "upcoming":
+            data = await get(self.session, "https://hosts.uhc.gg/api/matches/upcoming")
+
+            embed = discord.Embed(title="UHC.gg upcoming UHC games", description="Displayed the top 6 upcoming UHC games on [hosts.uhc.gg](https://hosts.uhc.gg)\n", color=0x00ff00)
+
+            for match in data[:6]:
+                address = match['address']
+                opens = match['opens']
+                author = match['author']
+                region = match['region']
+                version = match['version']
+                slots = match['slots']
+                length = match['length']
+                tournament = match['tournament']
+                id = match['id']
+
+                info = ""
+                info += f"Opens: {opens}\n"
+                info += f"Author: {author}\n"
+                info += f"Region: {region}\n"
+                info += f"Version: {version}\n"
+                info += f"Slots: {slots}\n"
+                info += f"Length: {length} minutes\n"
+                info += f"Tournament: {tournament}\n"
+                info += f"id: {id}"
+
+                embed.add_field(name=address, value=info)
+
+            await ctx.send(embed=embed)
+
 
     # @commands.command()
     # async def version(self, ctx, version):
