@@ -74,7 +74,6 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
                 if not found:
                     await ctx.send(f"{ctx.message.author.mention}, :x: That command is not found please try again")
         else:
-            if ctx.guild is None:
             embed = discord.Embed(description=f"Below is a list of commands you can use\n To use commands type `{self.bot.prefix}command` or <@{self.bot.user.id}> command \n To get more information about a command type: `{self.bot.prefix}help command`", color=0x00ff00)
             embed.set_author(name="Bot's Commands")
             # General help command
