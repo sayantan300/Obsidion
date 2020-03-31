@@ -3,46 +3,32 @@ from random import choice
 import discord
 import aiohttp
 from datetime import datetime
-
-
-async def get(session, url):
-    async with session.get(url) as resp:
-        if resp.status == 200:
-            data = await resp.json()
-            return data
-        else:
-            return False
-
-
-async def get_uuid(session, username):
-    url = f"https://api.mojang.com/users/profiles/minecraft/{username}"
-    async with session.get(url) as resp:
-        if resp.status == 200:
-            data = await resp.json()
-            uuid = data["id"]
-            return uuid
-        else:
-            return False
+import json
+from utils.utils import get, get_uuid
 
 
 class Information(commands.Cog, name="Information"):
 
     def __init__(self, bot):
+        self.bot = bot
         self.session = bot.session
 
     @commands.command(aliases=['whois', 'p', "names", "namehistory", "pastnames", "namehis"])
-    async def profile(self, ctx, username):
+    async def profile(self, ctx, username=None):
         """View a players Minecraft UUID, Username history and skin."""
-
-        uuid = await get_uuid(self.session, username)
+        if username:
+            uuid = await get_uuid(self.session, username)
+        elif self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
+            uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+            names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+            username = names[-1]["name"]
+        else:
+            uuid = False
 
         if uuid:
             long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
 
-            url = f"https://api.mojang.com/user/profiles/{uuid}/names"
-            async with self.session.get(url) as resp:
-                if resp.status == 200:
-                    names = await resp.json()
+            names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
 
             name_list = ""
             for name in names[::-1][:-1]:
@@ -89,10 +75,16 @@ class Information(commands.Cog, name="Information"):
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def uuid(self, ctx, username):
+    async def uuid(self, ctx, username=None):
         """Get a players UUID."""
-
-        uuid = await get_uuid(self.session, username)
+        if username:
+            uuid = await get_uuid(self.session, username)
+        elif self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
+            uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+            names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+            username = names[-1]["name"]
+        else:
+            uuid = False
         if uuid:
             long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16-20]}-{uuid[20:]}"
             embed = discord.Embed(
@@ -104,11 +96,17 @@ class Information(commands.Cog, name="Information"):
             await ctx.send(f"{ctx.message.author.mention}, :x: the user: `{username}` does not exist!")
 
     @commands.command()
-    async def server(self, ctx, server):
+    async def server(self, ctx, server=None):
         """Request a JAVA Minecraft server for information such as online player count, MOTD and more."""
-
-        data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
-        if data["online"] == True:
+        if server:
+            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
+        elif self.bot.pool["guilds"][str(ctx.guild.id)]["server"]:
+            server = self.bot.pool["guilds"][str(ctx.guild.id)]["server"]
+            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
+        else:
+            server = False
+    
+        if data["online"] and server:
             embed = discord.Embed(
                 title=f"Java Server: {server}", color=0x00ff00)
             # need to fix encoding issues
@@ -135,8 +133,10 @@ class Information(commands.Cog, name="Information"):
 
             await ctx.send(embed=embed)
         else:
-            print(data["online"])
-            await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
+            if server:
+                await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
+            else:
+                await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
     @commands.command()
     async def status(self, ctx):

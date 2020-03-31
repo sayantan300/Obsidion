@@ -5,10 +5,20 @@ import asyncpg
 import discord
 import importlib
 import contextlib
+
+import config
 import traceback
-import click
 
 from bot import MinecraftDiscord
+from utils.db import Data
+
+# nice and fast async system
+try:
+    import uvloop
+except ImportError:
+    pass
+else:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 @contextlib.contextmanager
 def setup_logging():
@@ -34,20 +44,24 @@ def setup_logging():
             log.removeHandler(hdlr)
 
 def run_bot():
-    loop = asyncio.get_event_loop()
     log = logging.getLogger()
 
+    try:
+        pool = Data.connect("")
+    except Exception as e:
+        print('Could not load json database', file=sys.stderr)
+        log.exception('Could not load json Exiting.')
+        return
+
     bot = MinecraftDiscord()
+    bot.pool = pool
     bot.run()
 
-@click.group(invoke_without_command=True, options_metavar='[options]')
-@click.pass_context
-def main(ctx):
+def main():
     """Launches the bot."""
-    if ctx.invoked_subcommand is None:
-        loop = asyncio.get_event_loop()
-        with setup_logging():
-            run_bot()
+    loop = asyncio.get_event_loop()
+    with setup_logging():
+        run_bot()
 
 if __name__ == '__main__':
     main()

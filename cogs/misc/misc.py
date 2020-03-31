@@ -2,7 +2,6 @@ from discord.ext import commands
 from random import choice
 import discord
 import resource
-import json
 import aiohttp
 
 class Miscellaneous(commands.Cog, name="Miscellaneous"):
@@ -74,7 +73,11 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
                 if not found:
                     await ctx.send(f"{ctx.message.author.mention}, :x: That command is not found please try again")
         else:
-            embed = discord.Embed(description=f"Below is a list of commands you can use\n To use commands type `{self.bot.prefix}command` or <@{self.bot.user.id}> command \n To get more information about a command type: `{self.bot.prefix}help command`", color=0x00ff00)
+            if ctx.guild is None:
+                prefix = "/"
+            else:
+                prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
+            embed = discord.Embed(description=f"Below is a list of commands you can use\n To use commands type `{prefix}command` or <@{self.bot.user.id}> command \n To get more information about a command type: `{prefix}help command`", color=0x00ff00)
             embed.set_author(name="Bot's Commands")
             # General help command
             for cog in self.bot.cogs:
@@ -91,7 +94,11 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command()
     async def aliases(self, ctx):
         """Lists all the aliases you can use."""
-        embed = discord.Embed(description=f"Below is a list of command aliases you can use\n To use aliases type `{self.bot.prefix}alias` or <@{self.bot.user.id}> alias \n To get more information about a command type: `{self.bot.prefix}help command`", color=0x00ff00)
+        if ctx.guild is None:
+            prefix = "/"
+        else:
+            prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
+        embed = discord.Embed(description=f"Below is a list of command aliases you can use\n To use aliases type `{prefix}alias` or <@{self.bot.user.id}> alias \n To get more information about a command type: `{prefix}help command`", color=0x00ff00)
         embed.set_author(name="Bot's Commands")
         # General help command
         for cog in self.bot.cogs:

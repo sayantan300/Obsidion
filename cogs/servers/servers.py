@@ -3,32 +3,14 @@ from discord.ext import commands
 import aiohttp
 import datetime
 import asyncio
-
-hypixel_api = "ecdcbe5e-3d63-4a90-a374-87bc5a9357f7"
-
-async def get(session, url):
-    async with session.get(url) as resp:
-        if resp.status == 200:
-            data = await resp.json()
-            return data
-        else:
-            return False
-
-async def get_uuid(session, username):
-    url = f"https://api.mojang.com/users/profiles/minecraft/{username}"
-    async with session.get(url) as resp:
-        if resp.status == 200:
-            data = await resp.json()
-            uuid = data["id"]
-            return uuid
-        else:
-            return False
+from utils.utils import get_uuid
 
 class servers(commands.Cog, name="Servers"):
 
     def __init__(self, bot):
         self.session = bot.session
         self.bot = bot
+        self.hypixel = bot.hypixel_api
 
     #@commands.command()
     #async def blocksmcself(self, ctx, username):
