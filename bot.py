@@ -25,7 +25,12 @@ def _prefix_callable(bot, msg):
     if msg.guild is None:
         prefix.append('/')
     else:
-        prefix.append(bot.pool["guilds"][str(msg.guild.id)]["prefix"])
+        if str(msg.guild.id) in bot.pool["guilds"]:
+            prefix.append(bot.pool["guilds"][str(msg.guild.id)]["prefix"])
+        else:
+            bot.pool["guilds"][str(msg.guild.id)] = {"prefix": "/", "server": None}
+            db.Data.save("", bot.pool)
+            return "/"
     return prefix
 
 

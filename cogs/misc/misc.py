@@ -12,7 +12,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command()
     async def invite(self, ctx):
         """Provied the link to invite the bot to your server"""
-        embed = discord.Embed(description="**[Add the bot To Your Discord Server](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot)**", color=0x00ff00)
+        embed = discord.Embed(description=f"**[Click here to add {self.bot.user.name} to your Discord server](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot)**", color=0x00ff00)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -113,11 +113,17 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command()
     async def credits(self, ctx):
         embed = discord.Embed(title=f"{self.bot.user.name} Bot Credits", color=0x00ff00)
-        embed.add_field(name="Developers", value="Darkflame72#1150")
-        embed.add_field(name="Administrators", value="Darkflame72#1150")
-        embed.add_field(name="Moderators", value="Darkflame72#1150")
-        embed.add_field(name="Beta Testers", value="Darkflame72#1150")
-        embed.add_field(name="contribute", value="Contribute on Github: [LINK](https://github.com/Darkflame72/Minecraft-Discord)")
+        embed.add_field(name="Developers", value="[Darkflame72#1150](https://github.com/Darkflame72/)")
+        #embed.add_field(name="Staff", value="")
+        embed.add_field(name="Beta Testers", value="Abhishek Rameshand#8069")
+        embed.add_field(name="Contribute", value="[Contribute on Github](https://github.com/Darkflame72/Minecraft-Discord)")
+        third_party = ""
+        third_party += "This bot uses some external services to add extra features.\n"
+        third_party += "Skin renders - [Visage](https://visage.surgeplay.com/index.html)\n"
+        third_party += "Mojang API - [Wiki.vg](https://wiki.vg/Mojang_API)\n"
+        third_party += "Discord.py - [discord.py Github](https://github.com/Rapptz/discord.py)"
+        embed.add_field(name="Third Party Stuff", value=third_party, inline=False)
+        
         embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
         await ctx.send(embed=embed)
 

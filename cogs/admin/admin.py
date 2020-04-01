@@ -3,6 +3,7 @@ import discord
 import asyncio
 from utils.db import Data
 import resource
+import config
 
 class admin(commands.Cog, name="admin"):
     def __init__(self, bot):
@@ -47,14 +48,14 @@ class admin(commands.Cog, name="admin"):
         bots = sum([1 for m in guild.members if m.bot])
         members = f"Humans: `{users}/{len(guild.members)}` \n Bots: `{bots}/{len(guild.members)}`"
         
-        if str(guild.id) in self.pool["guilds"]:
+        if str(guild.id) in self.bot.pool["guilds"]:
             embed = discord.Embed(name=f"{self.bot.user.name} has re-joined a guild")
             embed.set_footer(text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | rejoin")
         else:
             embed = discord.Embed(name=f"{self.bot.user.name} has joined a new guild")
             embed.set_footer(text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | join")
-            self.pool["guilds"][guild.id] = {"prefix": "/", "server": None}
-            Data.save("", self.pool)
+            self.bot.pool["guilds"][guild.id] = {"prefix": "/", "server": None}
+            Data.save("", self.bot.pool)
         embed.add_field(name="Name", value=f"`{guild.name}`")
         embed.add_field(name="Members", value=members)
         embed.add_field(name="Owner", value=guild.owner)
@@ -63,7 +64,7 @@ class admin(commands.Cog, name="admin"):
             embed.set_thumbnail(url=guild.icon_url)
         else:
             embed.set_thumbnail(url="https://i.imgur.com/AFABgjD.png")
-        channel = self.get_channel(694417026331967538)
+        channel = self.bot.get_channel(config.new_guild_channel)
         await channel.send(embed=embed)
 
     @commands.command(hidden=True)

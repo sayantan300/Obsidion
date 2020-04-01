@@ -33,7 +33,6 @@ class Information(commands.Cog, name="Information"):
             name_list = ""
             for name in names[::-1][:-1]:
                 name1 = name["name"]
-                # Prettify and give actual month and time passed @Cubic_dd#9976
                 date = datetime.utcfromtimestamp(
                     int(str(name["changedToAt"])[:-3])).strftime('%b %d, %Y')
                 name_list += f"**{names.index(name)+1}.** `{name1}` - {date} " + "\n"
@@ -41,6 +40,9 @@ class Information(commands.Cog, name="Information"):
             name_list += f"**1.** `{original}` - First Username"
 
             uuids = "Short UUID: `" + uuid + "\n" + "`Long UUID: `" + long_uuid + "`"
+            information = ""
+            information += f"Username Changes: `{len(names)-1}`\n"
+            # information += f"Legacy: `{}`"
 
             embed = discord.Embed(
                 title=f"Minecraft profile for {username}", color=0x00ff00)
@@ -49,7 +51,7 @@ class Information(commands.Cog, name="Information"):
             embed.add_field(name="Textures", inline=True,
                             value=f"Skin: [Open Skin](https://visage.surgeplay.com/bust/{uuid})")
             embed.add_field(name="Information", inline=True,
-                            value=f"Username Changes: {len(names)-1}")
+                            value=information)
             embed.add_field(name="Name History", inline=False, value=name_list)
             embed.set_thumbnail(
                 url=(f"https://visage.surgeplay.com/bust/{uuid}"))
@@ -105,7 +107,7 @@ class Information(commands.Cog, name="Information"):
             data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
         else:
             server = False
-    
+
         if data["online"] and server:
             embed = discord.Embed(
                 title=f"Java Server: {server}", color=0x00ff00)
@@ -212,7 +214,8 @@ class Information(commands.Cog, name="Information"):
         if command == "upcoming":
             data = await get(self.session, "https://hosts.uhc.gg/api/matches/upcoming")
 
-            embed = discord.Embed(title="UHC.gg upcoming UHC games", description="Displayed the top 6 upcoming UHC games on [hosts.uhc.gg](https://hosts.uhc.gg)\n", color=0x00ff00)
+            embed = discord.Embed(title="UHC.gg upcoming UHC games",
+                                  description="Displayed the top 6 upcoming UHC games on [hosts.uhc.gg](https://hosts.uhc.gg)\n", color=0x00ff00)
 
             for match in data[:6]:
                 address = match['address']
@@ -245,8 +248,9 @@ class Information(commands.Cog, name="Information"):
         if bug:
             data = await get(self.session, f"https://bugs.mojang.com/rest/api/latest/issue/{bug}")
             if data:
-                embed = discord.Embed(title=f"[{data['fields']['project']['name']} - {data['fields']['summary']}](https://bugs.mojang.com/rest/api/latest/issue/{bug})", description=data["fields"]["description"], color=0x00ff00)
-                
+                embed = discord.Embed(title=f"[{data['fields']['project']['name']} - {data['fields']['summary']}](https://bugs.mojang.com/rest/api/latest/issue/{bug})",
+                                      description=data["fields"]["description"], color=0x00ff00)
+
                 info = ""
                 info += f"Version: {data['fields']['project']['name']}\n"
                 info += f"Reporter: {data['fields']['creator']['displayName']}\n"
