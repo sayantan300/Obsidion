@@ -2,8 +2,8 @@ from discord.ext import commands
 from random import choice
 import discord
 
-minecraft = "ᔑʖᓵ↸ᒷ⎓⊣⍑╎⋮ꖌꖎᒲリ𝙹!¡ᑑ∷ᓭℸ ̣⚍⍊∴ ̇/||⨅"
-alphabet = "abcdefghijklmnopqrstuvwxyz"
+minecraft = ["ᔑ", "ʖ", "ᓵ", "↸", "ᒷ", "⎓", "⊣", "⍑", "╎", "⋮", "ꖌ", "ꖎ", "ᒲ", "リ", "𝙹", "!", "¡", "ᑑ", "∷", "ᓭ", "ℸ", " ̣", "⚍", "⍊", "∴", " ̇", "|", "|", "⨅", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+alphabet = "abcdefghijklmnopqrstuvwxyz123456789"
 
 class Fun(commands.Cog, name="Fun"):
 
@@ -18,9 +18,16 @@ class Fun(commands.Cog, name="Fun"):
                 response += letter
         await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
-    #@commands.command()
-    #async def tntsweeper(self, ctx):
-    #    pass
+    @commands.command()
+    async def unenchant(self, ctx, *, msg):
+        """Enchant a message"""
+        response = ""
+        for letter in msg:
+            if letter in minecraft:
+                response += alphabet[minecraft.index(letter)]
+            else:
+                response += letter
+        await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
     @commands.command()
     async def creeper(self, ctx):

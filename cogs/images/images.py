@@ -8,19 +8,19 @@ class images(commands.Cog, name="Images"):
         self.session = bot.session
 
     @commands.command()
-    async def achievement(self, ctx, title=None, word1=None, word2=None, word3=None):
+    async def achievement(self, ctx, block_id=None, title=None, word1=None, word2=None, word3=None):
         """Create your very own custom Minecraft achievements!"""
-        if title and word1:
+        if title and word1 and block_id:
             embed = discord.Embed(color=0x00ff00)
             if word2 == None:
-                embed.set_image(url=f"https://minecraftskinstealer.com/achievement/a.php?i=test&h={title}&t={word1}")
+                embed.set_image(url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}")
             elif word3 == None:
-                embed.set_image(url=f"https://minecraftskinstealer.com/achievement/a.php?i=test&h={title}&t={word1}+{word2}")
+                embed.set_image(url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}+{word2}")
             else:
-                embed.set_image(url=f"https://minecraftskinstealer.com/achievement/a.php?i=test&h={title}&t={word1}+{word2}+{word3}")
+                embed.set_image(url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}+{word2}+{word3}")
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f"{ctx.message.author.mention}, :x: Please supply a title and 2-3 words")
+            await ctx.send(f"{ctx.message.author.mention}, :x: Please supply a block_id title and 1-3 words")
     
     @commands.command()
     async def avatar(self, ctx, username):

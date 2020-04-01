@@ -239,6 +239,38 @@ class Information(commands.Cog, name="Information"):
 
             await ctx.send(embed=embed)
 
+    @commands.command(aliases=["bug"])
+    async def mcbug(self, ctx, bug=None):
+        """ Gets info on a bug from bugs.mojang.com"""
+        if bug:
+            data = await get(self.session, f"https://bugs.mojang.com/rest/api/latest/issue/{bug}")
+            if data:
+                embed = discord.Embed(title=f"[{data['fields']['project']['name']} - {data['fields']['summary']}](https://bugs.mojang.com/rest/api/latest/issue/{bug})", description=data["fields"]["description"], color=0x00ff00)
+                
+                info = ""
+                info += f"Version: {data['fields']['project']['name']}\n"
+                info += f"Reporter: {data['fields']['creator']['displayName']}\n"
+                info += f"Created: {data['fields']['created']}\n"
+                info += f"Votes: {data['fields']['votes']['votes']}\n"
+                info += f"Updates: {data['fields']['updated']}\n"
+                info += f"Watchers: {data['fields']['watches']['watchCount']}"
+
+                details = ""
+                details += f"Type: {data['fields']['issuetype']['name']}\n"
+                details += f"Status: {data['fields']['status']['name']}\n"
+                details += f"Resolution: {data['fields']['resolution']['name']}\n"
+                details += f"Affected: { ', '.join([s['name'] for s in data['fields']['versions']])}\n"
+                if len(data['fields']['fixVersions']) >= 1:
+                    details += f"Fixed Version: {data['fields']['fixVersions'][0]} + {len(data['fields']['fixVersions'])}\n"
+
+                embed.add_field(name="Information", value=info)
+                embed.add_field(name="details", value=details)
+
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"{ctx.message.author.mention},  :x: The bug {bug} was not found.")
+        else:
+            await ctx.send(f"{ctx.message.author.mention},  :x: Please provide a bug.")
 
     # @commands.command()
     # async def version(self, ctx, version):

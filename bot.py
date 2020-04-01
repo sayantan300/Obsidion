@@ -86,28 +86,6 @@ class MinecraftDiscord(commands.AutoShardedBot):
     def config(self):
         return __import__('config')
 
-    async def on_guild_join(self, guild):
-        users = sum([1 for m in guild.members if not m.bot])
-        bots = sum([1 for m in guild.members if m.bot])
-        members = f"Humans: `{users}/{len(guild.members)}` \n Bots: `{bots}/{len(guild.members)}`"
-        
-        embed = discord.Embed(name=f"{self.user.name} has joined a new guild")
-        embed.add_field(name="Name", value=f"`{guild.name}`")
-        embed.add_field(name="Members", value=members)
-        embed.add_field(name="Owner", value=guild.owner)
-        embed.add_field(name="Region", value=guild.region, inline=False)
-        if guild.icon_url:
-            embed.set_thumbnail(url=guild.icon_url)
-        else:
-            embed.set_thumbnail(url="https://i.imgur.com/AFABgjD.png")
-        if str(guild.id) in self.pool["guilds"]:
-            embed.set_footer(text=f"Guild: {len(self.guilds):,} | Shard: {guild.shard_id}/{self.shard_count-1} | rejoin")
-        else:
-            embed.set_footer(text=f"Guild: {len(self.guilds):,} | Shard: {guild.shard_id}/{self.shard_count-1} | join")
-            self.pool["guilds"][guild.id] = {"prefix": "/", "server": None}
-            db.Data.save("", self.pool)
-        channel = self.get_channel(694417026331967538)
-        await channel.send(embed=embed)
 
     def run(self):
         super().run(config.token, reconnect=True)

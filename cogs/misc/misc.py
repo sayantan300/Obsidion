@@ -27,19 +27,16 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command()
     async def stats(self, ctx):
         """View statistics about the bot"""
-        total_users = 0
-        channels = 0
-        for guild in self.bot.guilds:
-            total_users += len(guild.members)
-            channels += len(guild.text_channels)
-            channels += len(guild.voice_channels)
+        total_users = sum(len(guild.members) for guild in self.bot.guilds)
+        text_channels = sum(len(guild.text_channels) for guild in self.bot.guilds)
+        voice_channels = sum(len(guild.voice_channels) for guild in self.bot.guilds)
 
         ram = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (2**20), 2)
 
         statics = ""
         statics += f"Guilds: `{len(self.bot.guilds):,}`\n"
         statics += f"Users: `{total_users:,}`\n"
-        statics += f"Channels: `{channels:,}`\n"
+        statics += f"Channels: `{text_channels+voice_channels:,}`\n"
         statics += f"Memory Usage: `{ram:,}MB`\n"
         statics += f"Discord.py: `v{discord.__version__}`"
 
