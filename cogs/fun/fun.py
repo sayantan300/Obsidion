@@ -9,6 +9,12 @@ class Fun(commands.Cog, name="Fun"):
 
     def __init__(self, bot):
         self.bot = bot
+        with open("cogs/fun/kill.txt") as f:
+            content = f.readlines()
+        self.kill = [x.strip() for x in content]
+        with open("cogs/fun/pvp.txt") as f:
+            content = f.readlines()
+        self.pvp = [x.strip() for x in content]
 
     @commands.command()
     async def enchant(self, ctx, *, msg):
@@ -42,16 +48,22 @@ class Fun(commands.Cog, name="Fun"):
         """Kill that pesky friend in a fun and stylish way"""
         if not member:
             member = ctx.message.author.mention
-        elif member == self.bot.owner_id:
+        elif str(member) == f"<@{self.bot.owner_id}>":
             member = ctx.message.author.mention
 
-        killing = ["was shot by a skeleton using a bow.", "was struck by lightning.", "turned into dust.", "was ripped apart by a Vex.", "tripped too hard and died.", "was squashed by a falling block.", "was killed by gravity.", "failed at killing a Creeper.", "had one to many speed potions.", "was ripped apart by a Spider Jockey."]
+        await ctx.send(eval(f'f"""{choice(self.kill)}"""')) # I am aware of the danger of doing this but I don't have a better ideas
 
-        await ctx.send(f"{member} {choice(killing)}")
+    @commands.command()
+    async def pvp(self, ctx, member1, member2=None):
+        """Duel someone"""
+        if member1:
+            if not member2:
+                member2 = ctx.message.author.mention
 
-    #@commands.command()
-    #async def pvp(self, ctx):
-    #    pass
+            await ctx.send(eval(f'f"""{choice(self.pvp)}"""')) # Please don't crucify me for doing this
+        else:
+            await ctx.send("Please provide 2 people to fight")
+        pass
 
     #@commands.command()
     #async def rps(self, ctx):
