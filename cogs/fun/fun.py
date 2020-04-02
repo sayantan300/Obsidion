@@ -7,6 +7,9 @@ alphabet = "abcdefghijklmnopqrstuvwxyz123456789"
 
 class Fun(commands.Cog, name="Fun"):
 
+    def __init__(self, bot):
+        self.bot = bot
+
     @commands.command()
     async def enchant(self, ctx, *, msg):
         """Enchant a message"""
@@ -38,6 +41,8 @@ class Fun(commands.Cog, name="Fun"):
     async def kill(self, ctx, member=None):
         """Kill that pesky friend in a fun and stylish way"""
         if not member:
+            member = ctx.message.author.mention
+        elif member == self.bot.owner_id:
             member = ctx.message.author.mention
 
         killing = ["was shot by a skeleton using a bow.", "was struck by lightning.", "turned into dust.", "was ripped apart by a Vex.", "tripped too hard and died.", "was squashed by a falling block.", "was killed by gravity.", "failed at killing a Creeper.", "had one to many speed potions.", "was ripped apart by a Spider Jockey."]
