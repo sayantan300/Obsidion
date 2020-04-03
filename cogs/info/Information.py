@@ -110,15 +110,15 @@ class Information(commands.Cog, name="Information"):
     async def server(self, ctx, server=None):
         """
         Request a JAVA Minecraft server for information such as online player count, MOTD and more.
-        
+
         :param server: This is for the url and port for the Minecraft java server in this format: `example.com:25565`
         """
         await ctx.channel.trigger_typing()
         if server:
-            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
+            data = await get(self.session, f"https://mcapi.us/server/status?ip={server}")
         elif self.bot.pool["guilds"][str(ctx.guild.id)]["server"]:
             server = self.bot.pool["guilds"][str(ctx.guild.id)]["server"]
-            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
+            data = await get(self.session, f"https://mcapi.us/server/status?ip={server}")
         else:
             server = False
 
@@ -127,8 +127,10 @@ class Information(commands.Cog, name="Information"):
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
                 # need to fix encoding issues
-                embed.add_field(name="Description", value=data["motd"]["raw"][0])
-                now = data["players"]["online"]
+                embed.add_field(name="Description", value=data["motd"])
+
+                print(data["motd"])
+                now = data["players"]["now"]
                 max = data["players"]["max"]
                 embed.add_field(
                     name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
@@ -138,15 +140,13 @@ class Information(commands.Cog, name="Information"):
                     names = "\n".join(data["players"]["list"])
                     embed.add_field(name="Player names", value=names)
 
-                if 'software' in data:
-                    version = f"{data['software']} {data['version']}"
-                else:
-                    version = data['version']
+                version = f"{data['server']['name']}"
 
                 embed.add_field(
-                    name="Version", value=f"Java Edition \n Running: `{version}` \n Protocol: `{data['protocol']}`", inline=False)
+                    name="Version", value=f"Java Edition \n Running: `{version}` \n Protocol: `{data['server']['protocol']}`", inline=False)
 
-                embed.set_thumbnail(url=f"https://api.mcsrvstat.us/icon/{server}")
+                embed.set_thumbnail(
+                    url=f"https://api.mcsrvstat.us/icon/{server}")
 
                 await ctx.send(embed=embed)
             else:
@@ -158,9 +158,9 @@ class Information(commands.Cog, name="Information"):
                 await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
     # This has been temporarily disabled due to Mojangs API not updateding
-    #@commands.cooldown(1, 5, commands.BucketType.user)
-    #@commands.command()
-    #async def status(self, ctx):
+    # @commands.cooldown(1, 5, commands.BucketType.user)
+    # @commands.command()
+    # async def status(self, ctx):
     #    """Check the status of all the Mojang services"""
     #    await ctx.channel.trigger_typing()
     #    data = await get(self.session, "https://status.mojang.com/check")
@@ -230,44 +230,48 @@ class Information(commands.Cog, name="Information"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(aliases=["uhcgg", "uhc.gg"])
+    @commands.group(aliases=["uhcgg", "uhc.gg"])
     async def uhc(self, ctx, command):
         """
         View info about uhc matches
 
         :param command: Chooses what request to make option are:`upcoming`
         """
-        if command == "upcoming":
-            await ctx.channel.trigger_typing()
-            data = await get(self.session, "https://hosts.uhc.gg/api/matches/upcoming")
+        if ctx.invoked_subcommand is None:
+            await ctx.send('No command passed')
+    
+    @uhc.commands(name="upcoming")
+    async def uhc_upcoming(self, ctx):
+        await ctx.channel.trigger_typing()
+        data = await get(self.session, "https://hosts.uhc.gg/api/matches/upcoming")
 
-            embed = discord.Embed(title="UHC.gg upcoming UHC games",
+        embed = discord.Embed(title="UHC.gg upcoming UHC games",
                                 description="Displayed the top 6 upcoming UHC games on [hosts.uhc.gg](https://hosts.uhc.gg)\n", color=0x00ff00)
 
-            for match in data[:6]:
-                address = match['address']
-                opens = match['opens']
-                author = match['author']
-                region = match['region']
-                version = match['version']
-                slots = match['slots']
-                length = match['length']
-                tournament = match['tournament']
-                id = match['id']
+        for match in data[:6]:
+            address = match['address']
+            opens = match['opens']
+            author = match['author']
+            region = match['region']
+            version = match['version']
+            slots = match['slots']
+            length = match['length']
+            tournament = match['tournament']
+            id = match['id']
 
-                info = ""
-                info += f"Opens: {opens}\n"
-                info += f"Author: {author}\n"
-                info += f"Region: {region}\n"
-                info += f"Version: {version}\n"
-                info += f"Slots: {slots}\n"
-                info += f"Length: {length} minutes\n"
-                info += f"Tournament: {tournament}\n"
-                info += f"id: {id}"
+            info = ""
+            info += f"Opens: {opens}\n"
+            info += f"Author: {author}\n"
+            info += f"Region: {region}\n"
+            info += f"Version: {version}\n"
+            info += f"Slots: {slots}\n"
+            info += f"Length: {length} minutes\n"
+            info += f"Tournament: {tournament}\n"
+            info += f"id: {id}"
 
-                embed.add_field(name=address, value=info)
+            embed.add_field(name=address, value=info)
 
-            await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["bug"])
@@ -278,7 +282,7 @@ class Information(commands.Cog, name="Information"):
             data = await get(self.session, f"https://bugs.mojang.com/rest/api/latest/issue/{bug}")
             if data:
                 embed = discord.Embed(title=f"[{data['fields']['project']['name']} - {data['fields']['summary']}](https://bugs.mojang.com/rest/api/latest/issue/{bug})",
-                                    description=data["fields"]["description"], color=0x00ff00)
+                                      description=data["fields"]["description"], color=0x00ff00)
 
                 info = ""
                 info += f"Version: {data['fields']['project']['name']}\n"
@@ -304,6 +308,62 @@ class Information(commands.Cog, name="Information"):
                 await ctx.send(f"{ctx.message.author.mention},  :x: The bug {bug} was not found.")
         else:
             await ctx.send(f"{ctx.message.author.mention},  :x: Please provide a bug.")
+
+    @commands.command()
+    async def wiki(self, ctx, *, query):
+        """Get an article from the minecraft wiki"""
+        async with ctx.channel.typing():
+            def generate_payload(query):
+                """Generate the payload for Gamepedia based on a query string."""
+                payload = {}
+                payload["action"] = "query"
+                payload["titles"] = query.replace(" ", "_")
+                payload["format"] = "json"
+                payload["formatversion"] = "2"  # Cleaner json results
+                # Include extract in returned results
+                payload["prop"] = "extracts"
+                # Only return summary paragraph(s) before main content
+                payload["exintro"] = "1"
+                payload["redirects"] = "1"  # Follow redirects
+                # Make sure it's plaintext (not HTML)
+                payload["explaintext"] = "1"
+                return payload
+
+            base_url = "https://minecraft.gamepedia.com/api.php"
+            footer_icon = (
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wikimedia-logo.png"
+                "/600px-Wikimedia-logo.png"
+            )
+
+            payload = generate_payload(query)
+
+            async with self.session.get(base_url, params=payload) as resp:
+                result = await resp.json()
+
+            try:
+                # Get the last page. Usually this is the only page.
+                page = result["query"]["pages"][-1]
+                title = page["title"]
+                description = page["extract"].strip().replace("\n", "\n\n")
+                url = f"https://minecraft.gamepedia.com/{title.replace(' ', '_')}"
+
+                if len(description) > 1500:
+                    description = description[:1500].strip()
+                    description += f"... [(read more)]({url})"
+
+                embed = discord.Embed(
+                    title=f"Minecraft Gamepedia: {title}",
+                    description=u"\u2063\n{}\n\u2063".format(description),
+                    color=0x00ff00,
+                    url=url,
+                )
+                embed.set_footer(
+                    text="Information provided by Wikimedia", icon_url=footer_icon
+                )
+                await ctx.send(embed=embed)
+
+            except KeyError:
+                await ctx.send(f"I'm sorry, I couldn't find \"{query}\" on Gamepedia")
 
     # @commands.command()
     # async def version(self, ctx, version):

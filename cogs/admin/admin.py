@@ -101,3 +101,22 @@ class admin(commands.Cog, name="admin"):
     async def shutdown(self, ctx):
         await ctx.send("Shutting Down")
         await ctx.bot.logout()
+
+# Handles automatic posting
+import dbl
+
+
+class TopGG(commands.Cog):
+    """Handles interactions with the top.gg API"""
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.token = config.dblToken # set this to your DBL token
+        self.dblpy = dbl.DBLClient(self.bot, self.token, autopost=True) # Autopost will post your guild count every 30 minutes
+
+    async def on_guild_post():
+        print("Server count posted successfully")
+
+    @commands.Cog.listener()
+    async def on_dbl_vote(self, data):
+        print(data)

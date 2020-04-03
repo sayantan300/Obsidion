@@ -35,7 +35,7 @@ def _prefix_callable(bot, msg):
     return prefix
 
 
-class Osisdion(commands.AutoShardedBot):
+class Obsidion(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=_prefix_callable, case_insensitive=True,
                          help_command=None, owner_id=456217109236809748)
@@ -105,8 +105,10 @@ class Osisdion(commands.AutoShardedBot):
         self._prev_events.append(msg)
 
     async def on_message(self, message):
+        # ignore messages from other bots
         if message.author.bot:
             return
+            
         await self.process_commands(message)
 
 

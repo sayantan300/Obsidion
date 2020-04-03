@@ -9,7 +9,7 @@ import contextlib
 import config
 import traceback
 
-from bot import Osisdion
+from bot import Obsidion
 from utils.db import Data
 
 # nice and fast async system
@@ -53,7 +53,7 @@ def run_bot():
         log.exception('Could not load json Exiting.')
         return
 
-    bot = Osisdion()
+    bot = Obsidion()
     bot.pool = pool
     bot.run()
 

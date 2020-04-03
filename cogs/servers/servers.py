@@ -18,10 +18,10 @@ class servers(commands.Cog, name="Servers"):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             for server, value in self.bot.pool["serverTracking"].items():
-                data = await get(self.session, f"https://api.mcsrvstat.us/2/{value['server']}")
+                data = await get(self.session, f"https://mcapi.us/server/status?ip={value['server']}")
                 channel = self.bot.get_channel(int(value["channel"]))
                 if data["online"]:
-                    name = f"{value['server'].split('.')[0].title()}: {data['players']['online']:,} / {data['players']['max']:,}"
+                    name = f"{value['server'].split('.')[0].title()}: {data['players']['now']:,} / {data['players']['max']:,}"
                     await channel.edit(name=name)
                 else:
                     await channel.edit(name="SERVER IS OFFLINE")

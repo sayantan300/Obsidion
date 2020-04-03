@@ -3,7 +3,9 @@ from random import choice
 import discord
 import resource
 import aiohttp
-import datetime, time
+import datetime
+import time
+
 
 class Miscellaneous(commands.Cog, name="Miscellaneous"):
     def __init__(self, bot):
@@ -15,6 +17,16 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         """Provied the link to invite the bot to your server"""
         embed = discord.Embed(
             description=f"**[Click here to add {self.bot.user.name} to your Discord server](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot)**", color=0x00ff00)
+
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def vote(self, ctx):
+        """Vote for this discord bot so that other people can find it"""
+        embed = discord.Embed(color=0x00ff00)
+        embed.add_field(
+            name="Vote:", value="top.gg: I am waiting for top.gg to accept the bog and then I will add an invite here")
+
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -52,8 +64,8 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         statics += f"Discord.py: `v{discord.__version__}`"
 
         links = ""
-        links += "[INVITE BOT](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot)\n"
-        links += "[GITHUB](https://github.com/Darkflame72/Minecraft-Discord)\n"
+        links += "[INVITE BOT](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448)\n"
+        links += "[GITHUB](https://github.com/Darkflame72/Obsidion)\n"
         links += "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
 
         embed = discord.Embed(title="Stats", color=0x00ff00)
@@ -137,7 +149,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         embed.add_field(
             name="Beta Testers", value="[Abhishek Rameshand#8069](https://www.youtube.com/channel/UC0L0CPqIoZzKeV7ndIXjZZw), [Arrow_Plays#8625](https://github.com/AjayACST/)")
         embed.add_field(
-            name="Contribute", value="[Contribute on Github](https://github.com/Darkflame72/Osisdion/)")
+            name="Contribute", value="[Contribute on Github](https://github.com/Darkflame72/Obsidion/)")
         third_party = ""
         third_party += "This bot uses some external services to add extra features.\n"
         third_party += "Skin renders - [Visage](https://visage.surgeplay.com/index.html)\n"
@@ -148,46 +160,6 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
 
         embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
         await ctx.send(embed=embed)
-
-    @commands.command()
-    async def wiki(self, ctx, *, query):
-        """Get an article from the minecraft wiki"""
-        async with ctx.channel.typing():
-            base_url = "https://minecraft.gamepedia.com/api.php"
-            footer_icon = (
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wikimedia-logo.png"
-                "/600px-Wikimedia-logo.png"
-            )
-
-            payload = generate_payload(query)
-
-            async with self.session.get(base_url, params=payload) as resp:
-                result = await resp.json()
-
-            try:
-                # Get the last page. Usually this is the only page.
-                page = result["query"]["pages"][-1]
-                title = page["title"]
-                description = page["extract"].strip().replace("\n", "\n\n")
-                url = f"https://minecraft.gamepedia.com/{title.replace(' ', '_')}"
-
-                if len(description) > 1500:
-                    description = description[:1500].strip()
-                    description += f"... [(read more)]({url})"
-
-                embed = discord.Embed(
-                    title=f"Minecraft Gamepedia: {title}",
-                    description=u"\u2063\n{}\n\u2063".format(description),
-                    color=0x00ff00,
-                    url=url,
-                )
-                embed.set_footer(
-                    text="Information provided by Wikimedia", icon_url=footer_icon
-                )
-                await ctx.send(embed=embed)
-
-            except KeyError:
-                await ctx.send(f"I'm sorry, I couldn't find \"{query}\" on Gamepedia")
     # @commands.command()
     # async def aliases(self, ctx, command_name=None):
     #    pass
