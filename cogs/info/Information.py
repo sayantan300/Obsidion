@@ -240,7 +240,7 @@ class Information(commands.Cog, name="Information"):
         if ctx.invoked_subcommand is None:
             await ctx.send('No command passed')
     
-    @uhc.commands(name="upcoming")
+    @uhc.command(name="upcoming")
     async def uhc_upcoming(self, ctx):
         await ctx.channel.trigger_typing()
         data = await get(self.session, "https://hosts.uhc.gg/api/matches/upcoming")
