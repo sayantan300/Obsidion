@@ -13,6 +13,7 @@ class Information(commands.Cog, name="Information"):
         self.bot = bot
         self.session = bot.session
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['whois', 'p', "names", "namehistory", "pastnames", "namehis"])
     async def profile(self, ctx, username=None):
         """View a players Minecraft UUID, Username history and skin."""
@@ -64,6 +65,7 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send("That username is not been used.")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["available", "availability", "namecheck"])
     async def checkname(self, ctx, username):
         """Check weather a username is currently in use."""
@@ -80,6 +82,7 @@ class Information(commands.Cog, name="Information"):
                 name="Name Checker", value=f"The username: `{username}` is available! \n Claim the username here: https://account.mojang.com/me")
             await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def uuid(self, ctx, username=None):
         """Get a players UUID."""
@@ -102,9 +105,14 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: the user: `{username}` does not exist!")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def server(self, ctx, server=None):
-        """Request a JAVA Minecraft server for information such as online player count, MOTD and more."""
+        """
+        Request a JAVA Minecraft server for information such as online player count, MOTD and more.
+        
+        :param server: This is for the url and port for the Minecraft java server in this format: `example.com:25565`
+        """
         await ctx.channel.trigger_typing()
         if server:
             data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
@@ -142,52 +150,55 @@ class Information(commands.Cog, name="Information"):
 
                 await ctx.send(embed=embed)
             else:
-                ctx.send("The server is currently offline")
+                await ctx.send("The server is currently offline")
         else:
             if server:
                 await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
             else:
                 await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
-    @commands.command()
-    async def status(self, ctx):
-        """Check the status of all the Mojang services"""
-        await ctx.channel.trigger_typing()
-        data = await get(self.session, "https://status.mojang.com/check")
+    # This has been temporarily disabled due to Mojangs API not updateding
+    #@commands.cooldown(1, 5, commands.BucketType.user)
+    #@commands.command()
+    #async def status(self, ctx):
+    #    """Check the status of all the Mojang services"""
+    #    await ctx.channel.trigger_typing()
+    #    data = await get(self.session, "https://status.mojang.com/check")
 
-        sales_mapping = {
-            'item_sold_minecraft': True,
-            'prepaid_card_redeemed_minecraft': True,
-            'item_sold_cobalt': False,
-            'item_sold_scrolls': False
-        }
-        payload = {
-            'metricKeys': [k for (k, v) in sales_mapping.items() if v]
-        }
+    #    sales_mapping = {
+    #        'item_sold_minecraft': True,
+    #        'prepaid_card_redeemed_minecraft': True,
+    #        'item_sold_cobalt': False,
+    #        'item_sold_scrolls': False
+    #    }
+    #    payload = {
+    #        'metricKeys': [k for (k, v) in sales_mapping.items() if v]
+    #    }
 
-        url = "https://api.mojang.com/orders/statistics"
-        async with self.session.post(url, json=payload) as resp:
-            if resp.status == 200:
-                sales_data = await resp.json()
+    #    url = "https://api.mojang.com/orders/statistics"
+    #    async with self.session.post(url, json=payload) as resp:
+    #        if resp.status == 200:
+    #            sales_data = await resp.json()
 
-        embed = discord.Embed(
-            title=f"Minecraft Service Status", color=0x00ff00)
-        embed.add_field(name="Minecraft Game Sales",
-                        value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**")
+    #    embed = discord.Embed(
+    #        title=f"Minecraft Service Status", color=0x00ff00)
+    #    embed.add_field(name="Minecraft Game Sales",
+    #                    value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**")
 
-        services = ""
-        for service in data:
-            if service[next(iter(service))] == "green":
-                services += f":green_heart: - {next(iter(service)).title()}: **This service is healthy.** \n"
-            elif service[next(iter(service))] == "yellow":
-                services += f":yellow_heart: - {next(iter(service)).title()}: **This service has some issues.** \n"
-            else:
-                services += f":heart: - {next(iter(service)).title()}: **This service is offline.** \n"
-        embed.add_field(name="Minecraft Services:",
-                        value=services, inline=False)
+    #    services = ""
+    #    for service in data:
+    #        if service[next(iter(service))] == "green":
+    #            services += f":green_heart: - {next(iter(service)).title()}: **This service is healthy.** \n"
+    #        elif service[next(iter(service))] == "yellow":
+    #            services += f":yellow_heart: - {next(iter(service)).title()}: **This service has some issues.** \n"
+    #        else:
+    #            services += f":heart: - {next(iter(service)).title()}: **This service is offline.** \n"
+    #    embed.add_field(name="Minecraft Services:",
+    #                    value=services, inline=False)
 
-        await ctx.send(embed=embed)
+    #    await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def sales(self, ctx):
         """See the total sales of Minecraft"""
@@ -218,9 +229,14 @@ class Information(commands.Cog, name="Information"):
 
         await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["uhcgg", "uhc.gg"])
-    async def uhc(self, ctx, command, info=None):
-        """View info about uhc matches"""
+    async def uhc(self, ctx, command):
+        """
+        View info about uhc matches
+
+        :param command: Chooses what request to make option are:`upcoming`
+        """
         if command == "upcoming":
             await ctx.channel.trigger_typing()
             data = await get(self.session, "https://hosts.uhc.gg/api/matches/upcoming")
@@ -253,6 +269,7 @@ class Information(commands.Cog, name="Information"):
 
             await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["bug"])
     async def mcbug(self, ctx, bug=None):
         """ Gets info on a bug from bugs.mojang.com"""

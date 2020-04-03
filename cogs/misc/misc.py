@@ -3,7 +3,7 @@ from random import choice
 import discord
 import resource
 import aiohttp
-
+import datetime, time
 
 class Miscellaneous(commands.Cog, name="Miscellaneous"):
     def __init__(self, bot):
@@ -29,6 +29,11 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command()
     async def stats(self, ctx):
         """View statistics about the bot"""
+
+        current_time = time.time()
+        difference = int(round(current_time - self.bot.start_time))
+        text = str(datetime.timedelta(seconds=difference))
+
         total_users = sum(len(guild.members) for guild in self.bot.guilds)
         text_channels = sum(len(guild.text_channels)
                             for guild in self.bot.guilds)
@@ -43,6 +48,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         statics += f"Users: `{total_users:,}`\n"
         statics += f"Channels: `{text_channels+voice_channels:,}`\n"
         statics += f"Memory Usage: `{ram:,}MB`\n"
+        statics += f"Uptime: `{text}`\n"
         statics += f"Discord.py: `v{discord.__version__}`"
 
         links = ""
@@ -71,6 +77,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
                         if y.name == cog_name:
                             embed = discord.Embed(
                                 title=cog_name, description=y.help, color=0x00ff00)
+                            await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
                             await ctx.author.send(embed=embed)
                             found = True
                             break
@@ -97,7 +104,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
             embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["alias", "a"])
     async def aliases(self, ctx):
         """Lists all the aliases you can use."""
         if ctx.guild is None:
@@ -112,9 +119,9 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
             cogs = []
             cog_commands = self.bot.get_cog(cog).get_commands()
             for c in cog_commands:
-                if not c.hidden and len(c.aliases) > 1:
-                    cogs.append(f"**{c.name}**: `{','.join(c.aliases)}`\n")
-            if len(cogs) > 1:
+                if not c.hidden and len(c.aliases) >= 1:
+                    cogs.append(f"**{c.name}**: `{', '.join(c.aliases)}`\n")
+            if len(cogs) >= 1:
                 embed.add_field(
                     name=cog, value=f"{''.join(cogs)}", inline=False)
         embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")

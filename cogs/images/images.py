@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands
-from utils.utils import get_uuid
+from utils.utils import get_uuid, get
 
 class images(commands.Cog, name="Images"):
 
     def __init__(self, bot):
         self.session = bot.session
+        self.bot = bot
 
     @commands.command(aliases=["ach"])
     async def achievement(self, ctx, block_id=None, title=None, word1=None, word2=None, word3=None):
@@ -31,57 +32,92 @@ class images(commands.Cog, name="Images"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: Please supply a block_id title and 1-3 words")
     
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
-    async def avatar(self, ctx, username):
+    async def avatar(self, ctx, username=None):
         """Renders a Minecraft players face."""
         await ctx.channel.trigger_typing()
-        uuid = await get_uuid(self.session, username)
+        if username:
+            uuid = await get_uuid(self.session, username)
+        elif str(ctx.author.id) in self.bot.pool["user"]:
+            if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
+                uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+                names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+                username = names[-1]["name"]
+            else:
+                uuid = False
         if uuid:
-            embed = discord.Embed(description=f"Here is: `{username}`'s Face! \n **[DOWNLOAD SKIN](https://visage.surgeplay.com/skin/{uuid})**", color=0x00ff00)
-            embed.set_image(url=f"https://visage.surgeplay.com/face/{uuid}")
+            embed = discord.Embed(description=f"Here is: `{username}`'s Face! \n **[DOWNLOAD](https://visage.surgeplay.com/face/512/{uuid})**", color=0x00ff00)
+            embed.set_image(url=f"https://visage.surgeplay.com/face/512/{uuid}")
 
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!")
 
     
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
-    async def skull(self, ctx, username):
+    async def skull(self, ctx, username=None):
         """Renders a Minecraft players skull."""
         await ctx.channel.trigger_typing()
-        uuid = await get_uuid(self.session, username)
+        if username:
+            uuid = await get_uuid(self.session, username)
+        elif str(ctx.author.id) in self.bot.pool["user"]:
+            if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
+                uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+                names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+                username = names[-1]["name"]
+            else:
+                uuid = False
         if uuid:
-            embed = discord.Embed(description=f"Here is: `{username}`'s Skull! \n **[DOWNLOAD SKIN](https://visage.surgeplay.com/skin/{uuid})**", color=0x00ff00)
-            embed.set_image(url=f"https://visage.surgeplay.com/head/{uuid}")
+            embed = discord.Embed(description=f"Here is: `{username}`'s Skull! \n **[DOWNLOAD](https://visage.surgeplay.com/head/512/{uuid})**", color=0x00ff00)
+            embed.set_image(url=f"https://visage.surgeplay.com/head/512/{uuid}")
 
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!")
 
-    
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
-    async def skin(self, ctx, username):
+    async def skin(self, ctx, username=None):
         """Renders a Minecraft players skin."""
         await ctx.channel.trigger_typing()
-        uuid = await get_uuid(self.session, username)
+        if username:
+            uuid = await get_uuid(self.session, username)
+        elif str(ctx.author.id) in self.bot.pool["user"]:
+            if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
+                uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+                names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+                username = names[-1]["name"]
+            else:
+                uuid = False
         if uuid:
-            embed = discord.Embed(description=f"Here is: `{username}`'s Skin! \n **[DOWNLOAD SKIN](https://visage.surgeplay.com/skin/{uuid})**", color=0x00ff00)
-            embed.set_image(url=f"https://visage.surgeplay.com/full/{uuid}")
+            embed = discord.Embed(description=f"Here is: `{username}`'s Skin! \n **[DOWNLOAD](https://visage.surgeplay.com/full/512/{uuid})**", color=0x00ff00)
+            embed.set_image(url=f"https://visage.surgeplay.com/full/512/{uuid}")
 
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!")
 
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
-    async def render(self, ctx, username, type):
+    async def render(self, ctx, username=None, type=None):
         """Renders a Minecraft players skin in 6 different ways. You can choose from these 6 render types: face, front, frontfull, head, bust & skin."""
         await ctx.channel.trigger_typing()
         renders = ["face", "front", "frontfull", "head", "bust", "skin"]
         if type in renders:
-            uuid = await get_uuid(self.session, username)
+            if username:
+                uuid = await get_uuid(self.session, username)
+            elif str(ctx.author.id) in self.bot.pool["user"]:
+                if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
+                    uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+                    names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+                    username = names[-1]["name"]
+                else:
+                    uuid = False
             if uuid:
-                embed = discord.Embed(description=f"Here is: `{username}`'s {type}! \n **[DOWNLOAD SKIN](https://visage.surgeplay.com/skin/{uuid})**", color=0x00ff00)
-                embed.set_image(url=f"https://visage.surgeplay.com/{type}/{uuid}")
+                embed = discord.Embed(description=f"Here is: `{username}`'s {type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{type}/512/{uuid})**", color=0x00ff00)
+                embed.set_image(url=f"https://visage.surgeplay.com/{type}/512/{uuid}")
 
                 await ctx.send(embed=embed)
             else:

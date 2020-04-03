@@ -4,43 +4,45 @@ import asyncio
 from utils.db import Data
 import resource
 import config
+import os, sys
+import traceback
 
 class admin(commands.Cog, name="admin"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.is_owner()
+    async def cog_check(self, ctx):
+        return ctx.author.id == self.bot.owner_id
+
     @commands.command(hidden=True)
     async def load(self, ctx, *, module):
         """Loads a module."""
         try:
             self.bot.load_extension(f"cogs.{module}")
         except commands.ExtensionError as e:
-            await ctx.send(f"{e.__class__.__name__}: {e}")
+            await ctx.send(f"{ctx.message.author.mention}, :x: {e.__class__.__name__}: {e}")
         else:
-            await ctx.send(f"The cog {module} has been succesfully loaded")
+            await ctx.send(f"{ctx.message.author.mention}, :white_check_mark: The cog {module} has been succesfully loaded")
 
-    @commands.is_owner()
     @commands.command(hidden=True)
     async def unload(self, ctx, *, module):
         """Unloads a module."""
         try:
             self.bot.unload_extension(f"cogs.{module}")
         except commands.ExtensionError as e:
-            await ctx.send(f"{e.__class__.__name__}: {e}")
+            await ctx.send(f"{ctx.message.author.mention}, :x: {e.__class__.__name__}: {e}")
         else:
-            await ctx.send(f"The cog {module} has been succesfully unloaded")
+            await ctx.send(f"{ctx.message.author.mention}, :white_check_mark: The cog {module} has been succesfully unloaded")
 
-    @commands.is_owner()
     @commands.group(name="reload", hidden=True, invoke_without_command=True)
     async def _reload(self, ctx, *, module):
         """Reloads a module."""
         try:
             self.bot.reload_extension(f"cogs.{module}")
         except commands.ExtensionError as e:
-            await ctx.send(f"{e.__class__.__name__}: {e}")
+            await ctx.send(f"{ctx.message.author.mention}, :x: {e.__class__.__name__}: {e}")
         else:
-            await ctx.send(f"The cog {module} has been succesfully reloaded")
+            await ctx.send(f"{ctx.message.author.mention}, :white_check_mark: The cog {module} has been succesfully reloaded")
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -89,3 +91,13 @@ class admin(commands.Cog, name="admin"):
             embed.add_field(name=f"Shard: {i}", value=value)
 
         await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def reboot(self, ctx):
+        await ctx.send("Rebooting")
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+    @commands.command(hidden=True)
+    async def shutdown(self, ctx):
+        await ctx.send("Shutting Down")
+        await ctx.bot.logout()
