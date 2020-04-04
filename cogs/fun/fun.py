@@ -9,12 +9,42 @@ class Fun(commands.Cog, name="Fun"):
 
     def __init__(self, bot):
         self.bot = bot
-        with open("cogs/fun/kill.txt") as f:
-            content = f.readlines()
-        self.kill = [x.strip() for x in content]
-        with open("cogs/fun/pvp.txt") as f:
-            content = f.readlines()
+        def load_from_text(file):
+            with open(f"cogs/fun/{file}") as f:
+                content = f.readlines()
+            return [x.strip() for x in content]
+        self.kill = load_from_text()
         self.pvp = [x.strip() for x in content]
+        self.build_ideas = [x.strip() for x in content]
+        self.facts = [x.strip() for x in content]
+
+    @commands.command(aliases=["idea"])
+    async def buildidea(self, ctx):
+        """Get an idea for a new idea"""
+        await ctx.send(f"{ctx.message.author.mention}, here is something cool to build: {choice(self.build_ideas)}.") # I am aware of the danger of doing this but I don't have a better ideas
+    
+    @commands.command()
+    async def fact(self, ctx, id=None ):
+        """Get a fact about minecraft"""
+        if id:
+            fact_choice = self.facts[int(id)]
+        else:
+            fact_choice = choice(self.facts)
+            id = str(self.facts.index(fact_choice))
+
+        embed=discord.Embed(title=f"Minecraft Fact #{id}", description=fact_choice, color=0x00ff00)
+        await ctx.send(embed=embed)
+
+    
+    @commands.command()
+    async def villager(self, ctx, *, speech):
+        """Convert english to Villager speech hmm."""
+        split = speech.split(" ")
+        sentence = ""
+        for s in split:
+            sentence += " hmm"
+        response = sentence.strip() + "."
+        await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
     @commands.command()
     async def enchant(self, ctx, *, msg):

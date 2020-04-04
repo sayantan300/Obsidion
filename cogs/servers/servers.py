@@ -11,6 +11,7 @@ class servers(commands.Cog, name="Servers"):
         self.session = bot.session
         self.bot = bot
         self.hypixel = bot.hypixel_api
+        self.update = datetime.datetime.now()
 
         self.bg_task = bot.loop.create_task(self.my_background_task())
 
@@ -25,7 +26,13 @@ class servers(commands.Cog, name="Servers"):
                     await channel.edit(name=name)
                 else:
                     await channel.edit(name="SERVER IS OFFLINE")
+            self.update = datetime.datetime.now()
             await asyncio.sleep(5*60) # task runs every 5 minutes
+
+    
+    @commands.command(hidden=True)
+    async def update(self, ctx):
+        await ctx.send(self.update)
 
     #@commands.command()
     #async def blocksmcself(self, ctx, username):

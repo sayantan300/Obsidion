@@ -25,7 +25,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         """Vote for this discord bot so that other people can find it"""
         embed = discord.Embed(color=0x00ff00)
         embed.add_field(
-            name="Vote:", value="top.gg: I am waiting for top.gg to accept the bog and then I will add an invite here")
+            name="Vote:", value="Discord Bot List: **[VOTE HERE](https://top.gg/bot/691589447074054224)**\nBots For Discord: **[VOTE HERE](https://botsfordiscord.com/bot/691589447074054224)**")
 
         await ctx.send(embed=embed)
 
@@ -67,6 +67,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         links += "[INVITE BOT](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448)\n"
         links += "[GITHUB](https://github.com/Darkflame72/Obsidion)\n"
         links += "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
+        links += "[VOTE](https://top.gg/bot/691589447074054224)"
 
         embed = discord.Embed(title="Stats", color=0x00ff00)
         embed.add_field(name=":newspaper: STATS", value=statics, inline=True)
@@ -96,12 +97,10 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
                 if not found:
                     await ctx.send(f"{ctx.message.author.mention}, :x: That command is not found please try again")
         else:
-            if ctx.guild is None:
-                prefix = "/"
-            else:
-                prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
+            prefixes = self.bot.get_guild_prefixes(ctx.guild)
+            del prefixes[1]
             embed = discord.Embed(
-                description=f"Below is a list of commands you can use\n To use commands type `{prefix}command` or <@{self.bot.user.id}> command \n To get more information about a command type: `{prefix}help command`", color=0x00ff00)
+                description=f"Below is a list of commands you can use\n To use commands type `{prefixes[1]}command` or {prefixes[0]} command \n To get more information about a command type: `{prefixes[1]}help command`", color=0x00ff00)
             embed.set_author(name="Bot's Commands")
             # General help command
             for cog in self.bot.cogs:
@@ -119,12 +118,10 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command(aliases=["alias", "a"])
     async def aliases(self, ctx):
         """Lists all the aliases you can use."""
-        if ctx.guild is None:
-            prefix = "/"
-        else:
-            prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
+        prefixes = self.bot.get_guild_prefixes(ctx.guild)
+        del prefixes[1]
         embed = discord.Embed(
-            description=f"Below is a list of command aliases you can use\n To use aliases type `{prefix}alias` or <@{self.bot.user.id}> alias \n To get more information about a command type: `{prefix}help command`", color=0x00ff00)
+            description=f"Below is a list of command aliases you can use\n To use aliases type `{prefixes[1]}alias` or {prefixes[0]} alias \n To get more information about a command type: `{prefixes[1]}help command`", color=0x00ff00)
         embed.set_author(name="Bot's Commands")
         # General help command
         for cog in self.bot.cogs:

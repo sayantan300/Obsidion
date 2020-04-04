@@ -6,6 +6,7 @@ import resource
 import config
 import os, sys
 import traceback
+from utils.utils import get
 
 class admin(commands.Cog, name="admin"):
     def __init__(self, bot):
@@ -46,28 +47,29 @@ class admin(commands.Cog, name="admin"):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        users = sum([1 for m in guild.members if not m.bot])
-        bots = sum([1 for m in guild.members if m.bot])
-        members = f"Humans: `{users}/{len(guild.members)}` \n Bots: `{bots}/{len(guild.members)}`"
-        
-        if str(guild.id) in self.bot.pool["guilds"]:
-            embed = discord.Embed(name=f"{self.bot.user.name} has re-joined a guild")
-            embed.set_footer(text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | rejoin")
-        else:
-            embed = discord.Embed(name=f"{self.bot.user.name} has joined a new guild")
-            embed.set_footer(text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | join")
-            self.bot.pool["guilds"][guild.id] = {"prefix": "/", "server": None}
-            Data.save("", self.bot.pool)
-        embed.add_field(name="Name", value=f"`{guild.name}`")
-        embed.add_field(name="Members", value=members)
-        embed.add_field(name="Owner", value=guild.owner)
-        embed.add_field(name="Region", value=guild.region, inline=False)
-        if guild.icon_url:
-            embed.set_thumbnail(url=guild.icon_url)
-        else:
-            embed.set_thumbnail(url="https://i.imgur.com/AFABgjD.png")
-        channel = self.bot.get_channel(config.new_guild_channel)
-        await channel.send(embed=embed)
+        if config.new_guild_channel:
+            users = sum([1 for m in guild.members if not m.bot])
+            bots = sum([1 for m in guild.members if m.bot])
+            members = f"Humans: `{users}/{len(guild.members)}` \n Bots: `{bots}/{len(guild.members)}`"
+            
+            if str(guild.id) in self.bot.pool["guilds"]:
+                embed = discord.Embed(name=f"{self.bot.user.name} has re-joined a guild")
+                embed.set_footer(text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | rejoin")
+            else:
+                embed = discord.Embed(name=f"{self.bot.user.name} has joined a new guild")
+                embed.set_footer(text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | join")
+                self.bot.pool["guilds"][guild.id] = {"prefix": "/", "server": None}
+                Data.save("", self.bot.pool)
+            embed.add_field(name="Name", value=f"`{guild.name}`")
+            embed.add_field(name="Members", value=members)
+            embed.add_field(name="Owner", value=guild.owner)
+            embed.add_field(name="Region", value=guild.region, inline=False)
+            if guild.icon_url:
+                embed.set_thumbnail(url=guild.icon_url)
+            else:
+                embed.set_thumbnail(url="https://i.imgur.com/AFABgjD.png")
+            channel = self.bot.get_channel(config.new_guild_channel)
+            await channel.send(embed=embed)
 
     @commands.command(hidden=True)
     async def shardinfo(self, ctx):
@@ -114,9 +116,16 @@ class TopGG(commands.Cog):
         self.token = config.dblToken # set this to your DBL token
         self.dblpy = dbl.DBLClient(self.bot, self.token, autopost=True) # Autopost will post your guild count every 30 minutes
 
-    async def on_guild_post():
+    async def on_guild_post(self):
         print("Server count posted successfully")
 
     @commands.Cog.listener()
     async def on_dbl_vote(self, data):
         print(data)
+
+
+class bots4discord(commands.Cog):
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.token = config.bots4discordToken

@@ -38,15 +38,15 @@ def _prefix_callable(bot, msg):
 class Obsidion(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=_prefix_callable, case_insensitive=True,
-                         help_command=None, owner_id=456217109236809748)
+                         help_command=None, owner_id=config.owner_id, fetch_offline_members=False)
 
         self.client_id = config.client_id
         self.hypixel_api = config.hypixel_key
         self._prev_events = deque(maxlen=10)
         self.start_time = time.time()
 
-
         self.session = aiohttp.ClientSession(loop=self.loop)
+
 
         for cog in config.cogs:
             try:
@@ -54,7 +54,7 @@ class Obsidion(commands.AutoShardedBot):
             except Exception as e:
                 print(f'Failed to load extension {cog}.', file=sys.stderr)
                 traceback.print_exc()
-
+    
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.NoPrivateMessage):
             await ctx.author.send('This command cannot be used in private messages.')
@@ -77,6 +77,23 @@ class Obsidion(commands.AutoShardedBot):
                 print(f'{original.__class__.__name__}: {original}',
                       file=sys.stderr)
 
+    # make getting prefixes a bit nicer
+    def get_guild_prefixes(self, guild, *, local_inject=_prefix_callable):
+        proxy_msg = discord.Object(id=None)
+        proxy_msg.guild = guild
+        return local_inject(self, proxy_msg)
+
+    # make sure our bot does not reply to other bots
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+        await self.process_commands(message)
+
+
+    ##########################
+    # Main Control Functions #
+    ##########################
+    
     async def on_ready(self):
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.utcnow()
@@ -89,29 +106,14 @@ class Obsidion(commands.AutoShardedBot):
         activity = discord.Activity(
             name=f"For @{self.user.name} help", type=discord.ActivityType.watching)
         await self.change_presence(status=discord.Status.online, activity=activity)
-
-    async def on_resumed(self):
-        print('resumed...')
-
+    
     async def close(self):
         await super().close()
         await self.session.close()
 
-    @property
-    def config(self):
-        return __import__('config')
-
-    async def on_socket_response(self, msg):
-        self._prev_events.append(msg)
-
-    async def on_message(self, message):
-        # ignore messages from other bots
-        if message.author.bot:
-            return
-            
-        await self.process_commands(message)
-
-
+    async def on_resumed(self):
+        print('resumed...')
+    
     def run(self):
         try:
             super().run(config.token, reconnect=True)
@@ -124,3 +126,7 @@ class Obsidion(commands.AutoShardedBot):
                         fp.write(f'{data}\n')
                     else:
                         fp.write(f'{x}\n')
+
+    @property
+    def config(self):
+        return __import__('config')

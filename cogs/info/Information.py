@@ -115,10 +115,10 @@ class Information(commands.Cog, name="Information"):
         """
         await ctx.channel.trigger_typing()
         if server:
-            data = await get(self.session, f"https://mcapi.us/server/status?ip={server}")
+            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
         elif self.bot.pool["guilds"][str(ctx.guild.id)]["server"]:
             server = self.bot.pool["guilds"][str(ctx.guild.id)]["server"]
-            data = await get(self.session, f"https://mcapi.us/server/status?ip={server}")
+            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
         else:
             server = False
 
@@ -127,10 +127,9 @@ class Information(commands.Cog, name="Information"):
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
                 # need to fix encoding issues
-                embed.add_field(name="Description", value=data["motd"])
+                embed.add_field(name="Description", value=data["motd"]["raw"])
 
-                print(data["motd"])
-                now = data["players"]["now"]
+                now = data["players"]["online"]
                 max = data["players"]["max"]
                 embed.add_field(
                     name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
@@ -140,10 +139,10 @@ class Information(commands.Cog, name="Information"):
                     names = "\n".join(data["players"]["list"])
                     embed.add_field(name="Player names", value=names)
 
-                version = f"{data['server']['name']}"
+                version = f"{data['version']}"
 
                 embed.add_field(
-                    name="Version", value=f"Java Edition \n Running: `{version}` \n Protocol: `{data['server']['protocol']}`", inline=False)
+                    name="Version", value=f"Java Edition \n Running: `{version}` \n Protocol: `{data['protocol']}`", inline=False)
 
                 embed.set_thumbnail(
                     url=f"https://api.mcsrvstat.us/icon/{server}")
@@ -231,14 +230,19 @@ class Information(commands.Cog, name="Information"):
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.group(aliases=["uhcgg", "uhc.gg"])
-    async def uhc(self, ctx, command):
+    async def uhc(self, ctx):
         """
         View info about uhc matches
 
         :param command: Chooses what request to make option are:`upcoming`
         """
         if ctx.invoked_subcommand is None:
-            await ctx.send('No command passed')
+            if ctx.guild is None:
+                prefix = "/"
+            else:
+                prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
+            embed = discord.Embed(title="Command Usage", description=f"`{prefix}uhc upcoming` - Shows 6 upcoming matches.", color=0x00ff00)
+            await ctx.send(embed=embed)
     
     @uhc.command(name="upcoming")
     async def uhc_upcoming(self, ctx):
@@ -272,7 +276,10 @@ class Information(commands.Cog, name="Information"):
             embed.add_field(name=address, value=info)
 
         await ctx.send(embed=embed)
-
+    
+    
+    
+    
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["bug"])
     async def mcbug(self, ctx, bug=None):
