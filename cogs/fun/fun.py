@@ -86,7 +86,7 @@ class Fun(commands.Cog, name="Fun"):
     @commands.command()
     async def pvp(self, ctx, member1, member2=None):
         """Duel someone"""
-        pvp_mes = load_from_text('facts')
+        pvp_mes = load_from_text('pvp')
         if member1:
             if not member2:
                 member2 = ctx.message.author.mention
@@ -96,6 +96,19 @@ class Fun(commands.Cog, name="Fun"):
             await ctx.send("Please provide 2 people to fight")
         pass
 
-    #@commands.command()
-    #async def rps(self, ctx):
-     #   pass
+    @commands.command()
+    async def rps(self, ctx, user_choice=None):
+        if user_choice:
+            options = ["rock", "paper", "shears"]
+            if user_choice in options:
+                c_choice = choice(options)
+                if user_choice == options[options.index(user_choice)-1]:
+                    await ctx.send(f"You chose {user_choice}, I chose {c_choice} I win.")
+                elif c_choice == user_choice:
+                    await ctx.send(f"You chose {user_choice}, I chose {c_choice} looks like we have a tie.")
+                else:
+                    await ctx.send(f"You chose {user_choice}, I chose {c_choice} you win.")
+            else:
+                await ctx.send(f"That is an invalid option can you please choose from rock, paper or shears")
+        else:
+            await ctx.send(f"That is an invalid option can you please choose from rock, paper or shears")

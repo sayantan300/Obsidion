@@ -115,22 +115,23 @@ class Information(commands.Cog, name="Information"):
         """
         await ctx.channel.trigger_typing()
         if server:
-            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
+            data = await get(self.session, f"https://mcapi.xdefcon.com/server/mc.{server}/full/json")
         elif self.bot.pool["guilds"][str(ctx.guild.id)]["server"]:
             server = self.bot.pool["guilds"][str(ctx.guild.id)]["server"]
-            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
+            data = await get(self.session, f"https://mcapi.xdefcon.com/server/mc.{server}/full/json")
         else:
             server = False
 
         if server:
-            if data["online"]:
+            if data["serverStatus"]:
+                print(data)
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
                 # need to fix encoding issues
-                embed.add_field(name="Description", value=data["motd"]["raw"][0])
+                embed.add_field(name="Description", value=data["motd"]["text"])
 
-                now = data["players"]["online"]
-                max = data["players"]["max"]
+                now = data["players"]
+                max = data["maxplayers"]
                 embed.add_field(
                     name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
                 if now > 10 or now == 0:
@@ -138,20 +139,7 @@ class Information(commands.Cog, name="Information"):
                 else:
                     names = "\n".join(data["players"]["list"])
                     embed.add_field(name="Player names", value=names)
-                if "software" in data:
-                    version = f"{data['version']}, {data['software']}"
-                else:
-                    version = f"{data['version']}"
-                
-                if "mods" in data:
-                    mods = "\n".join(data["mods"]["clean"])
-                    embed.add_field(name="Mods running", value=mods)
-                    pass
-
-                if "plugins" in data:
-                    plugins = "\n".join(data["plugins"]["clean"])
-                    embed.add_field(name="Installed plugins", value=plugins)
-                    pass
+                version = f"{data['version']}"
 
 
 

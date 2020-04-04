@@ -17,17 +17,24 @@ class servers(commands.Cog, name="Servers"):
 
     async def my_background_task(self):
         await self.bot.wait_until_ready()
+        print("start")
         while not self.bot.is_closed():
             for server, value in self.bot.pool["serverTracking"].items():
-                data = await get(self.session, f"https://mcapi.us/server/status?ip={value['server']}")
+                print(server, value)
+                data = await get(self.session, f"https://api.mcsrvstat.us/2/{value['server']}")
+                print("yay")
                 channel = self.bot.get_channel(int(value["channel"]))
+                print("channel")
+                print(data)
                 if data["online"]:
                     name = f"{value['server'].split('.')[0].title()}: {data['players']['now']:,} / {data['players']['max']:,}"
                     await channel.edit(name=name)
                 else:
+                    print("offline")
                     await channel.edit(name="SERVER IS OFFLINE")
             self.update = datetime.datetime.now()
             await asyncio.sleep(5*60) # task runs every 5 minutes
+        print("end")
 
     
     @commands.command(hidden=True)
