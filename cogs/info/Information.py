@@ -127,7 +127,7 @@ class Information(commands.Cog, name="Information"):
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
                 # need to fix encoding issues
-                embed.add_field(name="Description", value=data["motd"]["raw"])
+                embed.add_field(name="Description", value=data["motd"]["raw"][0])
 
                 now = data["players"]["online"]
                 max = data["players"]["max"]
@@ -138,8 +138,22 @@ class Information(commands.Cog, name="Information"):
                 else:
                     names = "\n".join(data["players"]["list"])
                     embed.add_field(name="Player names", value=names)
+                if "software" in data:
+                    version = f"{data['version']}, {data['software']}"
+                else:
+                    version = f"{data['version']}"
+                
+                if "mods" in data:
+                    mods = "\n".join(data["mods"]["clean"])
+                    embed.add_field(name="Mods running", value=mods)
+                    pass
 
-                version = f"{data['version']}"
+                if "plugins" in data:
+                    plugins = "\n".join(data["plugins"]["clean"])
+                    embed.add_field(name="Installed plugins", value=plugins)
+                    pass
+
+
 
                 embed.add_field(
                     name="Version", value=f"Java Edition \n Running: `{version}` \n Protocol: `{data['protocol']}`", inline=False)
