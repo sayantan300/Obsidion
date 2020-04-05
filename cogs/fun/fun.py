@@ -85,7 +85,7 @@ class Fun(commands.Cog, name="Fun"):
         elif str(member) == f"<@{self.bot.owner_id}>":
             member = ctx.message.author.mention
 
-        await ctx.send(eval(f'f"""{choice(kill_mes)}"""')) # I am aware of the danger of doing this but I don't have a better ideas
+        await ctx.send(choice(kill_mes).replace("member", member)) # I am aware of the danger of doing this but I don't have a better ideas
 
     @commands.command()
     async def pvp(self, ctx, member1, member2=None):
@@ -95,7 +95,7 @@ class Fun(commands.Cog, name="Fun"):
             if not member2:
                 member2 = ctx.message.author.mention
 
-            await ctx.send(eval(f'f"""{choice(pvp_mes)}"""')) # Please don't crucify me for doing this
+            await ctx.send(choice(pvp_mes).replace("member1", member1).replace("member2", member2)) # Please don't crucify me for doing this
         else:
             await ctx.send("Please provide 2 people to fight")
         pass
