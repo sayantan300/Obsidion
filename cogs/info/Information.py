@@ -184,7 +184,6 @@ class Information(commands.Cog, name="Information"):
 
             q = Query(host, int(port))
             server_data = q.query()
-            print(vars(server_data))
 
             if server_data:
                 embed = discord.Embed(
