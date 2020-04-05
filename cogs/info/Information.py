@@ -133,11 +133,23 @@ class Information(commands.Cog, name="Information"):
             if data:
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
-                # need to fix encoding issues
                 if 'text' in data.description:
                     embed.add_field(name="Description", value=data.description['text'])
                 else:
-                    embed.add_field(name="Description", value=data.description)
+                    # cleanup motd very badly but it does it
+                    s=data.description
+                    motd = ""
+                    found = 0
+                    for i in range(len(s)-1):
+                        if s[i] == "§":
+                            found = i
+                        elif found == i-1 and s[i+1] != "§":
+                            found = 0
+                        elif found == i-1 and s[i+1] == "§":
+                            found += 1
+                        else:
+                            motd += s[i]
+                    embed.add_field(name="Description", value=motd)
 
                 embed.add_field(
                     name="Players", value=f"Online: `{data.players.online:,}` \n Maximum: `{data.players.max:,}`")
@@ -177,8 +189,20 @@ class Information(commands.Cog, name="Information"):
             if server_data:
                 embed = discord.Embed(
                         title=f"Bedrock Server: {server}", color=0x00ff00)
-
-                embed.add_field(name="Description", value=server_data.SERVER_NAME, inline=False)
+                # cleanup motd very badly but it does it
+                s=server_data.SERVER_NAME
+                motd = ""
+                found = 0
+                for i in range(len(s)-1):
+                    if s[i] == "§":
+                        found = i
+                    elif found == i-1 and s[i+1] != "§":
+                        found = 0
+                    elif found == i-1 and s[i+1] == "§":
+                        found += 1
+                    else:
+                        motd += s[i]
+                embed.add_field(name="Description", value=motd, inline=False)
                 embed.add_field(name="Players", value=f"Online: `{server_data.NUM_PLAYERS}`\nMax: `{server_data.MAX_PLAYERS}`")
                 embed.add_field(name="Version", value=f"Bedrock Edition\nRunning: `{server_data.GAME_VERSION}`")
                 await ctx.send(embed=embed)

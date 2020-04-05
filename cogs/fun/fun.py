@@ -26,7 +26,11 @@ class Fun(commands.Cog, name="Fun"):
         """Get a fact about minecraft"""
         facts = load_from_text('facts')
         if id:
-            fact_choice = facts[int(id)]
+            if int(id) < len(facts):
+                fact_choice = facts[int(id)]
+            else:
+                fact_choice = choice(facts)
+                id = str(facts.index(fact_choice))
         else:
             fact_choice = choice(facts)
             id = str(facts.index(fact_choice))
