@@ -76,6 +76,8 @@ class Obsidion(commands.AutoShardedBot):
                 traceback.print_tb(original.__traceback__)
                 print(f'{original.__class__.__name__}: {original}',
                       file=sys.stderr)
+        else:
+            raise
 
     # make getting prefixes a bit nicer
     def get_guild_prefixes(self, guild, *, local_inject=_prefix_callable):
