@@ -8,6 +8,8 @@ from utils.utils import get, get_uuid
 from uuid import UUID
 from mcstatus import MinecraftServer
 from py_mcpe_stats import Query
+import base64
+import io
 
 
 class Information(commands.Cog, name="Information"):
@@ -132,7 +134,6 @@ class Information(commands.Cog, name="Information"):
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
                 # need to fix encoding issues
-                print(data.description)
                 if 'text' in data.description:
                     embed.add_field(name="Description", value=data.description['text'])
                 else:
@@ -148,11 +149,13 @@ class Information(commands.Cog, name="Information"):
 
                 embed.add_field(
                     name="Version", value=f"Java Edition \n Running: `{data.version.name}` \n Protocol: `{data.version.protocol}`", inline=False)
-
-                embed.set_thumbnail(
-                    url=f"https://api.mcsrvstat.us/icon/{server}")
-
-                await ctx.send(embed=embed)
+                
+                encoded = base64.decodebytes(data.favicon[22:].encode('utf-8'))
+                image_bytesio = io.BytesIO(encoded)
+                thumb = discord.File(image_bytesio, 'thumb.png')
+                embed.set_thumbnail(url='attachment://thumb.png')
+                
+                await ctx.send(embed=embed, file=thumb)
             else:
                 await ctx.send("The server is currently offline")
         else:
