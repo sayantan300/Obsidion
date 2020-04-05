@@ -2,4 +2,4 @@ __pycache__
 *.json
 *.log
 config.py
-cogs/servers/test.py
+
