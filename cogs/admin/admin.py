@@ -117,7 +117,7 @@ class bot_advertise(commands.Cog):
             self.bfdtoken = config.bots4discordToken
             self.bg_task = bot.loop.create_task(self.loop_server_count())
         if config.dblToken:
-            self.dbltoken = config.dblToken # set this to your DBL token
+            self.dbltoken = config.dblToken
             self.dblpy = dbl.DBLClient(self.bot, self.token, autopost=True)
 
 

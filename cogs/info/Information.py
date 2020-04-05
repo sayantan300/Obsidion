@@ -159,7 +159,9 @@ class Information(commands.Cog, name="Information"):
                 if data.players.online > 10 or data.players.online == 0:
                     pass
                 else:
-                    names = "\n".join(data.players.names)
+                    names=""
+                    for player in data.players.sample:
+                        names += f"{player.name}\n"
                     embed.add_field(name="Player names", value=names)
 
                 embed.add_field(
@@ -205,7 +207,7 @@ class Information(commands.Cog, name="Information"):
                     else:
                         motd += s[i]
                 if found != len(s)-2:
-                        motd += s[-1]
+                    motd += s[-1]
                 embed.add_field(name="Description", value=motd, inline=False)
                 embed.add_field(name="Players", value=f"Online: `{server_data.NUM_PLAYERS}`\nMax: `{server_data.MAX_PLAYERS}`")
                 embed.add_field(name="Version", value=f"Bedrock Edition\nRunning: `{server_data.GAME_VERSION}`")
