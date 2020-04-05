@@ -149,6 +149,9 @@ class Information(commands.Cog, name="Information"):
                             found += 1
                         else:
                             motd += s[i]
+                    if found != len(s)-2:
+                        motd += s[-1]
+
                     embed.add_field(name="Description", value=motd)
 
                 embed.add_field(
@@ -201,6 +204,8 @@ class Information(commands.Cog, name="Information"):
                         found += 1
                     else:
                         motd += s[i]
+                if found != len(s)-2:
+                        motd += s[-1]
                 embed.add_field(name="Description", value=motd, inline=False)
                 embed.add_field(name="Players", value=f"Online: `{server_data.NUM_PLAYERS}`\nMax: `{server_data.MAX_PLAYERS}`")
                 embed.add_field(name="Version", value=f"Bedrock Edition\nRunning: `{server_data.GAME_VERSION}`")
