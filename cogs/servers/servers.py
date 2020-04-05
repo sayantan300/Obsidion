@@ -20,10 +20,13 @@ class servers(commands.Cog, name="Servers"):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             for server, value in self.bot.pool["serverTracking"].items():
-                mc_server = MinecraftServer.lookup(server)
-                data = mc_server.status()
+                try:
+                    mc_server = MinecraftServer.lookup(value['server'])
+                    data = mc_server.status()
+                except:
+                    data = False
                 channel = self.bot.get_channel(int(value["channel"]))
-                if data["online"]:
+                if data:
                     name = f"{value['server'].split('.')[0].title()}: {data.players.online:,} / {data.players.max:,}"
                     await channel.edit(name=name)
                 else:
