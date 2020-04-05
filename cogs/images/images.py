@@ -32,7 +32,6 @@ class images(commands.Cog, name="Images"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: Please supply a block_id title and 1-3 words")
     
-    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
     async def avatar(self, ctx, username=None):
         """Renders a Minecraft players face."""
@@ -55,7 +54,6 @@ class images(commands.Cog, name="Images"):
             await ctx.send(f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!")
 
     
-    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
     async def skull(self, ctx, username=None):
         """Renders a Minecraft players skull."""
@@ -77,7 +75,6 @@ class images(commands.Cog, name="Images"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!")
 
-    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
     async def skin(self, ctx, username=None):
         """Renders a Minecraft players skin."""
@@ -99,7 +96,6 @@ class images(commands.Cog, name="Images"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!")
 
-    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
     async def render(self, ctx, username=None, type=None):
         """Renders a Minecraft players skin in 6 different ways. You can choose from these 6 render types: face, front, frontfull, head, bust & skin."""

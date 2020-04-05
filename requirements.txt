@@ -2,3 +2,5 @@ discord.py
 aiohttp
 asyncpg
 uvloop
+mcstatus
+py_mcpe_stats

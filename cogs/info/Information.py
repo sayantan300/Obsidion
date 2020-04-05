@@ -5,6 +5,9 @@ import aiohttp
 from datetime import datetime
 import json
 from utils.utils import get, get_uuid
+from uuid import UUID
+from mcstatus import MinecraftServer
+from py_mcpe_stats import Query
 
 
 class Information(commands.Cog, name="Information"):
@@ -13,7 +16,6 @@ class Information(commands.Cog, name="Information"):
         self.bot = bot
         self.session = bot.session
 
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['whois', 'p', "names", "namehistory", "pastnames", "namehis"])
     async def profile(self, ctx, username=None):
         """View a players Minecraft UUID, Username history and skin."""
@@ -65,7 +67,6 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send("That username is not been used.")
 
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["available", "availability", "namecheck"])
     async def checkname(self, ctx, username):
         """Check weather a username is currently in use."""
@@ -82,7 +83,6 @@ class Information(commands.Cog, name="Information"):
                 name="Name Checker", value=f"The username: `{username}` is available! \n Claim the username here: https://account.mojang.com/me")
             await ctx.send(embed=embed)
 
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def uuid(self, ctx, username=None):
         """Get a players UUID."""
@@ -105,7 +105,6 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: the user: `{username}` does not exist!")
 
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def server(self, ctx, server=None):
         """
@@ -115,36 +114,40 @@ class Information(commands.Cog, name="Information"):
         """
         await ctx.channel.trigger_typing()
         if server:
-            data = await get(self.session, f"https://mcapi.xdefcon.com/server/mc.{server}/full/json")
+            try:
+                mc_server = MinecraftServer.lookup(server)
+                data = mc_server.status()
+            except:
+                data = False
         elif self.bot.pool["guilds"][str(ctx.guild.id)]["server"]:
             server = self.bot.pool["guilds"][str(ctx.guild.id)]["server"]
-            data = await get(self.session, f"https://mcapi.xdefcon.com/server/mc.{server}/full/json")
-        else:
-            server = False
+            try:
+                mc_server = MinecraftServer.lookup(server)
+                data = mc_server.status()
+            except:
+                data = False
 
         if server:
-            if data["serverStatus"]:
-                print(data)
+            if data:
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
                 # need to fix encoding issues
-                embed.add_field(name="Description", value=data["motd"]["text"])
+                print(data.description)
+                if 'text' in data.description:
+                    embed.add_field(name="Description", value=data.description['text'])
+                else:
+                    embed.add_field(name="Description", value=data.description)
 
-                now = data["players"]
-                max = data["maxplayers"]
                 embed.add_field(
-                    name="Players", value=f"Online: `{now:,}` \n Maximum: `{max:,}`")
-                if now > 10 or now == 0:
+                    name="Players", value=f"Online: `{data.players.online:,}` \n Maximum: `{data.players.max:,}`")
+                if data.players.online > 10 or data.players.online == 0:
                     pass
                 else:
-                    names = "\n".join(data["players"]["list"])
+                    names = "\n".join(data.players.names)
                     embed.add_field(name="Player names", value=names)
-                version = f"{data['version']}"
-
-
 
                 embed.add_field(
-                    name="Version", value=f"Java Edition \n Running: `{version}` \n Protocol: `{data['protocol']}`", inline=False)
+                    name="Version", value=f"Java Edition \n Running: `{data.version.name}` \n Protocol: `{data.version.protocol}`", inline=False)
 
                 embed.set_thumbnail(
                     url=f"https://api.mcsrvstat.us/icon/{server}")
@@ -157,6 +160,29 @@ class Information(commands.Cog, name="Information"):
                 await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
             else:
                 await ctx.send(f"{ctx.author}, :x: Please provide a server")
+
+    @commands.command()
+    async def serverpe(self, ctx, server=None):
+        """Get information about a Bedrock Edition Server"""
+        if server:
+            host, port = server.split(":")
+
+            q = Query(host, int(port))
+            server_data = q.query()
+            print(vars(server_data))
+
+            if server_data:
+                embed = discord.Embed(
+                        title=f"Bedrock Server: {server}", color=0x00ff00)
+
+                embed.add_field(name="Description", value=server_data.SERVER_NAME, inline=False)
+                embed.add_field(name="Players", value=f"Online: `{server_data.NUM_PLAYERS}`\nMax: `{server_data.MAX_PLAYERS}`")
+                embed.add_field(name="Version", value=f"Bedrock Edition\nRunning: `{server_data.GAME_VERSION}`")
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"{ctx.author}, :x: The Bedrock edition Minecraft server `{server}` is currently not online or cannot be requested")
+        else:
+            await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
     # This has been temporarily disabled due to Mojangs API not updateding
     # @commands.cooldown(1, 5, commands.BucketType.user)
@@ -199,7 +225,6 @@ class Information(commands.Cog, name="Information"):
 
     #    await ctx.send(embed=embed)
 
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def sales(self, ctx):
         """See the total sales of Minecraft"""
@@ -230,7 +255,6 @@ class Information(commands.Cog, name="Information"):
 
         await ctx.send(embed=embed)
 
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.group(aliases=["uhcgg", "uhc.gg"])
     async def uhc(self, ctx):
         """
@@ -243,7 +267,7 @@ class Information(commands.Cog, name="Information"):
                 prefix = "/"
             else:
                 prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
-            embed = discord.Embed(title="Command Usage", description=f"`{prefix}uhc upcoming` - Shows 6 upcoming matches.", color=0x00ff00)
+            embed = discord.Embed(title="Command Usage", description=f"`{prefix}uhc upcoming` - Shows 6 upcoming matches.\n`{prefix}uhc banned <uuid | username>` - View the bans of a player.", color=0x00ff00)
             await ctx.send(embed=embed)
     
     @uhc.command(name="upcoming")
@@ -279,10 +303,39 @@ class Information(commands.Cog, name="Information"):
 
         await ctx.send(embed=embed)
     
-    
-    
-    
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @uhc.command(name="match")
+    async def match(self, ctx, param):
+        pass
+
+    @uhc.command(name="banned")
+    async def uhc_banned(self, ctx, user):
+        await ctx.channel.trigger_typing()
+        try:
+            val = UUID(user, version=4)
+            uuid = user
+        except ValueError:
+            # If it's a value error, then the string 
+            # is not a valid hex code for a UUID.
+            uuid = await get_uuid(self.session, user)
+            uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
+
+        data = await get(self.session, f"https://hosts.uhc.gg/api/ubl/{uuid}")
+        if data:
+            embed = discord.Embed(color=0x00ff00)
+            for ban in data:
+                value = ""
+                value += f"Date: {ban['created']}\n"
+                value += f"Expires: {ban['expires']}\n"
+                value += f"Reason: {ban['reason']}\n"
+                value += f"Link: {ban['link']}\n"
+                value += f"Created by: {ban['createdBy']}"
+                embed.add_field(name=ban["id"], value=value)
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f"No ban information for {uuid}")
+
+
     @commands.command(aliases=["bug"])
     async def mcbug(self, ctx, bug=None):
         """ Gets info on a bug from bugs.mojang.com"""
