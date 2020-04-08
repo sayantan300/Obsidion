@@ -80,9 +80,9 @@ class Configurable(commands.Cog, name="Configurable"):
             def check(m):
                return m.author == ctx.author
             # get minecraft server
-            embed=discord.Embed(title="Server Tracking Setup", description=f"please provide the minecraft server you would like to track")
+            embed=discord.Embed(title="Server Tracking Setup", description=f"please provide the minecraft server you would like to track", color=0x00ff00)
             await ctx.send(embed=embed)
-            server = await self.bot.wait_for("message", check=check, timeout=30)
+            server = await self.bot.wait_for("message", check=check, timeout=10)
             server = server.content
             
             # get the voice channel
@@ -90,7 +90,7 @@ class Configurable(commands.Cog, name="Configurable"):
             while not voiceChannel:
                 embed=discord.Embed(title="Server Tracking Setup", description=f"Please provide the name of the voice channel you would like to use\n I will need to have the permissions to edit the name and everyone else should not be able to join it.")
                 await ctx.send(embed=embed)
-                voice = await self.bot.wait_for("message", check=check, timeout=30)
+                voice = await self.bot.wait_for("message", check=check, timeout=10)
                 channel = discord.utils.get(ctx.guild.voice_channels, name=voice.content)
                 print(channel.id)
                 if channel is not None:
@@ -102,108 +102,115 @@ class Configurable(commands.Cog, name="Configurable"):
                 self.bot.pool["serverTracking"][server] = [voiceChannel]
             print(self.bot.pool)
             Data.save("", self.bot.pool)
-            self.bot.get_channel(int(voiceChannel))
-            await channel.edit(name="SERVERTRACKING")
-            data = await get(self.session, f"https://api.mcsrvstat.us/2/{server}")
-            if data["online"]:
-                name = f"{server.split('.')[0].title()}: {data['players']['online']:,} / {data['players']['max']:,}"
-                await channel.edit(name=name)
-            else:
-                await channel.edit(name="SERVER IS OFFLINE")
+            await ctx.send("Server Tracking is all setup and ready for you to enjoy. It will update it less than 5 minutes.")
         else:
             def yes(m):
                 return m.author == ctx.author and m.content.lower() in ["yes", "no"]
-            await ctx.send("there is a server tracking channel setup already would you like me to remove it?")
-            delete = await self.bot.wait_for("message", check=yes, timeout=30)
+            await ctx.send("Server Tracking is currently setup would you like me to remove the current configuration?")
+            delete = await self.bot.wait_for("message", check=yes, timeout=10)
             if delete.content == "yes":
                 server, voiceChannel = self.bot.pool["guilds"][str(ctx.guild.id)]["serverTracking"]
-                test = self.bot.pool
-                test["guilds"][str(ctx.guild.id)]["serverTracking"] = None
-                if len(test["serverTracking"][server]) == 1:
-                    diction = test["serverTracking"]
+                self.bot.pool["guilds"][str(ctx.guild.id)]["serverTracking"] = None
+                if len(self.bot.pool["serverTracking"][server]) == 1:
+                    diction = self.bot.pool["serverTracking"]
                     diction.pop(server)
-                    test["serverTracking"] = diction
+                    self.bot.pool["serverTracking"] = diction
                 else:
-                    test["serverTracking"][server].remove(voiceChannel)
-                Data.save("", test)
-                self.bot.pool = test
-                await ctx.send("your server tracking has been deleted to setup server tracking run the command again")
+                    self.bot.pool["serverTracking"][server].remove(voiceChannel)
+                Data.save("", self.bot.pool)
+                self.bot.pool = self.bot.pool
+                await ctx.send("Server Tracking has been removed from this server, run the command again to set it up.")
 
-    # @commands.group()
-    # @commands.has_guild_permissions(administrator=True)
-    # async def blacklist(self, ctx):
-    #     if ctx.invoked_subcommand is None:
-    #         embed = discord.Embed(title=f"{self.bot.user.name} Blacklist Command",
-    #                               description=f"Blacklisting is a feature that allows you to configure {self.bot.user.name} to ignore certain commands. You can use this to blacklist commands in a certain channel or the whole Discord server. Require assistance? Join the [Support Discord Server](https://discord.gg/7BRD7s6) for help.")
-    #         prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
-    #         embed.add_field(name="Usage", 
-    #                               value=f"`{prefix}blacklist add` - Add a command or category to the blacklist.\n`{prefix}blacklist remove` - Remove a command or category to the blacklist.\n`{prefix}blacklist silent` - Enable or disable replies to blacklisted command usage.\n`{prefix}blacklist settings` - Displays the current configuration.")
+    @commands.command()
+    async def delete(self, ctx):
+        """This will delete all data that is linked to your account"""
+        embed = discord.Embed(title="DELETE DATA", description="WARNING\n THIS IS AN IRREVERABLE ACTION AND WILL DELETE ALL DATA LINKED TO YOUR ACCOUNT\nDO YOU WISH TO PROCEED?\nYES/NO", colour=0xff0000)
+        await ctx.send(embed=embed)
+        def yes(m):
+            return m.author == ctx.author and m.content.lower() in ["yes", "no"]
+        delete = await self.bot.wait_for("message", check=yes, timeout=10)
+        if delete.content.lower() == "yes":
+            # deletes data
+            self.bot.pool["user"].pop(str(ctx.author.id))
+            Data.save("", self.bot.pool)
+            await ctx.send(f"{ctx.message.author.mention}, all data linked to yuor discord account has been deleted.")
+    
+    @commands.group()
+    @commands.has_guild_permissions(administrator=True)
+    async def blacklist(self, ctx):
+        if ctx.invoked_subcommand is None:
+            embed = discord.Embed(title=f"{self.bot.user.name} Blacklist Command",
+                                  description=f"Blacklisting is a feature that allows you to configure {self.bot.user.name} to ignore certain commands. You can use this to blacklist commands in a certain channel or the whole Discord server. Require assistance? Join the [Support Discord Server](https://discord.gg/7BRD7s6) for help.")
+            prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
+            embed.add_field(name="Usage", 
+                                  value=f"`{prefix}blacklist add` - Add a command or category to the blacklist.\n`{prefix}blacklist remove` - Remove a command or category to the blacklist.\n`{prefix}blacklist silent` - Enable or disable replies to blacklisted command usage.\n`{prefix}blacklist settings` - Displays the current configuration.")
 
-    #         await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
 
-    # @blacklist.command()
-    # async def add(self, ctx, command, channel=None):
-    #     if channel:
-    #         # Channel specific blacklist
-    #         for x in self.bot.cogs:
-    #             for y in self.bot.get_cog(x).get_commands():
-    #                 if y.name == command:
-    #                     found = True
-    #                     break
-    #         if found:
-    #             discord_channel = self.bot.get_channel(int(channel))
-    #             if discord_channel:
-    #                 if str(str(channel)) in self.bot.pool["blacklist"]:
-    #                     self.bot.pool["blacklist"][str(channel)] = self.bot.pool["blacklist"][str(channel)].append(command)
-    #                 else:
-    #                     self.bot.pool["blacklist"][str(channel)] = [command]
-    #                 Data.save("", self.bot.pool)
-    #                 await ctx.send(f"{ctx.message.author.mention}, That command has been blacklisted for use in {channel}.")
-    #             else:
-    #                 await ctx.send(f"{ctx.message.author.mention}, That command has been blacklisted for use in {channel}.")
-    #         else:
-    #             await ctx.send(f"{ctx.message.author.mention}, :x: That command has not been found please try again.")
-    #     else:
-    #         #guild wide blacklist
-    #         for x in self.bot.cogs:
-    #             for y in self.bot.get_cog(x).get_commands():
-    #                 if y.name == command:
-    #                     found = True
-    #                     break
-    #         if found:
-    #             if str(ctx.message.guild.id) in self.bot.pool["blacklist"]:
-    #                 self.bot.pool["blacklist"][str(ctx.message.guild.id)] = self.bot.pool["blacklist"][str(ctx.message.guild.id)].append(command)
-    #             else:
-    #                 self.bot.pool["blacklist"][str(ctx.message.guild.id)] = [command]
-    #             Data.save("", self.bot.pool)
-    #             await ctx.send(f"{ctx.message.author.mention}, That command has been blacklisted for use in this guild.")
-    #         else:
-    #             await ctx.send(f"{ctx.message.author.mention}, :x: That command has not been found please try again.")
+    @blacklist.command()
+    async def add(self, ctx, command, channel: discord.TextChannel = None):
+        # find command
+        found = False
+        for x in self.bot.cogs:
+            for y in self.bot.get_cog(x).get_commands():
+                if y.name == command and y.hidden == False:
+                    found = True
+                    break
+        if found:
+            if channel:
+                if ctx.message.guild.id not in self.bot.pool["blacklist"]:
+                    self.bot.pool["blacklist"][str(ctx.message.guild.id)] = {command: channel.id}
+                else:
+                    self.bot.pool["blacklist"][str(ctx.message.guild.id)][command] = channel.id
+                Data.save("", self.bot.pool)
+                await ctx.send(f"{ctx.message.author.mention}, That command has been blacklisted for use in {channel}")
+            else:
+                if str(ctx.message.guild.id) not in self.bot.pool["blacklist"]:
+                    self.bot.pool["blacklist"][str(ctx.message.guild.id)] = {command: "All"}
+                else:
+                    self.bot.pool["blacklist"][str(ctx.message.guild.id)][command] = "All"
+                Data.save("", self.bot.pool)
+                await ctx.send(f"{ctx.message.author.mention}, That command has been blacklisted for use in this guild.")
+        else:
+            await ctx.send(f"{ctx.message.author.mention}, :x: That command has not been found please try again.")
 
-    # @blacklist.command()
-    # async def remove(self, ctx, command):
-    #     pass
+    @blacklist.command()
+    async def remove(self, ctx, command=None):
+        if command in self.bot.pool["blacklist"][str(ctx.guild.id)]:
+            self.bot.pool["blacklist"][str(ctx.guild.id)].pop(command)
+            Data.save("", self.bot.pool)
+            await ctx.send(f"{ctx.message.author.mention}, The command has been removed from the blacklist.")
+        else:
+            await ctx.send(f"{ctx.message.author.mention}, :x: The command was not in the blacklist.")
 
-    # @blacklist.command()
-    # async def silent(self, ctx):
-    #    embed=discord.Embed(title="Silent Blacklist", description=f"Would you like {self.bot.user.mention} to respond when a blacklisted command is used?\nYes or No")
-    #    await ctx.send(embed=embed)
-    #    def check(m):
-    #        print(m.content)
-    #        return m.author == ctx.author and m.content.lower() in ["yes", "no"]
-    #    try:
-    #        msg = await self.bot.wait_for("message", check=check, timeout=30).content.lower()
-    #        if msg == "yes":
-    #            await ctx.send(":white_check_mark: Silent reply succesfully **enabled**")
-    #        else:
-    #            await ctx.send(":white_check_mark: Silent reply succesfully **disabled**")
-    #    else:
-    #        ctx.send(f"{ctx.message.author.mention}, zyou did not respond tot the question, setup has been cancelled.")
+    @blacklist.command()
+    async def silent(self, ctx):
+        embed=discord.Embed(title="Silent Blacklist", description=f"Would you like {self.bot.user.mention} to respond when a blacklisted command is used?\nYes or No")
+        await ctx.send(embed=embed)
+        def check(m):
+            return m.author == ctx.author and m.content.lower() in ["yes", "no"]
+        msg = await self.bot.wait_for("message", check=check, timeout=30)
+        msg = msg.content.lower()
+        if msg == "yes":
+            self.bot.pool["guilds"][str(ctx.guild.id)]["silent"] = False
+            await ctx.send(":white_check_mark: Silent reply succesfully **enabled**")
+        else:
+            self.bot.pool["guilds"][str(ctx.guild.id)]["silent"] = True
+            await ctx.send(":white_check_mark: Silent reply succesfully **disabled**")
 
-    # @blacklist.command()
-    # async def settings(self, ctx, command):
-    #    pass
 
-    # @command.command()
-    # async def configuration(self, ctx):
-    #    pass
+    @blacklist.command()
+    async def settings(self, ctx):
+        embed = discord.Embed(title="Command blacklist settings")
+        silent = "Disabled" if self.bot.pool["guilds"][str(ctx.guild.id)]["silent"] else "Enabled"
+        embed.add_field(name="Silent reply", value=f"**{silent}**\nWhen enabled, {self.bot.user.name} will not reply to blacklisted commands when they're used.")
+        commands = ""
+        for command, blacklist_set in self.bot.pool["blacklist"][str(ctx.guild.id)].items():
+            commands += f"`{command}` - Guild wide" if blacklist_set == "All" else f"`{command}` - {self.bot.get_channel(blacklist_set)}"
+        
+        if commands == "":
+            commands = "You don't have any commands currently blacklisted."
+
+        embed.add_field(name="Blacklisted Commands", value=commands)
+
+        await ctx.send(embed=embed)

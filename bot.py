@@ -53,6 +53,7 @@ class Obsidion(commands.AutoShardedBot):
         self.hypixel_api = config.hypixel_key
         self._prev_events = deque(maxlen=10)
         self.start_time = time.time()
+        self.check(self.blacklist)
 
         # aiohttp session for use throughout the bot
         self.session = aiohttp.ClientSession(loop=self.loop)
@@ -127,12 +128,17 @@ class Obsidion(commands.AutoShardedBot):
             return
 
         elif isinstance(error, commands.CheckFailure):
-            await ctx.send("You do not have permission to use this command.")
+            #await ctx.send("You do not have permission to use this command.")
             return
 
         # for when that person tries to mess with your bot
         elif isinstance(error, commands.NotOwner):
             print(f"{ctx.message.author} attempted to run an {ctx.command}")
+            return
+
+        elif isinstance(error, asyncio.TimeoutError):
+            await ctx.send("You did not reply to the message, the command has been cancelled.")
+            return
 
         # ignore all other exception types, but print them to stderr
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
@@ -153,11 +159,18 @@ class Obsidion(commands.AutoShardedBot):
         # process command
         await self.process_commands(message)
 
-
     ##########################
     # Main Control Functions #
     ##########################
-    
+
+    async def blacklist(self, ctx):
+        if ctx.command.name in self.pool["blacklist"][str(ctx.guild.id)]:
+            if self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == "All" or self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == ctx.message.channel.id:
+                if self.pool["guilds"][str(ctx.guild.id)]["silent"]:
+                    await ctx.send(f"{ctx.message.author.mention}, :x: The command {ctx.command.name} is blacklisted.")
+                return False
+        return True
+
     async def on_ready(self):
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.utcnow()

@@ -15,5 +15,10 @@
     },
     "stats": {
         "MojangAPI": 0
+    },
+    "blacklist": {
+        "guild_id": {
+            "command": "Channel_id/all"
+        }
     }
 }

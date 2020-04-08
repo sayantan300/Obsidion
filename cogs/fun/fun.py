@@ -39,14 +39,14 @@ class Fun(commands.Cog, name="Fun"):
         await ctx.send(embed=embed)
 
     
-    @commands.command()
+    @commands.command(aliases=["villagerspeak", "villagerspeech", "hmm"])
     async def villager(self, ctx, *, speech):
         """Convert english to Villager speech hmm."""
         split = speech.split(" ")
         sentence = ""
         for s in split:
             sentence += " hmm"
-        response = sentence.strip() + "."
+        response = sentence.strip()
         await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
     @commands.command()
