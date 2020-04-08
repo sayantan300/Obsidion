@@ -11,33 +11,29 @@ class servers(commands.Cog, name="Servers"):
     def __init__(self, bot):
         self.session = bot.session
         self.bot = bot
-        self.hypixel = bot.hypixel_api
-        self.update = datetime.datetime.now()
 
+        # servertracking as a background task
         self.bg_task = bot.loop.create_task(self.my_background_task())
 
     async def my_background_task(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             for server, value in self.bot.pool["serverTracking"].items():
+                # loop through every minecraft server
                 try:
-                    mc_server = MinecraftServer.lookup(value['server'])
+                    mc_server = MinecraftServer.lookup(server)
                     data = mc_server.status()
                 except:
                     data = False
-                channel = self.bot.get_channel(int(value["channel"]))
-                if data:
-                    name = f"{value['server'].split('.')[0].title()}: {data.players.online:,} / {data.players.max:,}"
-                    await channel.edit(name=name)
-                else:
-                    await channel.edit(name="SERVER IS OFFLINE")
-            self.update = datetime.datetime.now()
+                for channel in value:
+                    channel = self.bot.get_channel(int(channel))
+                    # check 
+                    if data:
+                        name = f"{server.split('.')[-2].title()}: {data.players.online:,} / {data.players.max:,}"
+                        await channel.edit(name=name)
+                    else:
+                        await channel.edit(name="SERVER IS OFFLINE")
             await asyncio.sleep(5*60) # task runs every 5 minutes
-
-    
-    @commands.command(hidden=True)
-    async def update(self, ctx):
-        await ctx.send(self.update)
 
     #@commands.command()
     #async def blocksmcself(self, ctx, username):

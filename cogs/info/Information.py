@@ -18,7 +18,7 @@ class Information(commands.Cog, name="Information"):
         self.bot = bot
         self.session = bot.session
 
-    @commands.command(aliases=['whois', 'p', "names", "namehistory", "pastnames", "namehis"])
+    @commands.command(aliases=["whois", "p", "names", "namehistory", "pastnames", "namehis"])
     async def profile(self, ctx, username=None):
         """View a players Minecraft UUID, Username history and skin."""
         await ctx.channel.trigger_typing()
@@ -107,7 +107,7 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send(f"{ctx.message.author.mention}, :x: the user: `{username}` does not exist!")
 
-    @commands.command()
+    @commands.command(aliases=["serv"])
     async def server(self, ctx, server=None):
         """
         Request a JAVA Minecraft server for information such as online player count, MOTD and more.
@@ -133,10 +133,16 @@ class Information(commands.Cog, name="Information"):
             if data:
                 embed = discord.Embed(
                     title=f"Java Server: {server}", color=0x00ff00)
-                if 'text' in data.description:
-                    embed.add_field(name="Description", value=data.description['text'])
+                if 'extra' in data.description:
+                    # when they use this other format
+                    motd = ""
+                    for var in data.description['extra']:
+                        motd += var['text']
+                elif 'text' in data.description:
+                    # nice plain old description
+                    motd = data.description['text']
                 else:
-                    # cleanup motd very badly but it does it
+                    # when they add html
                     s=data.description
                     motd = ""
                     found = 0
@@ -151,14 +157,15 @@ class Information(commands.Cog, name="Information"):
                             motd += s[i]
                     if found != len(s)-2:
                         motd += s[-1]
-
-                    embed.add_field(name="Description", value=motd)
+                embed.add_field(name="Description", value=motd)
 
                 embed.add_field(
                     name="Players", value=f"Online: `{data.players.online:,}` \n Maximum: `{data.players.max:,}`")
                 if data.players.online > 10 or data.players.online == 0:
+                    # no player names provided so can't populate it
                     pass
                 else:
+                    # show which players are online
                     names=""
                     for player in data.players.sample:
                         names += f"{player.name}\n"
@@ -169,19 +176,19 @@ class Information(commands.Cog, name="Information"):
                 
                 encoded = base64.decodebytes(data.favicon[22:].encode('utf-8'))
                 image_bytesio = io.BytesIO(encoded)
-                thumb = discord.File(image_bytesio, 'thumb.png')
-                embed.set_thumbnail(url='attachment://thumb.png')
+                favicon = discord.File(image_bytesio, 'favicon.png')
+                embed.set_thumbnail(url='attachment://favicon.png')
                 
-                await ctx.send(embed=embed, file=thumb)
+                await ctx.send(embed=embed, file=favicon)
             else:
-                await ctx.send("The server is currently offline")
+                await ctx.send("The server is currently offline or could not be requested.")
         else:
             if server:
                 await ctx.send(f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested")
             else:
                 await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
-    @commands.command()
+    @commands.command(aliases=["servpe"])
     async def serverpe(self, ctx, server=None):
         """Get information about a Bedrock Edition Server"""
         if server:
@@ -276,17 +283,23 @@ class Information(commands.Cog, name="Information"):
         async with self.session.post(url, json=payload) as resp:
             if resp.status == 200:
                 sales_data = await resp.json()
+            else:
+                sales_data = False
 
-        embed = discord.Embed(color=0x00ff00)
+        if sales_data:
 
-        sale = f"Total Sales: `{sales_data['total']:,}`\n"
-        sale += f"Sales in the last 24 hours: `{sales_data['last24h']:,}`\n"
-        sale += f"Sales per second: `{sales_data['saleVelocityPerSeconds']}`\n"
-        sale += "[BUY MINECRAFT](https://my.minecraft.net/en-us/store/minecraft/)"
+            embed = discord.Embed(color=0x00ff00)
 
-        embed.add_field(name="Minecraft Sales", value=sale)
+            sale = f"Total Sales: `{sales_data['total']:,}`\n"
+            sale += f"Sales in the last 24 hours: `{sales_data['last24h']:,}`\n"
+            sale += f"Sales per second: `{sales_data['saleVelocityPerSeconds']}`\n"
+            sale += "[BUY MINECRAFT](https://my.minecraft.net/en-us/store/minecraft/)"
 
-        await ctx.send(embed=embed)
+            embed.add_field(name="Minecraft Sales", value=sale)
+
+            await ctx.send(embed=embed)
+        else:
+            ctx.send(f"{ctx.author}, :x: the Mojang API is not currently available please try again soon")
 
     @commands.group(aliases=["uhcgg", "uhc.gg"])
     async def uhc(self, ctx):

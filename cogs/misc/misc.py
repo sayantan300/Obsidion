@@ -12,7 +12,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         self.bot = bot
         self.session = bot.session
 
-    @commands.command()
+    @commands.command(aliases=["add"])
     async def invite(self, ctx):
         """Provied the link to invite the bot to your server"""
         embed = discord.Embed(
@@ -20,7 +20,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["upvote"])
     async def vote(self, ctx):
         """Vote for this discord bot so that other people can find it"""
         embed = discord.Embed(color=0x00ff00)
@@ -38,7 +38,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["statistics","botinfo","botinformation"])
     async def stats(self, ctx):
         """View statistics about the bot"""
 
@@ -67,15 +67,17 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         links += "[INVITE BOT](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448)\n"
         links += "[GITHUB](https://github.com/Darkflame72/Obsidion)\n"
         links += "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
-        links += "[VOTE](https://top.gg/bot/691589447074054224)"
+        links += "[VOTE](https://top.gg/bot/691589447074054224)\n"
+        links += "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)"
 
         embed = discord.Embed(title="Stats", color=0x00ff00)
         embed.add_field(name=":newspaper: STATS", value=statics, inline=True)
         embed.add_field(name=":link: LINKS", value=links, inline=True)
+        embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
 
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
+    @commands.command(aliases=["info", "commands", "obsidion"])
     async def help(self, ctx, *cog_name):
         """Gets all cogs and commands of mine."""
         if cog_name:
@@ -115,7 +117,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
             embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
             await ctx.send(embed=embed)
 
-    @commands.command(aliases=["alias", "a"])
+    @commands.command(aliases=["alias", "a", "aliaslist"])
     async def aliases(self, ctx):
         """Lists all the aliases you can use."""
         prefixes = self.bot.get_guild_prefixes(ctx.guild)
@@ -136,8 +138,9 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["team", "staff", "developers"])
     async def credits(self, ctx):
+        """See the team behind Obsidion and what services we use to bring you what you want"""
         embed = discord.Embed(
             title=f"{self.bot.user.name} Bot Credits", color=0x00ff00)
         embed.add_field(
@@ -146,7 +149,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         embed.add_field(
             name="Beta Testers", value="[Abhishek Rameshand#8069](https://www.youtube.com/channel/UC0L0CPqIoZzKeV7ndIXjZZw), [Arrow_Plays#8625](https://github.com/AjayACST/)")
         embed.add_field(
-            name="Contribute", value="[Contribute on Github](https://github.com/Darkflame72/Obsidion/)")
+            name="Contribute", value="[Contribute on Github](https://github.com/Darkflame72/Obsidion/)\n[Track the bots progress on Trello](https://trello.com/b/qZhxHkTq/obsidion)")
         third_party = ""
         third_party += "This bot uses some external services to add extra features.\n"
         third_party += "Skin renders - [Visage](https://visage.surgeplay.com/index.html)\n"
@@ -157,29 +160,3 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
 
         embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
         await ctx.send(embed=embed)
-    # @commands.command()
-    # async def aliases(self, ctx, command_name=None):
-    #    pass
-
-    # @commands.command()
-    # async def credits(self, ctx):
-    #    pass
-
-    # @commands.command()
-    # async def tutorial(self, ctx):
-    #    pass
-
-
-def generate_payload(query):
-    """Generate the payload for Gamepedia based on a query string."""
-    payload = {}
-    payload["action"] = "query"
-    payload["titles"] = query.replace(" ", "_")
-    payload["format"] = "json"
-    payload["formatversion"] = "2"  # Cleaner json results
-    payload["prop"] = "extracts"  # Include extract in returned results
-    # Only return summary paragraph(s) before main content
-    payload["exintro"] = "1"
-    payload["redirects"] = "1"  # Follow redirects
-    payload["explaintext"] = "1"  # Make sure it's plaintext (not HTML)
-    return payload

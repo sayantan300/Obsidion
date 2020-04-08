@@ -1,0 +1,19 @@
+{
+    "guilds": {
+        "guild_id": {
+            "prefix": "prefix",
+            "server": "minecraft server"
+        }
+    },
+    "user": {
+        "user_id": {
+            "uuid": "minecraft_uuid"
+        }
+    },
+    "serverTracking": {
+        "minecraft_server": ["channel"]
+    },
+    "stats": {
+        "MojangAPI": 0
+    }
+}

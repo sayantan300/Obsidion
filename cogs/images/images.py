@@ -8,7 +8,7 @@ class images(commands.Cog, name="Images"):
         self.session = bot.session
         self.bot = bot
 
-    @commands.command(aliases=["ach"])
+    @commands.command(aliases=["ach", "advancement"])
     async def achievement(self, ctx, block_id=None, title=None, word1=None, word2=None, word3=None):
         """Create your very own custom Minecraft achievements!"""
         await ctx.channel.trigger_typing()

@@ -21,7 +21,7 @@ class Fun(commands.Cog, name="Fun"):
         """Get an idea for a new idea"""
         await ctx.send(f"{ctx.message.author.mention}, here is something cool to build: {choice(load_from_text('build_ideas'))}.") # I am aware of the danger of doing this but I don't have a better ideas
     
-    @commands.command()
+    @commands.command(aliases=["funfact"])
     async def fact(self, ctx, id=None ):
         """Get a fact about minecraft"""
         facts = load_from_text('facts')
@@ -73,10 +73,10 @@ class Fun(commands.Cog, name="Fun"):
 
     @commands.command()
     async def creeper(self, ctx):
-        """Well there is never not enough room for this"""
+        """Aw man"""
         await ctx.send("Aw man")
 
-    @commands.command()
+    @commands.command(aliases=["slay"])
     async def kill(self, ctx, member=None):
         """Kill that pesky friend in a fun and stylish way"""
         kill_mes = load_from_text('kill')
@@ -85,9 +85,9 @@ class Fun(commands.Cog, name="Fun"):
         elif str(member) == f"<@{self.bot.owner_id}>":
             member = ctx.message.author.mention
 
-        await ctx.send(choice(kill_mes).replace("member", member)) # I am aware of the danger of doing this but I don't have a better ideas
+        await ctx.send(choice(kill_mes).replace("member", member))
 
-    @commands.command()
+    @commands.command(aliases=["battle"])
     async def pvp(self, ctx, member1, member2=None):
         """Duel someone"""
         pvp_mes = load_from_text('pvp')
@@ -95,13 +95,14 @@ class Fun(commands.Cog, name="Fun"):
             if not member2:
                 member2 = ctx.message.author.mention
 
-            await ctx.send(choice(pvp_mes).replace("member1", member1).replace("member2", member2)) # Please don't crucify me for doing this
+            await ctx.send(choice(pvp_mes).replace("member1", member1).replace("member2", member2))
         else:
             await ctx.send("Please provide 2 people to fight")
         pass
 
     @commands.command()
     async def rps(self, ctx, user_choice=None):
+        """play Rock Paper Shears"""
         if user_choice:
             options = ["rock", "paper", "shears"]
             if user_choice in options:
