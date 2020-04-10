@@ -60,8 +60,8 @@ class images(commands.Cog, name="Images"):
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
-        elif await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id):
-            uuid = await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id)
+        elif await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id):
+            uuid = await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id)
             names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
             username = names[-1]["name"]
         if uuid:
@@ -78,8 +78,8 @@ class images(commands.Cog, name="Images"):
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
-        elif await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id):
-            uuid = await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id)
+        elif await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id):
+            uuid = await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id)
             names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
             username = names[-1]["name"]
         if uuid:
@@ -98,8 +98,8 @@ class images(commands.Cog, name="Images"):
         if type in renders:
             if username:
                 uuid = await get_uuid(self.session, username)
-            elif await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id):
-                uuid = await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id)
+            elif await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id):
+                uuid = await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id)
                 names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
                 username = names[-1]["name"]
             if uuid:

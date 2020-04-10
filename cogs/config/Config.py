@@ -23,7 +23,7 @@ class Configurable(commands.Cog, name="Configurable"):
         if username:
             uuid = await get_uuid(self.session, username)
             if uuid:
-                await self.bot.pool.execute("UPDATE discord_user SET uuid = $1 WHERE id = $2", uuid, self.author.id)
+                await self.bot.pool.execute("UPDATE discord_user SET uuid = $1 WHERE id = $2", uuid, ctx.author.id)
                 await ctx.send(f"Your account has been linked to {username}")
             else:
                 await ctx.send("Please provide a valid username")
@@ -32,7 +32,7 @@ class Configurable(commands.Cog, name="Configurable"):
 
     @account.command(name="unlink")
     async def account_unlink(self, ctx):
-        await self.bot.pool.execute("UPDATE discord_user SET uuid = $1 WHERE id = $2", None, self.author.id)
+        await self.bot.pool.execute("UPDATE discord_user SET uuid = $1 WHERE id = $2", None, ctx.author.id)
         await ctx.send("Your account has been unlinked from any minecraft account")
 
     @commands.group()
@@ -45,13 +45,13 @@ class Configurable(commands.Cog, name="Configurable"):
 
     @serverlink.command(name="link")
     async def serverlink_link(self, ctx, server):
-        await self.bot.pool.execute("UPDATE guilds SET server = $1 WHERE id = $2", server, ctx.guild.id)
+        await self.bot.pool.execute("UPDATE guild SET server = $1 WHERE id = $2", server, ctx.guild.id)
         
         await ctx.send(f"Your discord server has been linked to {server}")
 
     @serverlink.command(name="unlink")
     async def serverlink_unlink(self, ctx):
-        await self.bot.pool.execute("UPDATE guilds SET server = $1 WHERE id = $2", None, ctx.guild.id)
+        await self.bot.pool.execute("UPDATE guild SET server = $1 WHERE id = $2", None, ctx.guild.id)
         
         await ctx.send("Your discord server is no longer linked to a minecraft server")
 
@@ -64,14 +64,14 @@ class Configurable(commands.Cog, name="Configurable"):
         if cur_prefix == new_prefix:
             await ctx.send(f"{ctx.author}, :ballot_box_with_cross: You are already using that as your set prefix for this guild.`")
         else:
-            await self.bot.pool.execute("UPDATE guilds SET prefix = $1 WHERE id = $2", new_prefix, ctx.guild.id)
+            await self.bot.pool.execute("UPDATE guild SET prefix = $1 WHERE id = $2", new_prefix, ctx.guild.id)
             await ctx.send(f"{ctx.author}, :ballot_box_with_check: The prefix has been changed to `{new_prefix}`")
 
     @commands.command(aliases=["strack", "servertracking"])
     @commands.has_guild_permissions(administrator=True)
     async def servertrack(self, ctx):
         """Server tracking is info"""
-        if not self.bot.pool["guilds"][str(ctx.guild.id)]["serverTracking"]:  # check wether servertracking is already setup
+        if not self.bot.pool["guild"][str(ctx.guild.id)]["serverTracking"]:  # check wether servertracking is already setup
             def check(m):
                 return m.author == ctx.author
             # get minecraft server
@@ -93,7 +93,7 @@ class Configurable(commands.Cog, name="Configurable"):
                 print(channel.id)
                 if channel is not None:
                     voiceChannel = channel.id
-            self.bot.pool["guilds"][str(ctx.guild.id)]["serverTracking"] = [
+            self.bot.pool["guild"][str(ctx.guild.id)]["serverTracking"] = [
                 server, voiceChannel]
             if server in self.bot.pool["serverTracking"]:
                 self.bot.pool["serverTracking"][server].append(voiceChannel)
@@ -108,9 +108,9 @@ class Configurable(commands.Cog, name="Configurable"):
             await ctx.send("Server Tracking is currently setup would you like me to remove the current configuration?")
             delete = await self.bot.wait_for("message", check=yes, timeout=10)
             if delete.content == "yes":
-                server, voiceChannel = self.bot.pool["guilds"][str(
+                server, voiceChannel = self.bot.pool["guild"][str(
                     ctx.guild.id)]["serverTracking"]
-                self.bot.pool["guilds"][str(
+                self.bot.pool["guild"][str(
                     ctx.guild.id)]["serverTracking"] = None
                 if len(self.bot.pool["serverTracking"][server]) == 1:
                     diction = self.bot.pool["serverTracking"]
@@ -135,7 +135,7 @@ class Configurable(commands.Cog, name="Configurable"):
         delete = await self.bot.wait_for("message", check=yes, timeout=10)
         if delete.content.lower() == "yes":
             # deletes data
-            await self.bot.pool.execute("DELETE FROM guilds WHERE id = $1", ctx.author.id)
+            await self.bot.pool.execute("DELETE FROM guild WHERE id = $1", ctx.author.id)
             
             await ctx.send(f"{ctx.message.author.mention}, all data linked to yuor discord account has been deleted.")
 
@@ -202,17 +202,17 @@ class Configurable(commands.Cog, name="Configurable"):
     #     msg = await self.bot.wait_for("message", check=check, timeout=30)
     #     msg = msg.content.lower()
     #     if msg == "yes":
-    #         self.bot.pool["guilds"][str(ctx.guild.id)]["silent"] = False
+    #         self.bot.pool["guild"][str(ctx.guild.id)]["silent"] = False
     #         await ctx.send(":white_check_mark: Silent reply succesfully **enabled**")
     #     else:
-    #         self.bot.pool["guilds"][str(ctx.guild.id)]["silent"] = True
+    #         self.bot.pool["guild"][str(ctx.guild.id)]["silent"] = True
     #         await ctx.send(":white_check_mark: Silent reply succesfully **disabled**")
 
     # @blacklist.command()
     # async def settings(self, ctx):
     #     embed = discord.Embed(
     #         title="Command blacklist settings", color=0x00ff00)
-    #     silent = "Disabled" if self.bot.pool["guilds"][str(
+    #     silent = "Disabled" if self.bot.pool["guild"][str(
     #         ctx.guild.id)]["silent"] else "Enabled"
     #     embed.add_field(
     #         name="Silent reply", value=f"**{silent}**\nWhen enabled, {self.bot.user.name} will not reply to blacklisted commands when they're used.")
@@ -240,7 +240,7 @@ class Configurable(commands.Cog, name="Configurable"):
     async def minecraftjoin(self, ctx, channel:discord.TextChannel=None):
         if channel:
             await ctx.send("There will now be welcome messages sent to that channel")
-            await self.bot.pool.execute("UPDATE guilds SET server_join = $1 WHERE id = $2", channel.id, ctx.guild.id)
+            await self.bot.pool.execute("UPDATE guild SET server_join = $1 WHERE id = $2", channel.id, ctx.guild.id)
             
         else:
             if await self.bot.pool.fetchvar("SELECT server_join FROM guild WHERE id = $1", ctx.guild.id):
