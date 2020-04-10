@@ -1,6 +1,5 @@
 from discord.ext import commands
 import discord
-from utils.db import Data
 
 # required libraries
 import datetime
@@ -21,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 # custom prefix
-def _prefix_callable(bot, msg):
+async def _prefix_callable(bot, msg):
     user_id = bot.user.id
     prefix = [f'<@!{user_id}> ', f'<@{user_id}> ']
 
@@ -32,14 +31,12 @@ def _prefix_callable(bot, msg):
         # because the bot is still in BETA it is offline
         # a lot meaning that some guilds are not added so
         # this is a sanity check
-        if str(msg.guild.id) in bot.pool["guilds"]:
-            prefix.append(bot.pool["guilds"][str(msg.guild.id)]["prefix"])
+        if await bot.pool.fetch("SELECT prefix FROM guild WHERE id = $1", msg.guild.id):
+            guild_prefixes = await bot.pool.fetchval("SELECT prefix FROM guild WHERE id = $1", msg.guild.id)
+            prefix.append(guild_prefixes.decode("utf-8") )
         else:
             # add the prefix to the database
-            bot.pool["guilds"][str(msg.guild.id)] = {"prefix": "/", "server": None}
-            Data.save("", bot.pool)
-            return "/"
-    
+            return prefix.append("/")
     return prefix
 
 
@@ -53,7 +50,6 @@ class Obsidion(commands.AutoShardedBot):
         self.hypixel_api = config.hypixel_key
         self._prev_events = deque(maxlen=10)
         self.start_time = time.time()
-        self.check(self.blacklist)
 
         # aiohttp session for use throughout the bot
         self.session = aiohttp.ClientSession(loop=self.loop)
@@ -128,7 +124,7 @@ class Obsidion(commands.AutoShardedBot):
             return
 
         elif isinstance(error, commands.CheckFailure):
-            #await ctx.send("You do not have permission to use this command.")
+            await ctx.send("You do not have permission to use this command.")
             return
 
         # for when that person tries to mess with your bot
@@ -159,17 +155,22 @@ class Obsidion(commands.AutoShardedBot):
         # process command
         await self.process_commands(message)
 
+    async def process_commands(self, message):
+        ctx = await self.get_context(message)
+
+        if ctx.command is None:
+            return
+
+        #if ctx.command.name in self.pool["blacklist"][str(ctx.guild.id)]:
+        #    if self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == "All" or self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == ctx.message.channel.id:
+        #        if self.pool["guilds"][str(ctx.guild.id)]["silent"]:
+        #            await ctx.send(f"{ctx.message.author.mention}, :x: The command {ctx.command.name} is blacklisted.")
+        #            return
+        await self.invoke(ctx)
+
     ##########################
     # Main Control Functions #
     ##########################
-
-    async def blacklist(self, ctx):
-        if ctx.command.name in self.pool["blacklist"][str(ctx.guild.id)]:
-            if self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == "All" or self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == ctx.message.channel.id:
-                if self.pool["guilds"][str(ctx.guild.id)]["silent"]:
-                    await ctx.send(f"{ctx.message.author.mention}, :x: The command {ctx.command.name} is blacklisted.")
-                return False
-        return True
 
     async def on_ready(self):
         if not hasattr(self, 'uptime'):

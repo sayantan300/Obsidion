@@ -60,13 +60,10 @@ class images(commands.Cog, name="Images"):
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
-        elif str(ctx.author.id) in self.bot.pool["user"]:
-            if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
-                uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
-                names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
-                username = names[-1]["name"]
-            else:
-                uuid = False
+        elif await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id):
+            uuid = await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id)
+            names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+            username = names[-1]["name"]
         if uuid:
             embed = discord.Embed(description=f"Here is: `{username}`'s Skull! \n **[DOWNLOAD](https://visage.surgeplay.com/head/512/{uuid})**", color=0x00ff00)
             embed.set_image(url=f"https://visage.surgeplay.com/head/512/{uuid}")
@@ -81,13 +78,10 @@ class images(commands.Cog, name="Images"):
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
-        elif str(ctx.author.id) in self.bot.pool["user"]:
-            if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
-                uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
-                names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
-                username = names[-1]["name"]
-            else:
-                uuid = False
+        elif await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id):
+            uuid = await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id)
+            names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+            username = names[-1]["name"]
         if uuid:
             embed = discord.Embed(description=f"Here is: `{username}`'s Skin! \n **[DOWNLOAD](https://visage.surgeplay.com/full/512/{uuid})**", color=0x00ff00)
             embed.set_image(url=f"https://visage.surgeplay.com/full/512/{uuid}")
@@ -104,13 +98,10 @@ class images(commands.Cog, name="Images"):
         if type in renders:
             if username:
                 uuid = await get_uuid(self.session, username)
-            elif str(ctx.author.id) in self.bot.pool["user"]:
-                if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
-                    uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
-                    names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
-                    username = names[-1]["name"]
-                else:
-                    uuid = False
+            elif await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id):
+                uuid = await self.bot.pool.fetchval("SELECT uuid FROM minecraft_user WHERE id = $1", ctx.author.id)
+                names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+                username = names[-1]["name"]
             if uuid:
                 embed = discord.Embed(description=f"Here is: `{username}`'s {type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{type}/512/{uuid})**", color=0x00ff00)
                 embed.set_image(url=f"https://visage.surgeplay.com/{type}/512/{uuid}")

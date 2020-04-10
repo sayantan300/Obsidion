@@ -10,7 +10,7 @@ from mcstatus import MinecraftServer
 from py_mcpe_stats import Query
 import base64
 import io
-
+import re
 
 class Information(commands.Cog, name="Information"):
 
@@ -24,13 +24,10 @@ class Information(commands.Cog, name="Information"):
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
-        elif str(ctx.author.id) in self.bot.pool["user"]:
-            if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
-                uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
-                names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
-                username = names[-1]["name"]
-            else:
-                uuid = False
+        elif await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id):
+            uuid = await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id)
+            names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
+            username = names[-1]["name"]
         else:
             uuid = False
 
@@ -91,8 +88,8 @@ class Information(commands.Cog, name="Information"):
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
-        elif self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
-            uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+        elif await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id):
+            uuid = await self.bot.pool.fetchval("SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id)
             names = await get(self.session, f"https://api.mojang.com/user/profiles/{uuid}/names")
             username = names[-1]["name"]
         else:
@@ -121,8 +118,8 @@ class Information(commands.Cog, name="Information"):
                 data = mc_server.status()
             except:
                 data = False
-        elif self.bot.pool["guilds"][str(ctx.guild.id)]["server"]:
-            server = self.bot.pool["guilds"][str(ctx.guild.id)]["server"]
+        elif await self.bot.pool.fetchval("SELECT server FROM guild WHERE id = $1", ctx.guild.id):
+            server = await self.bot.pool.fetchval("SELECT server FROM guild WHERE id = $1", ctx.guild.id)
             try:
                 mc_server = MinecraftServer.lookup(server)
                 data = mc_server.status()
@@ -142,34 +139,18 @@ class Information(commands.Cog, name="Information"):
                     # nice plain old description
                     motd = data.description['text']
                 else:
-                    # when they add html
-                    s=data.description
-                    motd = ""
-                    found = 0
-                    for i in range(len(s)-1):
-                        if s[i] == "§":
-                            found = i
-                        elif found == i-1 and s[i+1] != "§":
-                            found = 0
-                        elif found == i-1 and s[i+1] == "§":
-                            found += 1
-                        else:
-                            motd += s[i]
-                    if found != len(s)-2:
-                        motd += s[-1]
+                    motd = data.description
+                motd = re.sub(r"(§.)", "", motd)
                 embed.add_field(name="Description", value=motd)
 
                 embed.add_field(
                     name="Players", value=f"Online: `{data.players.online:,}` \n Maximum: `{data.players.max:,}`")
-                if data.players.online > 10 or data.players.online == 0:
-                    # no player names provided so can't populate it
-                    pass
-                else:
-                    # show which players are online
+                if data.players.sample:
                     names=""
                     for player in data.players.sample:
                         names += f"{player.name}\n"
-                    embed.add_field(name="Player names", value=names)
+                    names = re.sub(r"(§.)", "", names)
+                    embed.add_field(name="Information", value=names, inline=False)
 
                 embed.add_field(
                     name="Version", value=f"Java Edition \n Running: `{data.version.name}` \n Protocol: `{data.version.protocol}`", inline=False)
@@ -196,25 +177,13 @@ class Information(commands.Cog, name="Information"):
 
             q = Query(host, int(port))
             server_data = q.query()
+            print(server_data)
 
-            if server_data:
+            if server_data.NUM_PLAYERS  >= 0:
                 embed = discord.Embed(
                         title=f"Bedrock Server: {server}", color=0x00ff00)
                 # cleanup motd very badly but it does it
-                s=server_data.SERVER_NAME
-                motd = ""
-                found = 0
-                for i in range(len(s)-1):
-                    if s[i] == "§":
-                        found = i
-                    elif found == i-1 and s[i+1] != "§":
-                        found = 0
-                    elif found == i-1 and s[i+1] == "§":
-                        found += 1
-                    else:
-                        motd += s[i]
-                if found != len(s)-2:
-                    motd += s[-1]
+                motd = re.sub(r"(§.)", "", server_data.SERVER_NAME)
                 embed.add_field(name="Description", value=motd, inline=False)
                 embed.add_field(name="Players", value=f"Online: `{server_data.NUM_PLAYERS}`\nMax: `{server_data.MAX_PLAYERS}`")
                 embed.add_field(name="Version", value=f"Bedrock Edition\nRunning: `{server_data.GAME_VERSION}`")
@@ -225,7 +194,6 @@ class Information(commands.Cog, name="Information"):
             await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
     # This has been temporarily disabled due to Mojangs API not updateding
-    # @commands.cooldown(1, 5, commands.BucketType.user)
     # @commands.command()
     # async def status(self, ctx):
     #    """Check the status of all the Mojang services"""
@@ -312,7 +280,7 @@ class Information(commands.Cog, name="Information"):
             if ctx.guild is None:
                 prefix = "/"
             else:
-                prefix = self.bot.pool["guilds"][str(ctx.guild.id)]["prefix"]
+                prefix = ctx.prefix
             embed = discord.Embed(title="Command Usage", description=f"`{prefix}uhc upcoming` - Shows 6 upcoming matches.\n`{prefix}uhc banned <uuid | username>` - View the bans of a player.", color=0x00ff00)
             await ctx.send(embed=embed)
     
@@ -382,7 +350,7 @@ class Information(commands.Cog, name="Information"):
             await ctx.send(f"No ban information for {uuid}")
 
 
-    @commands.command(aliases=["bug"])
+    @commands.command()
     async def mcbug(self, ctx, bug=None):
         """ Gets info on a bug from bugs.mojang.com"""
         if bug:

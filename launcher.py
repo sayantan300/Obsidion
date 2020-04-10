@@ -4,12 +4,12 @@ import asyncio
 import discord
 import importlib
 import contextlib
+import asyncpg
 
 import config
 import traceback
 
 from bot import Obsidion
-from utils.db import Data
 
 # nice and fast async system
 try:
@@ -42,11 +42,16 @@ def setup_logging():
             hdlr.close()
             log.removeHandler(hdlr)
 
+async def create_pool(creds):
+    pool = await asyncpg.create_pool(creds)
+    return pool
+
 def run_bot():
     log = logging.getLogger()
+    loop = asyncio.get_event_loop()
 
     try:
-        pool = Data.connect("")
+        pool = loop.run_until_complete(create_pool(config.postgresql))
     except Exception as e:
         print('Could not load json database', file=sys.stderr)
         log.exception('Could not load json Exiting.')

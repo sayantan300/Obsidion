@@ -18,21 +18,20 @@ class servers(commands.Cog, name="Servers"):
     async def my_background_task(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            for server, value in self.bot.pool["serverTracking"].items():
+            for server, channel, guild in await self.bot.pool.fetch("SELECT * FROM servertracking"):
                 # loop through every minecraft server
                 try:
                     mc_server = MinecraftServer.lookup(server)
                     data = mc_server.status()
                 except:
                     data = False
-                for channel in value:
-                    channel = self.bot.get_channel(int(channel))
-                    # check 
-                    if data:
-                        name = f"{server.split('.')[-2].title()}: {data.players.online:,} / {data.players.max:,}"
-                        await channel.edit(name=name)
-                    else:
-                        await channel.edit(name="SERVER IS OFFLINE")
+                channel = self.bot.get_channel(channel)
+                # check 
+                if data:
+                    name = f"{server.split('.')[-2].title()}: {data.players.online:,} / {data.players.max:,}"
+                    await channel.edit(name=name)
+                else:
+                    await channel.edit(name="SERVER IS OFFLINE")
             await asyncio.sleep(5*60) # task runs every 5 minutes
 
     #@commands.command()

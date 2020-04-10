@@ -99,7 +99,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
                 if not found:
                     await ctx.send(f"{ctx.message.author.mention}, :x: That command is not found please try again")
         else:
-            prefixes = self.bot.get_guild_prefixes(ctx.guild)
+            prefixes = await self.bot.get_guild_prefixes(ctx.guild)
             del prefixes[1]
             embed = discord.Embed(
                 description=f"Below is a list of commands you can use\n To use commands type `{prefixes[1]}command` or {prefixes[0]} command \n To get more information about a command type: `{prefixes[1]}help command`", color=0x00ff00)
@@ -120,7 +120,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command(aliases=["alias", "a", "aliaslist"])
     async def aliases(self, ctx):
         """Lists all the aliases you can use."""
-        prefixes = self.bot.get_guild_prefixes(ctx.guild)
+        prefixes = await self.bot.get_guild_prefixes(ctx.guild)
         del prefixes[1]
         embed = discord.Embed(
             description=f"Below is a list of command aliases you can use\n To use aliases type `{prefixes[1]}alias` or {prefixes[0]} alias \n To get more information about a command type: `{prefixes[1]}help command`", color=0x00ff00)
