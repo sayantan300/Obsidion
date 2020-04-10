@@ -177,7 +177,6 @@ class Information(commands.Cog, name="Information"):
 
             q = Query(host, int(port))
             server_data = q.query()
-            print(server_data)
 
             if server_data.NUM_PLAYERS  >= 0:
                 embed = discord.Embed(
