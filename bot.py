@@ -15,6 +15,8 @@ import time
 # import environment variables
 import config
 
+from core.global_checks import init_global_checks
+
 # start logger
 log = logging.getLogger(__name__)
 
@@ -22,18 +24,20 @@ log = logging.getLogger(__name__)
 # custom prefix
 async def _prefix_callable(bot, msg):
     user_id = bot.user.id
-    prefix = [f'<@!{user_id}> ', f'<@{user_id}> ']
+    prefix = [f"<@!{user_id}> ", f"<@{user_id}> "]
 
     # if in direct messages
     if msg.guild is None:
-        prefix.append('/')
+        prefix.append("/")
     else:
         # because the bot is still in BETA it is offline
         # a lot meaning that some guilds are not added so
         # this is a sanity check
         if await bot.pool.fetch("SELECT prefix FROM guild WHERE id = $1", msg.guild.id):
-            guild_prefixes = await bot.pool.fetchval("SELECT prefix FROM guild WHERE id = $1", msg.guild.id)
-            prefix.append(guild_prefixes.decode("utf-8") )
+            guild_prefixes = await bot.pool.fetchval(
+                "SELECT prefix FROM guild WHERE id = $1", msg.guild.id
+            )
+            prefix.append(guild_prefixes.decode("utf-8"))
         else:
             # add the prefix to the database
             return prefix.append("/")
@@ -42,8 +46,13 @@ async def _prefix_callable(bot, msg):
 
 class Obsidion(commands.AutoShardedBot):
     def __init__(self):
-        super().__init__(command_prefix=_prefix_callable, case_insensitive=True,
-                         help_command=None, owner_id=config.owner_id, fetch_offline_members=False)
+        super().__init__(
+            command_prefix=_prefix_callable,
+            case_insensitive=True,
+            help_command=None,
+            owner_id=config.owner_id,
+            fetch_offline_members=False,
+        )
 
         # important tokens
         self.client_id = config.client_id
@@ -59,9 +68,10 @@ class Obsidion(commands.AutoShardedBot):
             try:
                 self.load_extension(f"cogs.{cog}")
             except Exception as e:
-                print(f'Failed to load extension {cog}.', file=sys.stderr)
+                print(f"Failed to load extension {cog}.", file=sys.stderr)
                 traceback.print_exc()
-    
+
+        init_global_checks(self)
 
     async def on_command_error(self, ctx, error):
         """
@@ -71,43 +81,51 @@ class Obsidion(commands.AutoShardedBot):
         """
 
         # This prevents any commands with local handlers being handled here in on_command_error.
-        if hasattr(ctx.command, 'on_error'):
+        if hasattr(ctx.command, "on_error"):
             return
-        
+
         ignored = (commands.CommandNotFound, commands.UserInputError)
 
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
-        error = getattr(error, 'original', error)
-        
+        error = getattr(error, "original", error)
+
         # Anything in ignored will return and prevent anything happening.
         if isinstance(error, ignored):
             return
 
         elif isinstance(error, commands.BotMissingPermissions):
-            missing = [perm.replace('_', ' ').replace('guild', 'server').title() for perm in error.missing_perms]
+            missing = [
+                perm.replace("_", " ").replace("guild", "server").title()
+                for perm in error.missing_perms
+            ]
             if len(missing) > 2:
-                fmt = '{}, and {}'.format("**, **".join(missing[:-1]), missing[-1])
+                fmt = "{}, and {}".format("**, **".join(missing[:-1]), missing[-1])
             else:
-                fmt = ' and '.join(missing)
-            _message = f'I need the **{fmt}** permission(s) to run this command.'
+                fmt = " and ".join(missing)
+            _message = f"I need the **{fmt}** permission(s) to run this command."
             await ctx.send(_message)
             return
-        
+
         elif isinstance(error, commands.DisabledCommand):
-            await ctx.send(f'This command has been disabled.')
+            await ctx.send(f"This command has been disabled.")
             return
 
         elif isinstance(error, commands.CommandOnCooldown):
-            return await ctx.send(f'This command is on cooldown, please retry in {error.retry_after:.2f}s')
+            return await ctx.send(
+                f"This command is on cooldown, please retry in {error.retry_after:.2f}s"
+            )
 
         elif isinstance(error, commands.MissingPermissions):
-            missing = [perm.replace('_', ' ').replace('guild', 'server').title() for perm in error.missing_perms]
+            missing = [
+                perm.replace("_", " ").replace("guild", "server").title()
+                for perm in error.missing_perms
+            ]
             if len(missing) > 2:
                 fmt = f'{"**, **".join(missing[:-1])}, and {missing[-1]}'
             else:
-                fmt = ' and '.join(missing)
-            _message = f'You need the **{fmt}** permission(s) to use this command.'
+                fmt = " and ".join(missing)
+            _message = f"You need the **{fmt}** permission(s) to use this command."
             await ctx.send(_message)
             return
 
@@ -118,7 +136,7 @@ class Obsidion(commands.AutoShardedBot):
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await ctx.author.send('This command cannot be used in direct messages.')
+                await ctx.author.send("This command cannot be used in direct messages.")
             except discord.Forbidden:
                 pass
             return
@@ -133,13 +151,17 @@ class Obsidion(commands.AutoShardedBot):
             return
 
         elif isinstance(error, asyncio.TimeoutError):
-            await ctx.send("You did not reply to the message, the command has been cancelled.")
+            await ctx.send(
+                "You did not reply to the message, the command has been cancelled."
+            )
             return
 
         # ignore all other exception types, but print them to stderr
-        print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
+        print(f"Ignoring exception in command {ctx.command}:", file=sys.stderr)
 
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        traceback.print_exception(
+            type(error), error, error.__traceback__, file=sys.stderr
+        )
 
     # make getting prefixes a bit nicer
     def get_guild_prefixes(self, guild, *, local_inject=_prefix_callable):
@@ -149,8 +171,6 @@ class Obsidion(commands.AutoShardedBot):
 
     async def on_message(self, message):
         # make sure our bot does not reply to other bots
-        if message.author.bot:
-            return
 
         # process command
         await self.process_commands(message)
@@ -161,7 +181,7 @@ class Obsidion(commands.AutoShardedBot):
         if ctx.command is None:
             return
 
-        #if ctx.command.name in self.pool["blacklist"][str(ctx.guild.id)]:
+        # if ctx.command.name in self.pool["blacklist"][str(ctx.guild.id)]:
         #    if self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == "All" or self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == ctx.message.channel.id:
         #        if self.pool["guilds"][str(ctx.guild.id)]["silent"]:
         #            await ctx.send(f"{ctx.message.author.mention}, :x: The command {ctx.command.name} is blacklisted.")
@@ -173,39 +193,40 @@ class Obsidion(commands.AutoShardedBot):
     ##########################
 
     async def on_ready(self):
-        if not hasattr(self, 'uptime'):
+        if not hasattr(self, "uptime"):
             self.uptime = datetime.datetime.utcnow()
 
         print(f"\n\nSuccessfully logged in and booted...!")
-        print(f'Ready: {self.user} (ID: {self.user.id})')
+        print(f"Ready: {self.user} (ID: {self.user.id})")
         print(f"Version: {discord.__version__}\n")
 
         # Sets our bots status to wether operational or testing
         activity = discord.Activity(
-            name=f"For @{self.user.name} help", type=discord.ActivityType.watching)
+            name=f"For @{self.user.name} help", type=discord.ActivityType.watching
+        )
         await self.change_presence(status=discord.Status.online, activity=activity)
-    
+
     async def close(self):
         await super().close()
         await self.session.close()
 
     async def on_resumed(self):
-        print('resumed...')
-    
+        print("resumed...")
+
     def run(self):
         try:
             super().run(config.token, reconnect=True)
         finally:
             # all the packdown controls
-            with open('prev_events.log', 'w', encoding='utf-8') as fp:
+            with open("prev_events.log", "w", encoding="utf-8") as fp:
                 for data in self._prev_events:
                     try:
                         x = json.dumps(data, ensure_ascii=True, indent=4)
                     except:
-                        fp.write(f'{data}\n')
+                        fp.write(f"{data}\n")
                     else:
-                        fp.write(f'{x}\n')
+                        fp.write(f"{x}\n")
 
     @property
     def config(self):
-        return __import__('config')
+        return __import__("config")

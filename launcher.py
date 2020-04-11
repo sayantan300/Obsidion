@@ -19,18 +19,21 @@ except ImportError:
 else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
+
 @contextlib.contextmanager
 def setup_logging():
     try:
         # __enter__
-        logging.getLogger('discord').setLevel(logging.INFO)
-        logging.getLogger('discord.http').setLevel(logging.WARNING)
+        logging.getLogger("discord").setLevel(logging.INFO)
+        logging.getLogger("discord.http").setLevel(logging.WARNING)
 
         log = logging.getLogger()
         log.setLevel(logging.INFO)
-        handler = logging.FileHandler(filename='bot.log', encoding='utf-8', mode='w')
-        dt_fmt = '%Y-%m-%d %H:%M:%S'
-        fmt = logging.Formatter('[{asctime}] [{levelname:<7}] {name}: {message}', dt_fmt, style='{')
+        handler = logging.FileHandler(filename="bot.log", encoding="utf-8", mode="w")
+        dt_fmt = "%Y-%m-%d %H:%M:%S"
+        fmt = logging.Formatter(
+            "[{asctime}] [{levelname:<7}] {name}: {message}", dt_fmt, style="{"
+        )
         handler.setFormatter(fmt)
         log.addHandler(handler)
 
@@ -42,9 +45,11 @@ def setup_logging():
             hdlr.close()
             log.removeHandler(hdlr)
 
+
 async def create_pool(creds):
     pool = await asyncpg.create_pool(creds)
     return pool
+
 
 def run_bot():
     log = logging.getLogger()
@@ -53,13 +58,14 @@ def run_bot():
     try:
         pool = loop.run_until_complete(create_pool(config.postgresql))
     except Exception as e:
-        print('Could not load json database', file=sys.stderr)
-        log.exception('Could not load json Exiting.')
+        print("Could not load Postgres database", file=sys.stderr)
+        log.exception("Could not load database Exiting.")
         return
 
     bot = Obsidion()
     bot.pool = pool
     bot.run()
+
 
 def main():
     """Launches the bot."""
@@ -67,5 +73,6 @@ def main():
     with setup_logging():
         run_bot()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

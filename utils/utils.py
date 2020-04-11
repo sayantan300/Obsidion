@@ -1,5 +1,6 @@
 import aiohttp
 
+
 async def get(session, url):
     async with session.get(url) as resp:
         if resp.status == 200:

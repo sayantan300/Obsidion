@@ -6,8 +6,8 @@ import asyncio
 from utils.utils import get_uuid, get
 from mcstatus import MinecraftServer
 
-class servers(commands.Cog, name="Servers"):
 
+class servers(commands.Cog, name="Servers"):
     def __init__(self, bot):
         self.session = bot.session
         self.bot = bot
@@ -18,7 +18,9 @@ class servers(commands.Cog, name="Servers"):
     async def my_background_task(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            for server, channel, guild in await self.bot.pool.fetch("SELECT * FROM servertracking"):
+            for server, channel, guild in await self.bot.pool.fetch(
+                "SELECT * FROM servertracking"
+            ):
                 # loop through every minecraft server
                 try:
                     mc_server = MinecraftServer.lookup(server)
@@ -26,24 +28,26 @@ class servers(commands.Cog, name="Servers"):
                 except:
                     data = False
                 channel = self.bot.get_channel(channel)
-                # check 
+                # check
                 if data:
                     name = f"{server.split('.')[-2].title()}: {data.players.online:,} / {data.players.max:,}"
                     await channel.edit(name=name)
                 else:
                     await channel.edit(name="SERVER IS OFFLINE")
-            await asyncio.sleep(5*60) # task runs every 5 minutes
+            await asyncio.sleep(5 * 60)  # task runs every 5 minutes
 
-    #@commands.command()
-    #async def blocksmcself(self, ctx, username):
+    # @commands.command()
+    # async def blocksmcself(self, ctx, username):
     #    pass
 
-    #@commands.command()
-    #async def funcraft(self, ctx, username):
+    # @commands.command()
+    # async def funcraft(self, ctx, username):
     #    pass
 
-    #async def hivemc(self, ctx, username):
+    # async def hivemc(self, ctx, username):
     #    pass
+
+
 '''
     @commands.command()
     async def hypixel(self, ctx, username):

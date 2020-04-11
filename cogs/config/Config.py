@@ -6,7 +6,6 @@ import config
 
 
 class Configurable(commands.Cog, name="Configurable"):
-
     def __init__(self, bot):
         self.session = bot.session
         self.bot = bot
@@ -16,67 +15,95 @@ class Configurable(commands.Cog, name="Configurable"):
         """view your Obisidon account
         do account link to link a minecraft username"""
         if ctx.invoked_subcommand is None:
-            await ctx.send('No command passed')
+            await ctx.send("No command passed")
 
     @account.command(name="link")
     async def account_link(self, ctx, username=None):
         if username:
             uuid = await get_uuid(self.session, username)
             if uuid:
-                await self.bot.pool.execute("UPDATE discord_user SET uuid = $1 WHERE id = $2", uuid, ctx.author.id)
+                await self.bot.pool.execute(
+                    "UPDATE discord_user SET uuid = $1 WHERE id = $2",
+                    uuid,
+                    ctx.author.id,
+                )
                 await ctx.send(f"Your account has been linked to {username}")
             else:
                 await ctx.send("Please provide a valid username")
         else:
-            await ctx.send(f"{ctx.message.author.mention}, :x: please provide a username")
+            await ctx.send(
+                f"{ctx.message.author.mention}, :x: please provide a username"
+            )
 
     @account.command(name="unlink")
     async def account_unlink(self, ctx):
-        await self.bot.pool.execute("UPDATE discord_user SET uuid = $1 WHERE id = $2", None, ctx.author.id)
+        await self.bot.pool.execute(
+            "UPDATE discord_user SET uuid = $1 WHERE id = $2", None, ctx.author.id
+        )
         await ctx.send("Your account has been unlinked from any minecraft account")
 
+    @commands.guild_only()
     @commands.group()
     @commands.has_guild_permissions(administrator=True)
     async def serverlink(self, ctx):
         """link a minecraft server to your guild
         do serverlink link <server>"""
         if ctx.invoked_subcommand is None:
-            await ctx.send('Please pass either `link <server>` or `unlink`')
+            await ctx.send("Please pass either `link <server>` or `unlink`")
 
     @serverlink.command(name="link")
     async def serverlink_link(self, ctx, server):
-        await self.bot.pool.execute("UPDATE guild SET server = $1 WHERE id = $2", server, ctx.guild.id)
-        
+        await self.bot.pool.execute(
+            "UPDATE guild SET server = $1 WHERE id = $2", server, ctx.guild.id
+        )
+
         await ctx.send(f"Your discord server has been linked to {server}")
 
     @serverlink.command(name="unlink")
     async def serverlink_unlink(self, ctx):
-        await self.bot.pool.execute("UPDATE guild SET server = $1 WHERE id = $2", None, ctx.guild.id)
-        
+        await self.bot.pool.execute(
+            "UPDATE guild SET server = $1 WHERE id = $2", None, ctx.guild.id
+        )
+
         await ctx.send("Your discord server is no longer linked to a minecraft server")
 
     @commands.command()
+    @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def prefix(self, ctx, new_prefix):
         """Set a custom prefix for the bot commands"""
         cur_prefix = self.bot._prefix_callable(self.bot, ctx)
 
         if cur_prefix == new_prefix:
-            await ctx.send(f"{ctx.author}, :ballot_box_with_cross: You are already using that as your set prefix for this guild.`")
+            await ctx.send(
+                f"{ctx.author}, :ballot_box_with_cross: You are already using that as your set prefix for this guild.`"
+            )
         else:
-            await self.bot.pool.execute("UPDATE guild SET prefix = $1 WHERE id = $2", new_prefix, ctx.guild.id)
-            await ctx.send(f"{ctx.author}, :ballot_box_with_check: The prefix has been changed to `{new_prefix}`")
+            await self.bot.pool.execute(
+                "UPDATE guild SET prefix = $1 WHERE id = $2", new_prefix, ctx.guild.id
+            )
+            await ctx.send(
+                f"{ctx.author}, :ballot_box_with_check: The prefix has been changed to `{new_prefix}`"
+            )
 
     @commands.command(aliases=["strack", "servertracking"])
+    @commands.guild_only()
     @commands.has_guild_permissions(administrator=True)
     async def servertrack(self, ctx):
         """Server tracking is info"""
-        if not self.bot.pool["guild"][str(ctx.guild.id)]["serverTracking"]:  # check wether servertracking is already setup
+        if not self.bot.pool["guild"][str(ctx.guild.id)][
+            "serverTracking"
+        ]:  # check wether servertracking is already setup
+
             def check(m):
                 return m.author == ctx.author
+
             # get minecraft server
-            embed = discord.Embed(title="Server Tracking Setup",
-                                  description=f"please provide the minecraft server you would like to track", color=0x00ff00)
+            embed = discord.Embed(
+                title="Server Tracking Setup",
+                description=f"please provide the minecraft server you would like to track",
+                color=0x00FF00,
+            )
             await ctx.send(embed=embed)
             server = await self.bot.wait_for("message", check=check, timeout=10)
             server = server.content
@@ -85,59 +112,80 @@ class Configurable(commands.Cog, name="Configurable"):
             voiceChannel = False
             while not voiceChannel:
                 embed = discord.Embed(
-                    title="Server Tracking Setup", description=f"Please provide the name of the voice channel you would like to use\n I will need to have the permissions to edit the name and everyone else should not be able to join it.", color=0x00ff00)
+                    title="Server Tracking Setup",
+                    description=f"Please provide the name of the voice channel you would like to use\n I will need to have the permissions to edit the name and everyone else should not be able to join it.",
+                    color=0x00FF00,
+                )
                 await ctx.send(embed=embed)
                 voice = await self.bot.wait_for("message", check=check, timeout=10)
                 channel = discord.utils.get(
-                    ctx.guild.voice_channels, name=voice.content)
+                    ctx.guild.voice_channels, name=voice.content
+                )
                 print(channel.id)
                 if channel is not None:
                     voiceChannel = channel.id
             self.bot.pool["guild"][str(ctx.guild.id)]["serverTracking"] = [
-                server, voiceChannel]
+                server,
+                voiceChannel,
+            ]
             if server in self.bot.pool["serverTracking"]:
                 self.bot.pool["serverTracking"][server].append(voiceChannel)
             else:
                 self.bot.pool["serverTracking"][server] = [voiceChannel]
             print(self.bot.pool)
-            
-            await ctx.send("Server Tracking is all setup and ready for you to enjoy. It will update it less than 5 minutes.")
+
+            await ctx.send(
+                "Server Tracking is all setup and ready for you to enjoy. It will update it less than 5 minutes."
+            )
         else:
+
             def yes(m):
                 return m.author == ctx.author and m.content.lower() in ["yes", "no"]
-            await ctx.send("Server Tracking is currently setup would you like me to remove the current configuration?")
+
+            await ctx.send(
+                "Server Tracking is currently setup would you like me to remove the current configuration?"
+            )
             delete = await self.bot.wait_for("message", check=yes, timeout=10)
             if delete.content == "yes":
-                server, voiceChannel = self.bot.pool["guild"][str(
-                    ctx.guild.id)]["serverTracking"]
-                self.bot.pool["guild"][str(
-                    ctx.guild.id)]["serverTracking"] = None
+                server, voiceChannel = self.bot.pool["guild"][str(ctx.guild.id)][
+                    "serverTracking"
+                ]
+                self.bot.pool["guild"][str(ctx.guild.id)]["serverTracking"] = None
                 if len(self.bot.pool["serverTracking"][server]) == 1:
                     diction = self.bot.pool["serverTracking"]
                     diction.pop(server)
                     self.bot.pool["serverTracking"] = diction
                 else:
-                    self.bot.pool["serverTracking"][server].remove(
-                        voiceChannel)
-                
+                    self.bot.pool["serverTracking"][server].remove(voiceChannel)
+
                 self.bot.pool = self.bot.pool
-                await ctx.send("Server Tracking has been removed from this server, run the command again to set it up.")
+                await ctx.send(
+                    "Server Tracking has been removed from this server, run the command again to set it up."
+                )
 
     @commands.command()
     async def delete(self, ctx):
         """This will delete all data that is linked to your account"""
         embed = discord.Embed(
-            title="DELETE DATA", description="WARNING\n THIS IS AN IRREVERABLE ACTION AND WILL DELETE ALL DATA LINKED TO YOUR ACCOUNT\nDO YOU WISH TO PROCEED?\nYES/NO", colour=0xff0000)
+            title="DELETE DATA",
+            description="WARNING\n THIS IS AN IRREVERABLE ACTION AND WILL DELETE ALL DATA LINKED TO YOUR ACCOUNT\nDO YOU WISH TO PROCEED?\nYES/NO",
+            colour=0xFF0000,
+        )
         await ctx.send(embed=embed)
 
         def yes(m):
             return m.author == ctx.author and m.content.lower() in ["yes", "no"]
+
         delete = await self.bot.wait_for("message", check=yes, timeout=10)
         if delete.content.lower() == "yes":
             # deletes data
-            await self.bot.pool.execute("DELETE FROM guild WHERE id = $1", ctx.author.id)
-            
-            await ctx.send(f"{ctx.message.author.mention}, all data linked to yuor discord account has been deleted.")
+            await self.bot.pool.execute(
+                "DELETE FROM guild WHERE id = $1", ctx.author.id
+            )
+
+            await ctx.send(
+                f"{ctx.message.author.mention}, all data linked to yuor discord account has been deleted."
+            )
 
     # @commands.group()
     # @commands.has_guild_permissions(administrator=True)
@@ -168,7 +216,7 @@ class Configurable(commands.Cog, name="Configurable"):
     #             else:
     #                 self.bot.pool["blacklist"][str(
     #                     ctx.message.guild.id)][command] = channel.id
-                
+
     #             await ctx.send(f"{ctx.message.author.mention}, That command has been blacklisted for use in {channel}")
     #         else:
     #             if str(ctx.message.guild.id) not in self.bot.pool["blacklist"]:
@@ -177,7 +225,7 @@ class Configurable(commands.Cog, name="Configurable"):
     #             else:
     #                 self.bot.pool["blacklist"][str(
     #                     ctx.message.guild.id)][command] = "All"
-                
+
     #             await ctx.send(f"{ctx.message.author.mention}, That command has been blacklisted for use in this guild.")
     #     else:
     #         await ctx.send(f"{ctx.message.author.mention}, :x: That command has not been found please try again.")
@@ -186,7 +234,7 @@ class Configurable(commands.Cog, name="Configurable"):
     # async def remove(self, ctx, command=None):
     #     if command in self.bot.pool["blacklist"][str(ctx.guild.id)]:
     #         self.bot.pool["blacklist"][str(ctx.guild.id)].pop(command)
-            
+
     #         await ctx.send(f"{ctx.message.author.mention}, The command has been removed from the blacklist.")
     #     else:
     #         await ctx.send(f"{ctx.message.author.mention}, :x: The command was not in the blacklist.")
@@ -230,22 +278,35 @@ class Configurable(commands.Cog, name="Configurable"):
     @commands.command(aliases=["bugreport"])
     async def bug(self, ctx, *, bug):
         """Send a bug report to the developers"""
-        embed = discord.Embed(title="Bug Report", description=bug, color=0x00ff00)
+        embed = discord.Embed(title="Bug Report", description=bug, color=0x00FF00)
         embed.set_footer(text=f"{ctx.author.name}#{ctx.author.discriminator}")
         channel = self.bot.get_channel(config.bugs_channel)
         await channel.send(embed=embed)
         await ctx.send("Bug report sent.")
 
     @commands.command(aliases=["mjoin"])
-    async def minecraftjoin(self, ctx, channel:discord.TextChannel=None):
+    @commands.guild_only()
+    async def minecraftjoin(self, ctx, channel: discord.TextChannel = None):
         if channel:
             await ctx.send("There will now be welcome messages sent to that channel")
-            await self.bot.pool.execute("UPDATE guild SET server_join = $1 WHERE id = $2", channel.id, ctx.guild.id)
-            
+            await self.bot.pool.execute(
+                "UPDATE guild SET server_join = $1 WHERE id = $2",
+                channel.id,
+                ctx.guild.id,
+            )
+
         else:
-            if await self.bot.pool.fetchvar("SELECT server_join FROM guild WHERE id = $1", ctx.guild.id):
-                await self.bot.pool.execute("UPDATE guild SET server_join = $1 WHERE id = $2", None, ctx.guild.id)
+            if await self.bot.pool.fetchvar(
+                "SELECT server_join FROM guild WHERE id = $1", ctx.guild.id
+            ):
+                await self.bot.pool.execute(
+                    "UPDATE guild SET server_join = $1 WHERE id = $2",
+                    None,
+                    ctx.guild.id,
+                )
                 await ctx.send("Minecraft joinmessages have been removed")
-                
+
             else:
-                await ctx.send("Please have the channel name at the end of the comamnd like: minecraftjoin #CHANNEL.")
+                await ctx.send(
+                    "Please have the channel name at the end of the comamnd like: minecraftjoin #CHANNEL."
+                )
