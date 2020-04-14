@@ -11,6 +11,11 @@ import aiohttp
 import sys
 from collections import Counter, deque
 import time
+import pip
+import os
+import platform
+import getpass
+import contextlib
 
 # import environment variables
 import config
@@ -19,6 +24,8 @@ from core.global_checks import init_global_checks
 
 # start logger
 log = logging.getLogger(__name__)
+
+__version__ = "0.2 BETA"
 
 
 # custom prefix
@@ -49,7 +56,7 @@ class Obsidion(commands.AutoShardedBot):
         super().__init__(
             command_prefix=_prefix_callable,
             case_insensitive=True,
-            help_command=None,
+            # help_command=None,
             owner_id=config.owner_id,
             fetch_offline_members=False,
         )
@@ -196,9 +203,15 @@ class Obsidion(commands.AutoShardedBot):
         if not hasattr(self, "uptime"):
             self.uptime = datetime.datetime.utcnow()
 
-        print(f"\n\nSuccessfully logged in and booted...!")
-        print(f"Ready: {self.user} (ID: {self.user.id})")
-        print(f"Version: {discord.__version__}\n")
+            info = (
+                f"Debug Info for {self.user.name}\n\n"
+                + f"{self.user.name} version: {__version__}\n"
+                + f"Successfully logged in and booted...!\n"
+                + f"Ready: {self.user} (ID: {self.user.id})\n"
+                + f"Logged in at: {self.uptime}"
+            )
+
+            print(info)
 
         # Sets our bots status to wether operational or testing
         activity = discord.Activity(

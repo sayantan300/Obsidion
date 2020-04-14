@@ -3,6 +3,9 @@ from random import choice
 import discord
 from utils.utils import get_uuid, get
 import config
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class Configurable(commands.Cog, name="Configurable"):
@@ -15,7 +18,7 @@ class Configurable(commands.Cog, name="Configurable"):
         """view your Obisidon account
         do account link to link a minecraft username"""
         if ctx.invoked_subcommand is None:
-            await ctx.send("No command passed")
+            await ctx.send_help(ctx.command)
 
     @account.command(name="link")
     async def account_link(self, ctx, username=None):
@@ -49,7 +52,7 @@ class Configurable(commands.Cog, name="Configurable"):
         """link a minecraft server to your guild
         do serverlink link <server>"""
         if ctx.invoked_subcommand is None:
-            await ctx.send("Please pass either `link <server>` or `unlink`")
+            await ctx.send_help(ctx.command)
 
     @serverlink.command(name="link")
     async def serverlink_link(self, ctx, server):
@@ -274,15 +277,6 @@ class Configurable(commands.Cog, name="Configurable"):
     #     embed.add_field(name="Blacklisted Commands", value=commands)
 
     #     await ctx.send(embed=embed)
-
-    @commands.command(aliases=["bugreport"])
-    async def bug(self, ctx, *, bug):
-        """Send a bug report to the developers"""
-        embed = discord.Embed(title="Bug Report", description=bug, color=0x00FF00)
-        embed.set_footer(text=f"{ctx.author.name}#{ctx.author.discriminator}")
-        channel = self.bot.get_channel(config.bugs_channel)
-        await channel.send(embed=embed)
-        await ctx.send("Bug report sent.")
 
     @commands.command(aliases=["mjoin"])
     @commands.guild_only()

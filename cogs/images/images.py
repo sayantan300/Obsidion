@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 from utils.utils import get_uuid, get
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class images(commands.Cog, name="Images"):
@@ -10,7 +13,7 @@ class images(commands.Cog, name="Images"):
 
     @commands.command(aliases=["ach", "advancement"])
     async def achievement(
-        self, ctx, block_id=None, title=None, word1=None, word2=None, word3=None
+        self, ctx, block_id: int = None, title=None, word1=None, word2=None, word3=None
     ):
         """Create your very own custom Minecraft achievements!"""
         await ctx.channel.trigger_typing()
@@ -61,8 +64,12 @@ class images(commands.Cog, name="Images"):
         if username:
             uuid = await get_uuid(self.session, username)
         elif str(ctx.author.id) in self.bot.pool["user"]:
-            if self.bot.pool["user"][str(ctx.author.id)]["uuid"]:
-                uuid = self.bot.pool["user"][str(ctx.author.id)]["uuid"]
+            if await self.bot.pool.fetchval(
+                "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
+            ):
+                uuid = await self.bot.pool.fetchval(
+                    "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
+                )
                 names = await get(
                     self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
                 )

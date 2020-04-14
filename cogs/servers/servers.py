@@ -5,6 +5,9 @@ import datetime
 import asyncio
 from utils.utils import get_uuid, get
 from mcstatus import MinecraftServer
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class servers(commands.Cog, name="Servers"):
@@ -44,42 +47,40 @@ class servers(commands.Cog, name="Servers"):
     # async def funcraft(self, ctx, username):
     #    pass
 
+    # @commands.command()
     # async def hivemc(self, ctx, username):
     #    pass
 
-
-'''
-    @commands.command()
-    async def hypixel(self, ctx, username):
-        """Get information about a Hypixel user"""
-        pass
-            
-
-    #@commands.command()
-    #async def manacube(self, ctx, username):
+    # @commands.command()
+    # async def hypixel(self, ctx, username):
+    #    """Get information about a Hypixel user"""
     #    pass
 
-    #@commands.command()
-    #async def minesage(self, ctx, username):
+    # @commands.command()
+    # async def manacube(self, ctx, username):
     #    pass
 
-    #@commands.command()
-    #async def universocraft(self, ctx, username):
+    # @commands.command()
+    # async def minesage(self, ctx, username):
     #    pass
 
-    #@commands.command()
-    #async def veltpvp(self, ctx, username):
+    # @commands.command()
+    # async def universocraft(self, ctx, username):
     #    pass
 
-    #@commands.command()
-    #async def wynncraft(self, ctx, username):
+    # @commands.command()
+    # async def veltpvp(self, ctx, username):
+    #    pass
+
+    # @commands.command()
+    # async def wynncraft(self, ctx, username):
     #    uuid = get_uuid(self.session, username)
     #    if uuid:
     #        url = f"https://api.wynncraft.com/v2/player/{uuid}/stats"
     #        data = await get(self.session, url)
 
     #        embed = discord.Embed(color=0x00ff00)
-    #        
+    #
     #        information = ""
 
     #        dates = ""
@@ -89,4 +90,3 @@ class servers(commands.Cog, name="Servers"):
 
     #        await ctx.send(embed=embed)
     #    pass
-'''

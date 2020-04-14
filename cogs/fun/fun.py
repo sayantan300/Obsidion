@@ -1,6 +1,9 @@
 from discord.ext import commands
 from random import choice
 import discord
+import logging
+
+log = logging.getLogger(__name__)
 
 minecraft = [
     "ᔑ",
@@ -127,7 +130,10 @@ class Fun(commands.Cog, name="Fun"):
 
     @commands.command()
     async def creeper(self, ctx):
-        """Aw man"""
+        """Roll a random number.
+        The result will be between 1 and `<number>`.
+        `<number>` defaults to 100.
+        """
         await ctx.send("Aw man")
 
     @commands.command(aliases=["slay"])

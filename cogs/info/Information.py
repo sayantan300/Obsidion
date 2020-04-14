@@ -3,7 +3,6 @@ from random import choice
 import discord
 import aiohttp
 from datetime import datetime
-import json
 from utils.utils import get, get_uuid
 from uuid import UUID
 from mcstatus import MinecraftServer
@@ -11,6 +10,9 @@ from py_mcpe_stats import Query
 import base64
 import io
 import re
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class Information(commands.Cog, name="Information"):
@@ -23,6 +25,7 @@ class Information(commands.Cog, name="Information"):
     )
     async def profile(self, ctx, username=None):
         """View a players Minecraft UUID, Username history and skin."""
+        log.info("test")
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
@@ -61,7 +64,6 @@ class Information(commands.Cog, name="Information"):
             uuids = "Short UUID: `" + uuid + "\n" + "`Long UUID: `" + long_uuid + "`"
             information = ""
             information += f"Username Changes: `{len(names)-1}`\n"
-            # information += f"Legacy: `{}`"
 
             embed = discord.Embed(
                 title=f"Minecraft profile for {username}", color=0x00FF00
@@ -139,9 +141,7 @@ class Information(commands.Cog, name="Information"):
     @commands.command(aliases=["serv"])
     async def server(self, ctx, server=None):
         """
-        Request a JAVA Minecraft server for information such as online player count, MOTD and more.
-
-        :param server: This is for the url and port for the Minecraft java server in this format: `example.com:25565`
+        Request information about a Minecraft Java edition multiplayer server.
         """
         await ctx.channel.trigger_typing()
         if server:
