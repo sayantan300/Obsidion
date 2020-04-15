@@ -6,8 +6,6 @@
 
 This is a configurable, fun and useful Minecraft themed Discord Bot.It has a wide range of commands available and can be customised on a per server basis. It includes features such as server tracking, wiki lookup, profile viewing and much more. It uses the [Discord.py](https://github.com/Rapptz/discord.py) library and is fully asynchronous.
 
-You have an option to self-host this bot but due to it's current BETA status I recommend against it as it is still undergoing major changes and instead invite you to use my [stable version](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448).
-
 ## Commands
 
 ### Informtaional
