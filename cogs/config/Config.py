@@ -75,7 +75,7 @@ class Configurable(commands.Cog, name="Configurable"):
     @commands.has_permissions(administrator=True)
     async def prefix(self, ctx, new_prefix):
         """Set a custom prefix for the bot commands"""
-        cur_prefix = self.bot._prefix_callable(self.bot, ctx)
+        cur_prefix = ctx.prefix
 
         if cur_prefix == new_prefix:
             await ctx.send(

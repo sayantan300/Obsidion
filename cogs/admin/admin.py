@@ -162,46 +162,6 @@ class admin(commands.Cog, name="admin"):
                 f"{ctx.message.author.mention}, :white_check_mark: The cog {module} has been succesfully reloaded"
             )
 
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild):
-        if config.new_guild_channel:
-            users = sum([1 for m in guild.members if not m.bot])
-            bots = sum([1 for m in guild.members if m.bot])
-            members = f"Humans: `{users}/{len(guild.members)}` \n Bots: `{bots}/{len(guild.members)}`"
-
-            if await self.pool.fetch("SELECT * FROM guild WHERE id = $1", guild.id):
-                embed = discord.Embed(
-                    name=f"{self.bot.user.name} has re-joined a guild"
-                )
-                embed.set_footer(
-                    text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | rejoin"
-                )
-            else:
-                embed = discord.Embed(
-                    name=f"{self.bot.user.name} has joined a new guild"
-                )
-                embed.set_footer(
-                    text=f"Guild: {len(self.bot.guilds):,} | Shard: {guild.shard_id}/{self.bot.shard_count-1} | join"
-                )
-                self.bot.pool.execute(
-                    "INSERT INTO guild (id, prefix, serverTrack, member_join, silent) VALUES ($1, $2, $3, $4, $5)",
-                    guild.id,
-                    "/",
-                    None,
-                    None,
-                    False,
-                )
-            embed.add_field(name="Name", value=f"`{guild.name}`")
-            embed.add_field(name="Members", value=members)
-            embed.add_field(name="Owner", value=guild.owner)
-            embed.add_field(name="Region", value=guild.region, inline=False)
-            if guild.icon_url:
-                embed.set_thumbnail(url=guild.icon_url)
-            else:
-                embed.set_thumbnail(url="https://i.imgur.com/AFABgjD.png")
-            channel = self.bot.get_channel(config.new_guild_channel)
-            await channel.send(embed=embed)
-
     @commands.command(hidden=True)
     async def shardinfo(self, ctx):
         """Get info about the shards"""

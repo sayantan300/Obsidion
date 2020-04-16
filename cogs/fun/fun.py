@@ -59,17 +59,6 @@ class Fun(commands.Cog, name="Fun"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        if await self.bot.pool.fetchval(
-            "SELECT serverTrack from guild WHERE id = $1", member.guild.id
-        ):
-            join = load_from_text("join")
-            channel = await self.bot.pool.fetchval(
-                "SELECT serverTrack from guild WHERE id = $1", member.guild.id
-            )
-            await channel.send(choice(join).replace("member", member.mention))
-
     @commands.command(aliases=["idea", "bidea"])
     async def buildidea(self, ctx):
         """Get an idea for a new idea"""

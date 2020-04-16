@@ -137,7 +137,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         )
         embed.add_field(
             name="Contribute",
-            value="[Contribute on Github](https://github.com/Darkflame72/Obsidion/)\n[Track the bots progress on Trello](https://trello.com/b/qZhxHkTq/obsidion)",
+            value="[Contribute on Github](https://github.com/Darkflame72/Obsidion/)\n[Track on Trello](https://trello.com/b/qZhxHkTq/obsidion)",
         )
 
         embed.add_field(
@@ -233,7 +233,11 @@ class MyHelpCommand(commands.HelpCommand):
 
     async def send_bot_help(self, mapping):
         bot = self.context.bot
-        embed = discord.Embed(title="Bot support", colour=0x00FF00)
+        embed = discord.Embed(
+            title="Bot support",
+            description=f"Below is a list of commands you can use\nTo use commands type `{self.context.prefix}command` or <@{bot.user.id}> `command`\nTo get more information about a command type: `{self.context.prefix}help command`",
+            colour=0x00FF00,
+        )
         embed.set_footer(
             text=f'Use "{self.context.prefix}help command" for more info on a command.'
         )
@@ -249,7 +253,7 @@ class MyHelpCommand(commands.HelpCommand):
         embed.add_field(
             inline=False,
             name="Support",
-            value="**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)**",
+            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={self.context.bot.user.id}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)**",
         )
         await self.context.send(embed=embed)
 
@@ -270,9 +274,6 @@ class MyHelpCommand(commands.HelpCommand):
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
-        # I will do this soon
-        # pass
-
         subcommands = group.commands
         if len(subcommands) == 0:
             return await self.send_command_help(group)
@@ -295,13 +296,20 @@ class MyHelpCommand(commands.HelpCommand):
             value=f"`{self.context.prefix}{self.get_command_signature(group)}`",
             inline=False,
         )
-
-        embed.add_field(
-            name=group.name,
-            value=f"""
-        Name: `{group.name}`
-        Aliases: `{', '.join(group.aliases)}`
-        Category: `{group.cog_name}`""",
-        )
+        if len(group.aliases) > 0:
+            embed.add_field(
+                name=group.name,
+                value=f"""
+            Name: `{group.name}`
+            Aliases: `{', '.join(group.aliases)}`
+            Category: `{group.cog_name}`""",
+            )
+        else:
+            embed.add_field(
+                name=group.name,
+                value=f"""
+            Name: `{group.name}`
+            Category: `{group.cog_name}`""",
+            )
 
         await self.context.send(embed=embed)

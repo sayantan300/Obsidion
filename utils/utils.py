@@ -19,3 +19,9 @@ async def get_uuid(session, username):
             return uuid
         else:
             return False
+
+
+def load_from_text(file):
+    with open(f"cogs/fun/{file}.txt") as f:
+        content = f.readlines()
+    return [x.strip() for x in content]

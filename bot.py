@@ -44,10 +44,18 @@ async def _prefix_callable(bot, msg):
             guild_prefixes = await bot.pool.fetchval(
                 "SELECT prefix FROM guild WHERE id = $1", msg.guild.id
             )
-            prefix.append(guild_prefixes.decode("utf-8"))
+            prefix.append(guild_prefixes)
         else:
             # add the prefix to the database
-            return prefix.append("/")
+            await bot.pool.execute(
+                "INSERT INTO guild (id, prefix, serverTrack, server_join, silent) VALUES ($1, $2, $3, $4, $5)",
+                msg.guild.id,
+                "/",
+                None,
+                None,
+                False,
+            )
+            prefix.append("/")
     return prefix
 
 
