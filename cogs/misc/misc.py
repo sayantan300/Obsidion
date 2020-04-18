@@ -153,7 +153,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         third_party += "Discord.py - [Github](https://github.com/Rapptz/discord.py)"
         embed.add_field(name="Third Party Stuff", value=third_party, inline=False)
 
-        embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
+        embed.set_footer(text="Version: 0.1 | Author: Darkflame72#1150")
         await ctx.send(embed=embed)
 
     @commands.command()
