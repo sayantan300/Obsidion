@@ -270,10 +270,30 @@ class MyHelpCommand(commands.HelpCommand):
 
     async def send_command_help(self, command):
         embed = discord.Embed(colour=0x00FF00)
+
         self.common_command_formatting(embed, command)
+        if len(command.aliases) > 0:
+            embed.add_field(
+                name=command.name,
+                value=f"""
+            Name: `{command.name}`
+            Aliases: `{', '.join(command.aliases)}`
+            Category: `{command.cog_name}`""",
+            )
+        else:
+            embed.add_field(
+                name=command.name,
+                value=f"""
+            Name: `{command.name}`
+            Category: `{command.cog_name}`""",
+            )
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
+        embed = discord.Embed(colour=0x00FF00)
+
+        self.common_command_formatting(embed, group)
+
         subcommands = group.commands
         if len(subcommands) == 0:
             return await self.send_command_help(group)
@@ -283,12 +303,6 @@ class MyHelpCommand(commands.HelpCommand):
         sub = ""
         for entry in entries:
             sub += f"`{self.context.prefix}{group.name} {entry.name}` {entry.help}.\n"
-
-        embed = discord.Embed(
-            name=f"Command INformation for: {group.name}",
-            description=group.help,
-            colour=0x00FF00,
-        )
         embed.add_field(name="Sub Commands:", value=sub)
 
         embed.add_field(

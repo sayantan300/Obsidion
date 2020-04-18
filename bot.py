@@ -9,7 +9,7 @@ import logging
 import traceback
 import aiohttp
 import sys
-from collections import Counter, deque
+from collections import Counter, deque, defaultdict
 import time
 import pip
 import os
@@ -75,6 +75,11 @@ class Obsidion(commands.AutoShardedBot):
         self._prev_events = deque(maxlen=10)
         self.start_time = time.time()
 
+        # shard_id: List[datetime.datetime]
+        # shows the last attempted IDENTIFYs and RESUMEs
+        self.resumes = defaultdict(list)
+        self.identifies = defaultdict(list)
+
         # aiohttp session for use throughout the bot
         self.session = aiohttp.ClientSession(loop=self.loop)
 
@@ -87,6 +92,26 @@ class Obsidion(commands.AutoShardedBot):
                 traceback.print_exc()
 
         init_global_checks(self)
+
+    def _clear_gateway_data(self):
+        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        for shard_id, dates in self.identifies.items():
+            to_remove = [index for index, dt in enumerate(dates) if dt < one_week_ago]
+            for index in reversed(to_remove):
+                del dates[index]
+
+        for shard_id, dates in self.resumes.items():
+            to_remove = [index for index, dt in enumerate(dates) if dt < one_week_ago]
+            for index in reversed(to_remove):
+                del dates[index]
+
+    async def on_socket_response(self, msg):
+        self._prev_events.append(msg)
+
+    async def before_identify_hook(self, shard_id, *, initial):
+        self._clear_gateway_data()
+        self.identifies[shard_id].append(datetime.datetime.utcnow())
+        await super().before_identify_hook(shard_id, initial=initial)
 
     async def on_command_error(self, ctx, error):
         """
@@ -146,7 +171,7 @@ class Obsidion(commands.AutoShardedBot):
 
         elif isinstance(error, commands.UserInputError):
             await ctx.send("Invalid input.")
-            await self.send_command_help(ctx)
+            # await self.send_command_help(ctx)
             return
 
         elif isinstance(error, commands.NoPrivateMessage):
@@ -231,8 +256,9 @@ class Obsidion(commands.AutoShardedBot):
         await super().close()
         await self.session.close()
 
-    async def on_resumed(self):
-        print("resumed...")
+    async def on_shard_resumed(self, shard_id):
+        print(f"Shard ID {shard_id} has resumed...")
+        self.resumes[shard_id].append(datetime.datetime.utcnow())
 
     def run(self):
         try:

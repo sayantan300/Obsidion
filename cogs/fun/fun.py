@@ -2,6 +2,7 @@ from discord.ext import commands
 from random import choice
 import discord
 import logging
+from utils.utils import load_from_text
 
 log = logging.getLogger(__name__)
 
@@ -49,12 +50,6 @@ minecraft = [
 alphabet = "abcdefghijklmnopqrstuvwxyz123456789"
 
 
-def load_from_text(file):
-    with open(f"cogs/fun/{file}.txt") as f:
-        content = f.readlines()
-    return [x.strip() for x in content]
-
-
 class Fun(commands.Cog, name="Fun"):
     def __init__(self, bot):
         self.bot = bot
@@ -64,21 +59,24 @@ class Fun(commands.Cog, name="Fun"):
         """Get an idea for a new idea"""
         await ctx.send(
             f"{ctx.message.author.mention}, here is something cool to build: {choice(load_from_text('build_ideas'))}."
-        )  # I am aware of the danger of doing this but I don't have a better ideas
+        )
 
     @commands.command(aliases=["funfact"])
-    async def fact(self, ctx, id=None):
+    async def fact(self, ctx, id: int = None):
         """Get a fact about minecraft"""
         facts = load_from_text("facts")
         if id:
-            if int(id) < len(facts):
-                fact_choice = facts[int(id)]
+            if id < len(facts):
+                fact_choice = facts[id]
             else:
+                await ctx.send(
+                    f"We only have {len(facts)-1} facts so please choose from this number."
+                )
                 fact_choice = choice(facts)
-                id = str(facts.index(fact_choice))
+                id = facts.index(fact_choice)
         else:
             fact_choice = choice(facts)
-            id = str(facts.index(fact_choice))
+            id = facts.index(fact_choice)
 
         embed = discord.Embed(
             title=f"Minecraft Fact #{id}", description=fact_choice, color=0x00FF00
@@ -86,7 +84,7 @@ class Fun(commands.Cog, name="Fun"):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["villagerspeak", "villagerspeech", "hmm"])
-    async def villager(self, ctx, *, speech):
+    async def villager(self, ctx, *, speech: str):
         """Convert english to Villager speech hmm."""
         split = speech.split(" ")
         sentence = ""
@@ -108,7 +106,7 @@ class Fun(commands.Cog, name="Fun"):
 
     @commands.command()
     async def unenchant(self, ctx, *, msg):
-        """Enchant a message"""
+        """Unenchant a message"""
         response = ""
         for letter in msg:
             if letter in minecraft:
@@ -119,10 +117,7 @@ class Fun(commands.Cog, name="Fun"):
 
     @commands.command()
     async def creeper(self, ctx):
-        """Roll a random number.
-        The result will be between 1 and `<number>`.
-        `<number>` defaults to 100.
-        """
+        """Aw man"""
         await ctx.send("Aw man")
 
     @commands.command(aliases=["slay"])
@@ -131,13 +126,16 @@ class Fun(commands.Cog, name="Fun"):
         kill_mes = load_from_text("kill")
         if not member:
             member = ctx.message.author.mention
-        elif str(member) == f"<@{self.bot.owner_id}>":
+        elif (
+            str(member) == f"<@{self.bot.owner_id}>"
+            or str(member) == f"<@!{self.bot.owner_id}>"
+        ):  # owner protection
             member = ctx.message.author.mention
 
         await ctx.send(choice(kill_mes).replace("member", member))
 
     @commands.command(aliases=["battle"])
-    async def pvp(self, ctx, member1, member2=None):
+    async def pvp(self, ctx, member1=None, member2=None):
         """Duel someone"""
         pvp_mes = load_from_text("pvp")
         if member1:
@@ -149,7 +147,6 @@ class Fun(commands.Cog, name="Fun"):
             )
         else:
             await ctx.send("Please provide 2 people to fight")
-        pass
 
     @commands.command()
     async def rps(self, ctx, user_choice=None):

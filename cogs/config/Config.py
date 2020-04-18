@@ -25,11 +25,20 @@ class Configurable(commands.Cog, name="Configurable"):
         if username:
             uuid = await get_uuid(self.session, username)
             if uuid:
-                await self.bot.pool.execute(
-                    "UPDATE discord_user SET uuid = $1 WHERE id = $2",
-                    uuid,
-                    ctx.author.id,
-                )
+                if await self.bot.pool.fetchval(
+                    "SELECT * FROM  discord_user WHERE id = $1", ctx.author.id
+                ):
+                    await self.bot.pool.execute(
+                        "UPDATE discord_user SET uuid = $1 WHERE id = $2",
+                        uuid,
+                        ctx.author.id,
+                    )
+                else:
+                    await self.bot.pool.execute(
+                        "INSERT INTO discord_user(id, uuid) VALUES ($1, $2)",
+                        ctx.author.id,
+                        uuid,
+                    )
                 await ctx.send(f"Your account has been linked to {username}")
             else:
                 await ctx.send("Please provide a valid username")
