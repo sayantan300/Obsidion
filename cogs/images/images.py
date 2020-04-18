@@ -63,7 +63,9 @@ class images(commands.Cog, name="Images"):
         await ctx.channel.trigger_typing()
         if username:
             uuid = await get_uuid(self.session, username)
-        elif str(ctx.author.id) in self.bot.pool["user"]:
+        if await self.bot.pool.fetchval(
+            "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
+        ):
             if await self.bot.pool.fetchval(
                 "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
             ):
