@@ -16,8 +16,9 @@ class bot_advertise(commands.Cog):
             self.bg_task = bot.loop.create_task(self.loop_server_count())
         if config.dblToken:
             self.dbltoken = config.dblToken
-            self.dblpy = dbl.DBLClient(self.bot, self.token, autopost=True)
+            self.dblpy = dbl.DBLClient(self.bot, self.dbltoken, autopost=True)
 
+    # bots3discord
     async def loop_server_count(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
@@ -28,6 +29,9 @@ class bot_advertise(commands.Cog):
                 await session.post(url, json=json)
             await asyncio.sleep(600)
 
+    #
+    # top.gg
+    #
     @commands.Cog.listener()
     async def on_dbl_vote(self, data):
         embed = discord.Embed(
@@ -36,3 +40,7 @@ class bot_advertise(commands.Cog):
         )
         channel = self.bot.get_channel(self.vote_channel)
         await channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_post(self):
+        print("Server count posted successfully")

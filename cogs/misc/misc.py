@@ -87,6 +87,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         links += "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
         links += "[VOTE](https://top.gg/bot/691589447074054224)\n"
         links += "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)"
+        links += "[WEBSITE](http://obsidion.bowie-co.nz)"
 
         embed = discord.Embed(title="Stats", color=0x00FF00)
         embed.add_field(name=":newspaper: STATS", value=statics, inline=True)
@@ -128,12 +129,11 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         embed = discord.Embed(title=f"{self.bot.user.name} Bot Credits", color=0x00FF00)
         embed.add_field(
             name="Developers",
-            value="[Darkflame72#1150](https://github.com/Darkflame72/)",
+            value="[Darkflame72#1150](https://github.com/Darkflame72/), [Arrow_Plays#8625](https://github.com/AjayACST/)",
         )
-        # embed.add_field(name="Staff", value="")
         embed.add_field(
-            name="Beta Testers",
-            value="[Abhishek Rameshand#8069](https://www.youtube.com/channel/UC0L0CPqIoZzKeV7ndIXjZZw), [Arrow_Plays#8625](https://github.com/AjayACST/)",
+            name="Staff",
+            value="[Abhishek Rameshand#8069](https://www.youtube.com/channel/UC0L0CPqIoZzKeV7ndIXjZZw)",
         )
         embed.add_field(
             name="Contribute",
@@ -253,7 +253,7 @@ class MyHelpCommand(commands.HelpCommand):
         embed.add_field(
             inline=False,
             name="Support",
-            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={self.context.bot.user.id}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)**",
+            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={self.context.bot.user.id}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)**",
         )
         await self.context.send(embed=embed)
 

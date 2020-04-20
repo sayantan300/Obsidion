@@ -299,7 +299,7 @@ class Configurable(commands.Cog, name="Configurable"):
             )
 
         else:
-            if await self.bot.pool.fetchvar(
+            if await self.bot.pool.fetchval(
                 "SELECT server_join FROM guild WHERE id = $1", ctx.guild.id
             ):
                 await self.bot.pool.execute(
