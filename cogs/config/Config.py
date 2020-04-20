@@ -103,9 +103,9 @@ class Configurable(commands.Cog, name="Configurable"):
     @commands.has_guild_permissions(administrator=True)
     async def servertrack(self, ctx):
         """Server tracking is info"""
-        if not self.bot.pool["guild"][str(ctx.guild.id)][
-            "serverTracking"
-        ]:  # check wether servertracking is already setup
+        if not await self.bot.pool.fetchval(
+            "SELECT servertrack FROM guild WHERE id = $1", ctx.guild.id
+        ):
 
             def check(m):
                 return m.author == ctx.author
@@ -133,18 +133,19 @@ class Configurable(commands.Cog, name="Configurable"):
                 channel = discord.utils.get(
                     ctx.guild.voice_channels, name=voice.content
                 )
-                print(channel.id)
                 if channel is not None:
                     voiceChannel = channel.id
-            self.bot.pool["guild"][str(ctx.guild.id)]["serverTracking"] = [
+            await self.bot.pool.execute(
+                "UPDATE guild SET servertrack = $1 WHERE id = $2",
+                voiceChannel,
+                ctx.message.guild.id,
+            )
+            await self.bot.pool.execute(
+                "INSERT INTO servertracking(server, channel, guild) VALUES($1, $2, $3)",
                 server,
                 voiceChannel,
-            ]
-            if server in self.bot.pool["serverTracking"]:
-                self.bot.pool["serverTracking"][server].append(voiceChannel)
-            else:
-                self.bot.pool["serverTracking"][server] = [voiceChannel]
-            print(self.bot.pool)
+                ctx.message.guild.id,
+            )
 
             await ctx.send(
                 "Server Tracking is all setup and ready for you to enjoy. It will update it less than 5 minutes."
@@ -159,18 +160,14 @@ class Configurable(commands.Cog, name="Configurable"):
             )
             delete = await self.bot.wait_for("message", check=yes, timeout=10)
             if delete.content == "yes":
-                server, voiceChannel = self.bot.pool["guild"][str(ctx.guild.id)][
-                    "serverTracking"
-                ]
-                self.bot.pool["guild"][str(ctx.guild.id)]["serverTracking"] = None
-                if len(self.bot.pool["serverTracking"][server]) == 1:
-                    diction = self.bot.pool["serverTracking"]
-                    diction.pop(server)
-                    self.bot.pool["serverTracking"] = diction
-                else:
-                    self.bot.pool["serverTracking"][server].remove(voiceChannel)
-
-                self.bot.pool = self.bot.pool
+                await self.bot.pool.execute(
+                    "DELETE FROM servertracking WHERE guild = $1", ctx.message.guild.id
+                )
+                await self.bot.pool.execute(
+                    "UPDATE guild SET servertrack = $1 WHERE id = $2",
+                    None,
+                    ctx.message.guild.id,
+                )
                 await ctx.send(
                     "Server Tracking has been removed from this server, run the command again to set it up."
                 )

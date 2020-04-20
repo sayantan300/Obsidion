@@ -418,9 +418,12 @@ class Information(commands.Cog, name="Information"):
             )
             if data:
                 embed = discord.Embed(
-                    title=f"[{data['fields']['project']['name']} - {data['fields']['summary']}](https://bugs.mojang.com/rest/api/latest/issue/{bug})",
-                    description=data["fields"]["description"],
-                    color=0x00FF00,
+                    description=data["fields"]["description"], color=0x00FF00,
+                )
+
+                embed.set_author(
+                    name=f"{data['fields']['project']['name']} - {data['fields']['summary']}",
+                    url=f"https://bugs.mojang.com/browse/{bug}",
                 )
 
                 info = ""
@@ -434,13 +437,16 @@ class Information(commands.Cog, name="Information"):
                 details = ""
                 details += f"Type: {data['fields']['issuetype']['name']}\n"
                 details += f"Status: {data['fields']['status']['name']}\n"
-                details += f"Resolution: {data['fields']['resolution']['name']}\n"
-                details += f"Affected: { ', '.join([s['name'] for s in data['fields']['versions']])}\n"
-                if len(data["fields"]["fixVersions"]) >= 1:
-                    details += f"Fixed Version: {data['fields']['fixVersions'][0]} + {len(data['fields']['fixVersions'])}\n"
+                if data["fields"]["resolution"]["name"]:
+                    details += f"Resolution: {data['fields']['resolution']['name']}\n"
+                if "version" in data["fields"]:
+                    details += f"Affected: { ', '.join([s['name'] for s in data['fields']['versions']])}\n"
+                if "fixVersions" in data["fields"]:
+                    if len(data["fields"]["fixVersions"]) >= 1:
+                        details += f"Fixed Version: {data['fields']['fixVersions'][0]} + {len(data['fields']['fixVersions'])}\n"
 
                 embed.add_field(name="Information", value=info)
-                embed.add_field(name="details", value=details)
+                embed.add_field(name="Details", value=details)
 
                 await ctx.send(embed=embed)
             else:
