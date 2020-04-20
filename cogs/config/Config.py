@@ -155,7 +155,7 @@ class Configurable(commands.Cog, name="Configurable"):
                 data = mc_server.status()
             except:
                 data = False
-            channel = self.bot.get_channel(channel)
+            channel = self.bot.get_channel(voiceChannel)
             # check
             if data:
                 name = f"{server.split('.')[-2].title()}: {data.players.online:,} / {data.players.max:,}"
