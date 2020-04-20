@@ -4,6 +4,7 @@ import discord
 from utils.utils import get_uuid, get
 import config
 import logging
+from mcstatus import MinecraftServer
 
 log = logging.getLogger(__name__)
 
@@ -147,9 +148,20 @@ class Configurable(commands.Cog, name="Configurable"):
                 ctx.message.guild.id,
             )
 
-            await ctx.send(
-                "Server Tracking is all setup and ready for you to enjoy. It will update it less than 5 minutes."
-            )
+            await ctx.send("Server Tracking is all setup and ready for you to enjoy.")
+            # loop through every minecraft server
+            try:
+                mc_server = MinecraftServer.lookup(server)
+                data = mc_server.status()
+            except:
+                data = False
+            channel = self.bot.get_channel(channel)
+            # check
+            if data:
+                name = f"{server.split('.')[-2].title()}: {data.players.online:,} / {data.players.max:,}"
+                await channel.edit(name=name)
+            else:
+                await channel.edit(name="SERVER IS OFFLINE")
         else:
 
             def yes(m):
