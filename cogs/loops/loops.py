@@ -20,7 +20,6 @@ class loops(commands.Cog):
         for guild, channel, server in await self.bot.pool.fetch(
             "SELECT * FROM servertracking"
         ):
-            print(server, channel, guild)
             # loop through every minecraft server
             try:
                 mc_server = MinecraftServer.lookup(server)
