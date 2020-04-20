@@ -40,7 +40,6 @@ class loops(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        print(1)
         if await self.bot.pool.fetchval(
             "SELECT server_join from guild WHERE id = $1", member.guild.id
         ):
