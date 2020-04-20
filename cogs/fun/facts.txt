@@ -148,3 +148,4 @@ Creepers are based off a fail pig model made by Notch​
 ​Weather happens around every 7 minecraft days, which is 2 hours real time​
 When looking at the debug screen (F3), the nether is called Hell, and the End is called Sky​
 There is a 1% chance a zombie will drop a carrot on easy mode​
+Spiders were the first arthropod mobs to be added to the game

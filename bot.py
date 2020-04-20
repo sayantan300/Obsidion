@@ -124,7 +124,7 @@ class Obsidion(commands.AutoShardedBot):
         if hasattr(ctx.command, "on_error"):
             return
 
-        ignored = (commands.CommandNotFound, commands.UserInputError)
+        ignored = commands.CommandNotFound
 
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -171,7 +171,8 @@ class Obsidion(commands.AutoShardedBot):
 
         elif isinstance(error, commands.UserInputError):
             await ctx.send("Invalid input.")
-            # await self.send_command_help(ctx)
+            ctx.bot.help_command.context = ctx
+            await ctx.bot.help_command.send_command_help(ctx.command)
             return
 
         elif isinstance(error, commands.NoPrivateMessage):
