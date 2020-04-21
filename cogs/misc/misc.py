@@ -86,7 +86,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         links += "[GITHUB](https://github.com/Darkflame72/Obsidion)\n"
         links += "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
         links += "[VOTE](https://top.gg/bot/691589447074054224)\n"
-        links += "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)"
+        links += "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)\n"
         links += "[WEBSITE](http://obsidion.bowie-co.nz)"
 
         embed = discord.Embed(title="Stats", color=0x00FF00)
