@@ -97,7 +97,6 @@ class admin(commands.Cog, name="admin"):
             process = await asyncio.create_subprocess_shell(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
-            result = await process.communicate()
         except NotImplementedError:
             process = subprocess.Popen(
                 command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -179,8 +178,6 @@ class admin(commands.Cog, name="admin"):
         embed = discord.Embed(
             title="Shard info", color=0x00FF00, description=description
         )
-
-        info = {}
         for i in range(self.bot.shard_count):
             value = ""
             value += "Status: :online:\n"
@@ -362,7 +359,7 @@ class admin(commands.Cog, name="admin"):
         new_ctx = await self.bot.get_context(msg, cls=type(ctx))
         new_ctx._db = ctx._db
 
-        for i in range(times):
+        for _ in range(times):
             await new_ctx.reinvoke()
 
     @commands.command(hidden=True)

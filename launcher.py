@@ -59,7 +59,7 @@ def run_bot():
 
     try:
         pool = loop.run_until_complete(create_pool(config.postgresql))
-    except Exception as e:
+    except Exception:
         print("Could not load Postgres database", file=sys.stderr)
         log.exception("Could not load database Exiting.")
         return
@@ -71,7 +71,7 @@ def run_bot():
 
 def main():
     """Launches the bot."""
-    loop = asyncio.get_event_loop()
+    asyncio.get_event_loop()
     with setup_logging():
         run_bot()
 
