@@ -100,7 +100,7 @@ class Obsidion(commands.AutoShardedBot):
             for index in reversed(to_remove):
                 del dates[index]
 
-        for shard_id, dates in self.resumes.items():
+        for _, dates in self.resumes.items():
             to_remove = [index for index, dt in enumerate(dates) if dt < one_week_ago]
             for index in reversed(to_remove):
                 del dates[index]
