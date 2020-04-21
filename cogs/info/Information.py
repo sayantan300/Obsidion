@@ -384,7 +384,7 @@ class Information(commands.Cog, name="Information"):
     async def uhc_banned(self, ctx, user):
         await ctx.channel.trigger_typing()
         try:
-            val = UUID(user, version=4)
+            UUID(user, version=4)
             uuid = user
         except ValueError:
             # If it's a value error, then the string

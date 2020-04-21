@@ -87,7 +87,7 @@ class Obsidion(commands.AutoShardedBot):
         for cog in config.cogs:
             try:
                 self.load_extension(f"cogs.{cog}")
-            except Exception as e:
+            except Exception:
                 print(f"Failed to load extension {cog}.", file=sys.stderr)
                 traceback.print_exc()
 
@@ -95,7 +95,7 @@ class Obsidion(commands.AutoShardedBot):
 
     def _clear_gateway_data(self):
         one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-        for shard_id, dates in self.identifies.items():
+        for _, dates in self.identifies.items():
             to_remove = [index for index, dt in enumerate(dates) if dt < one_week_ago]
             for index in reversed(to_remove):
                 del dates[index]

@@ -88,7 +88,7 @@ class Fun(commands.Cog, name="Fun"):
         """Convert english to Villager speech hmm."""
         split = speech.split(" ")
         sentence = ""
-        for s in split:
+        for _ in split:
             sentence += " hmm"
         response = sentence.strip()
         await ctx.send(f"{ctx.message.author.mention}, `{response}`")
