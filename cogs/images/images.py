@@ -39,11 +39,11 @@ class images(commands.Cog, name="Images"):
             ctx.typing()
         elif title and word1 and block_id:
             embed = discord.Embed(color=0x00FF00)
-            if word2 == None:
+            if word2 is None:
                 embed.set_image(
                     url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}"
                 )
-            elif word3 == None:
+            elif word3 is None:
                 embed.set_image(
                     url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}+{word2}"
                 )
