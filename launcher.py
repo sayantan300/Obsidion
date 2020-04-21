@@ -1,13 +1,10 @@
 import sys
 import logging
 import asyncio
-import discord
-import importlib
 import contextlib
 import asyncpg
 
 import config
-import traceback
 
 from bot import Obsidion
 

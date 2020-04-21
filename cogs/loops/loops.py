@@ -1,5 +1,4 @@
 from discord.ext import tasks, commands
-import asyncio
 from mcstatus import MinecraftServer
 import discord
 from random import choice

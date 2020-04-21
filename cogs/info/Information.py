@@ -1,7 +1,5 @@
 from discord.ext import commands
-from random import choice
 import discord
-import aiohttp
 from datetime import datetime
 from utils.utils import get, get_uuid
 from uuid import UUID

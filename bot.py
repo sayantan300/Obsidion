@@ -9,13 +9,8 @@ import logging
 import traceback
 import aiohttp
 import sys
-from collections import Counter, deque, defaultdict
+from collections import deque, defaultdict
 import time
-import pip
-import os
-import platform
-import getpass
-import contextlib
 
 # import environment variables
 import config
