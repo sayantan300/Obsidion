@@ -53,8 +53,8 @@ class loops(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         if config.new_guild_channel:
-            users = sum([1 for m in guild.members if not m.bot])
-            bots = sum([1 for m in guild.members if m.bot])
+            users = sum(1 for m in guild.members if not m.bot)
+            bots = sum(1 for m in guild.members if m.bot)
             members = f"Humans: `{users}/{len(guild.members)}` \n Bots: `{bots}/{len(guild.members)}`"
 
             if await self.pool.fetch("SELECT * FROM guild WHERE id = $1", guild.id):

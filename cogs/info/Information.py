@@ -440,7 +440,7 @@ class Information(commands.Cog, name="Information"):
                 if data["fields"]["resolution"]["name"]:
                     details += f"Resolution: {data['fields']['resolution']['name']}\n"
                 if "version" in data["fields"]:
-                    details += f"Affected: { ', '.join([s['name'] for s in data['fields']['versions']])}\n"
+                    details += f"Affected: { ', '.join(s['name'] for s in data['fields']['versions'])}\n"
                 if "fixVersions" in data["fields"]:
                     if len(data["fields"]["fixVersions"]) >= 1:
                         details += f"Fixed Version: {data['fields']['fixVersions'][0]} + {len(data['fields']['fixVersions'])}\n"
