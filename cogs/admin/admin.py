@@ -26,7 +26,8 @@ class PerformanceMocker:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
 
-    def permissions_for(self, obj):
+    @staticmethod
+    def permissions_for(obj):
         # Lie and say we don't have permissions to embed
         # This makes it so pagination sessions just abruptly end on __init__
         # Most checks based on permission have a bypass for the owner anyway
@@ -103,7 +104,8 @@ class admin(commands.Cog, name="admin"):
             )
             result = await self.bot.loop.run_in_executor(None, process.communicate)
 
-    def cleanup_code(self, content):
+    @staticmethod
+    def cleanup_code(content):
         """Automatically removes code blocks from the code."""
         # remove ```py\n```
         if content.startswith("```") and content.endswith("```"):
@@ -115,7 +117,8 @@ class admin(commands.Cog, name="admin"):
     async def cog_check(self, ctx):
         return await self.bot.is_owner(ctx.author)
 
-    def get_syntax_error(self, e):
+    @staticmethod
+    def get_syntax_error(e):
         if e.text is None:
             return f"```py\n{e.__class__.__name__}: {e}\n```"
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
