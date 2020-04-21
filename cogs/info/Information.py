@@ -297,7 +297,7 @@ class Information(commands.Cog, name="Information"):
         }
         payload = {"metricKeys": [k for (k, v) in sales_mapping.items() if v]}
 
-        url = f"https://api.mojang.com/orders/statistics"
+        url = "https://api.mojang.com/orders/statistics"
         async with self.session.post(url, json=payload) as resp:
             if resp.status == 200:
                 sales_data = await resp.json()
