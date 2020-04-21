@@ -2,10 +2,8 @@ from discord.ext import commands
 import discord
 import asyncio
 import resource
-import config
 import os, sys
 import traceback
-from utils.utils import get
 import logging
 import subprocess
 import io
@@ -14,8 +12,7 @@ from contextlib import redirect_stdout
 import textwrap
 import copy
 import time
-from typing import Union, Optional
-import unicodedata
+from typing import Optional
 
 log = logging.getLogger(__name__)
 

@@ -1,10 +1,4 @@
-import discord
 from discord.ext import commands
-import aiohttp
-import datetime
-import asyncio
-from utils.utils import get_uuid, get
-from mcstatus import MinecraftServer
 import logging
 
 log = logging.getLogger(__name__)

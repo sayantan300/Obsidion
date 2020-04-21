@@ -1,4 +1,3 @@
-import aiohttp
 
 
 async def get(session, url):

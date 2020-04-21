@@ -1,14 +1,10 @@
 from discord.ext import commands
-from random import choice
 import discord
 import resource
-import aiohttp
 import datetime
 import time
 import logging
 import config
-import itertools
-import asyncio
 
 log = logging.getLogger(__name__)
 

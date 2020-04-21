@@ -1,8 +1,6 @@
 from discord.ext import commands
-from random import choice
 import discord
-from utils.utils import get_uuid, get
-import config
+from utils.utils import get_uuid
 import logging
 from mcstatus import MinecraftServer
 
