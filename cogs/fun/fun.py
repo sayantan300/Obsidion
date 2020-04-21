@@ -169,9 +169,9 @@ class Fun(commands.Cog, name="Fun"):
                     )
             else:
                 await ctx.send(
-                    f"That is an invalid option can you please choose from rock, paper or shears"
+                    "That is an invalid option can you please choose from rock, paper or shears"
                 )
         else:
             await ctx.send(
-                f"That is an invalid option can you please choose from rock, paper or shears"
+                "That is an invalid option can you please choose from rock, paper or shears"
             )

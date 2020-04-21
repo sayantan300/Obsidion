@@ -114,7 +114,7 @@ class Configurable(commands.Cog, name="Configurable"):
             # get minecraft server
             embed = discord.Embed(
                 title="Server Tracking Setup",
-                description=f"please provide the minecraft server you would like to track",
+                description="please provide the minecraft server you would like to track",
                 color=0x00FF00,
             )
             await ctx.send(embed=embed)
@@ -126,7 +126,7 @@ class Configurable(commands.Cog, name="Configurable"):
             while not voiceChannel:
                 embed = discord.Embed(
                     title="Server Tracking Setup",
-                    description=f"Please provide the name of the voice channel you would like to use\n I will need to have the permissions to edit the name and everyone else should not be able to join it.",
+                    description="Please provide the name of the voice channel you would like to use\n I will need to have the permissions to edit the name and everyone else should not be able to join it.",
                     color=0x00FF00,
                 )
                 await ctx.send(embed=embed)

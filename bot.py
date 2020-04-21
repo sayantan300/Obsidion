@@ -148,7 +148,7 @@ class Obsidion(commands.AutoShardedBot):
             return
 
         elif isinstance(error, commands.DisabledCommand):
-            await ctx.send(f"This command has been disabled.")
+            await ctx.send("This command has been disabled.")
             return
 
         elif isinstance(error, commands.CommandOnCooldown):
@@ -240,7 +240,7 @@ class Obsidion(commands.AutoShardedBot):
             info = (
                 f"Debug Info for {self.user.name}\n\n"
                 + f"{self.user.name} version: {__version__}\n"
-                + f"Successfully logged in and booted...!\n"
+                + "Successfully logged in and booted...!\n"
                 + f"Ready: {self.user} (ID: {self.user.id})\n"
                 + f"Logged in at: {self.uptime}"
             )
