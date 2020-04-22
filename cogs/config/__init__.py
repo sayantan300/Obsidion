@@ -1,4 +1,4 @@
-from cogs.config.config import Configurable
+from cogs.config.Config import Configurable
 
 
 def setup(bot):
