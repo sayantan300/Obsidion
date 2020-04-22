@@ -5,8 +5,7 @@ async def get(session, url):
         if resp.status == 200:
             data = await resp.json()
             return data
-        else:
-            return False
+        return False
 
 
 async def get_uuid(session, username):
@@ -16,8 +15,7 @@ async def get_uuid(session, username):
             data = await resp.json()
             uuid = data["id"]
             return uuid
-        else:
-            return False
+        return False
 
 
 def load_from_text(file):
