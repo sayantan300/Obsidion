@@ -53,6 +53,9 @@ alphabet = "abcdefghijklmnopqrstuvwxyz123456789"
 class Fun(commands.Cog, name="Fun"):
     def __init__(self, bot):
         self.bot = bot
+        self.facts = load_from_text("facts")
+        self.kill_mes = load_from_text("kill")
+        self.pvp_mes = load_from_text("pvp")
 
     @commands.command(aliases=["idea", "bidea"])
     async def buildidea(self, ctx):
@@ -64,18 +67,17 @@ class Fun(commands.Cog, name="Fun"):
     @commands.command(aliases=["funfact"])
     async def fact(self, ctx, id: int = None):
         """Get a fact about minecraft"""
-        facts = load_from_text("facts")
         if id:
-            if id < len(facts):
-                fact_choice = facts[id]
+            if id < len(self.facts):
+                fact_choice = self.facts[id]
             else:
                 await ctx.send(
-                    f"We only have {len(facts)-1} facts so please choose from this number."
+                    f"We only have {len(self.facts)-1} facts so please choose from this number."
                 )
-                fact_choice = choice(facts)
+                fact_choice = choice(self.facts)
                 id = facts.index(fact_choice)
         else:
-            fact_choice = choice(facts)
+            fact_choice = choice(self.facts)
             id = facts.index(fact_choice)
 
         embed = discord.Embed(
@@ -123,7 +125,6 @@ class Fun(commands.Cog, name="Fun"):
     @commands.command(aliases=["slay"])
     async def kill(self, ctx, member=None):
         """Kill that pesky friend in a fun and stylish way"""
-        kill_mes = load_from_text("kill")
         if not member:
             member = ctx.message.author.mention
         elif (
@@ -132,18 +133,19 @@ class Fun(commands.Cog, name="Fun"):
         ):  # owner protection
             member = ctx.message.author.mention
 
-        await ctx.send(choice(kill_mes).replace("member", member))
+        await ctx.send(choice(self.kill_mes).replace("member", member))
 
     @commands.command(aliases=["battle"])
     async def pvp(self, ctx, member1=None, member2=None):
         """Duel someone"""
-        pvp_mes = load_from_text("pvp")
         if member1:
             if not member2:
                 member2 = ctx.message.author.mention
 
             await ctx.send(
-                choice(pvp_mes).replace("member1", member1).replace("member2", member2)
+                choice(self.pvp_mes)
+                .replace("member1", member1)
+                .replace("member2", member2)
             )
         else:
             await ctx.send("Please provide 2 people to fight")
