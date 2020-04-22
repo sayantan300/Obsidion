@@ -75,10 +75,10 @@ class Fun(commands.Cog, name="Fun"):
                     f"We only have {len(self.facts)-1} facts so please choose from this number."
                 )
                 fact_choice = choice(self.facts)
-                id = facts.index(fact_choice)
+                id = self.facts.index(fact_choice)
         else:
             fact_choice = choice(self.facts)
-            id = facts.index(fact_choice)
+            id = self.facts.index(fact_choice)
 
         embed = discord.Embed(
             title=f"Minecraft Fact #{id}", description=fact_choice, color=0x00FF00
