@@ -129,7 +129,7 @@ class Obsidion(commands.AutoShardedBot):
         if isinstance(error, ignored):
             return
 
-        elif isinstance(error, commands.BotMissingPermissions):
+        if isinstance(error, commands.BotMissingPermissions):
             missing = [
                 perm.replace("_", " ").replace("guild", "server").title()
                 for perm in error.missing_perms
