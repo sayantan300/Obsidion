@@ -140,14 +140,12 @@ class Obsidion(commands.AutoShardedBot):
                 fmt = " and ".join(missing)
             _message = f"I need the **{fmt}** permission(s) to run this command."
             await ctx.send(_message)
-            return
 
         elif isinstance(error, commands.DisabledCommand):
             await ctx.send("This command has been disabled.")
-            return
 
         elif isinstance(error, commands.CommandOnCooldown):
-            return await ctx.send(
+            await ctx.send(
                 f"This command is on cooldown, please retry in {error.retry_after:.2f}s"
             )
 
@@ -162,42 +160,36 @@ class Obsidion(commands.AutoShardedBot):
                 fmt = " and ".join(missing)
             _message = f"You need the **{fmt}** permission(s) to use this command."
             await ctx.send(_message)
-            return
 
         elif isinstance(error, commands.UserInputError):
             await ctx.send("Invalid input.")
             ctx.bot.help_command.context = ctx
             await ctx.bot.help_command.send_command_help(ctx.command)
-            return
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 await ctx.author.send("This command cannot be used in direct messages.")
             except discord.Forbidden:
                 pass
-            return
 
         elif isinstance(error, commands.CheckFailure):
             await ctx.send("You do not have permission to use this command.")
-            return
 
         # for when that person tries to mess with your bot
         elif isinstance(error, commands.NotOwner):
             print(f"{ctx.message.author} attempted to run an {ctx.command}")
-            return
 
         elif isinstance(error, asyncio.TimeoutError):
             await ctx.send(
                 "You did not reply to the message, the command has been cancelled."
             )
-            return
+        else:
+            # ignore all other exception types, but print them to stderr
+            print(f"Ignoring exception in command {ctx.command}:", file=sys.stderr)
 
-        # ignore all other exception types, but print them to stderr
-        print(f"Ignoring exception in command {ctx.command}:", file=sys.stderr)
-
-        traceback.print_exception(
-            type(error), error, error.__traceback__, file=sys.stderr
-        )
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr
+            )
 
     # make getting prefixes a bit nicer
     def get_guild_prefixes(self, guild, *, local_inject=_prefix_callable):
