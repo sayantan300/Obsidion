@@ -16,8 +16,8 @@ class loops(commands.Cog):
 
     @tasks.loop(minutes=5)
     async def servert_task(self):
-        for _, channel, server in await self.bot.pool.fetch(
-            "SELECT * FROM servertracking"
+        for channel, server in await self.bot.pool.fetch(
+            "SELECT channel, server FROM servertracking"
         ):
             # loop through every minecraft server
             try:
