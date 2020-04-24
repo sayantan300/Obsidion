@@ -114,7 +114,6 @@ class Obsidion(commands.AutoShardedBot):
         ctx   : Context
         error : Exception
         """
-
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, "on_error"):
             return
