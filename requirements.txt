@@ -4,3 +4,4 @@ asyncpg
 uvloop
 mcstatus
 py_mcpe_stats
+black
