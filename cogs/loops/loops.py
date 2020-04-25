@@ -56,7 +56,7 @@ class loops(commands.Cog):
             bots = sum(1 for m in guild.members if m.bot)
             members = f"Humans: `{users}/{len(guild.members)}` \n Bots: `{bots}/{len(guild.members)}`"
 
-            if await self.pool.fetch("SELECT * FROM guild WHERE id = $1", guild.id):
+            if await self.bot.pool.fetch("SELECT * FROM guild WHERE id = $1", guild.id):
                 embed = discord.Embed(
                     name=f"{self.bot.user.name} has re-joined a guild"
                 )
