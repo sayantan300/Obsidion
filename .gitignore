@@ -1,5 +1,5 @@
-__pycache__
-*.json
-*.log
-config.py
+__pycache__/
+/config.py
+.vscode/*
 .DS_Store
+*.log
