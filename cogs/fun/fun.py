@@ -69,7 +69,7 @@ class Fun(commands.Cog, name="Fun"):
         """Get a fact about minecraft"""
         if id and id.isdigit():
             id = int(id)
-            if id < len(self.facts) and id >= 0:
+            if 0 <= id < len(self.facts):
                 fact_choice = self.facts[id]
             else:
                 await ctx.send(
