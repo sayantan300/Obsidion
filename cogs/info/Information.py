@@ -313,9 +313,9 @@ class Information(commands.Cog, name="Information"):
         await ctx.send(embed=embed)
 
     @uhc.command(name="match")
-    async def match(self, ctx, id):
+    async def match(self, ctx, id_):
         await ctx.channel.trigger_typing()
-        data = await get(self.session, f"https://hosts.uhc.gg/api/matches/{id}")
+        data = await get(self.session, f"https://hosts.uhc.gg/api/matches/{id_}")
         if data:
             embed = discord.Embed(title=id, description=data["content"])
             embed.add_field(name="author", value=data["author"])
