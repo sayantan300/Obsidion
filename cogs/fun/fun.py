@@ -65,12 +65,12 @@ class Fun(commands.Cog, name="Fun"):
         )
 
     @commands.command(aliases=["funfact"])
-    async def fact(self, ctx, id: str = None):
+    async def fact(self, ctx, id_: str = None):
         """Get a fact about minecraft"""
-        if id and id.isdigit():
-            id = int(id)
-            if 0 <= id < len(self.facts):
-                fact_choice = self.facts[id]
+        if id_ and id_.isdigit():
+            id_ = int(id_)
+            if 0 <= id_ < len(self.facts):
+                fact_choice = self.facts[id_]
             else:
                 await ctx.send(
                     f"We only have {len(self.facts)-1} facts so please choose from this number."
@@ -82,7 +82,7 @@ class Fun(commands.Cog, name="Fun"):
             id = self.facts.index(fact_choice)
 
         embed = discord.Embed(
-            title=f"Minecraft Fact #{id}", description=fact_choice, color=0x00FF00
+            title=f"Minecraft Fact #{id_}", description=fact_choice, color=0x00FF00
         )
         await ctx.send(embed=embed)
 

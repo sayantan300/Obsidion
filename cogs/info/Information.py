@@ -296,7 +296,7 @@ class Information(commands.Cog, name="Information"):
             slots = match["slots"]
             length = match["length"]
             tournament = match["tournament"]
-            id = match["id"]
+            match_id = match["id"]
 
             info = ""
             info += f"Opens: {opens}\n"
@@ -306,7 +306,7 @@ class Information(commands.Cog, name="Information"):
             info += f"Slots: {slots}\n"
             info += f"Length: {length} minutes\n"
             info += f"Tournament: {tournament}\n"
-            info += f"id: {id}"
+            info += f"id: {match_id}"
 
             embed.add_field(name=address, value=info)
 
