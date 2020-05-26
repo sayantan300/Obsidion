@@ -204,7 +204,7 @@ class Information(commands.Cog, name="Information"):
             if resp.status == 200:
                 sales_data = await resp.json()
 
-        embed = discord.Embed(title=f"Minecraft Service Status", color=0x00FF00)
+        embed = discord.Embed(title="Minecraft Service Status", color=0x00FF00)
         embed.add_field(
             name="Minecraft Game Sales",
             value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**",
