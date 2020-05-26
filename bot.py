@@ -61,7 +61,7 @@ class Obsidion(commands.AutoShardedBot):
         self.client_id = config.client_id
         self.hypixel_api = config.hypixel_key
         self._prev_events = deque(maxlen=10)
-        self.start_time = time.time()
+        self.uptime = None
 
         # shard_id: List[datetime.datetime]
         # shows the last attempted IDENTIFYs and RESUMEs
@@ -216,7 +216,7 @@ class Obsidion(commands.AutoShardedBot):
     ##########################
 
     async def on_ready(self):
-        if not hasattr(self, "uptime"):
+        if not self.uptime:
             self.uptime = datetime.datetime.utcnow()
 
             info = (
