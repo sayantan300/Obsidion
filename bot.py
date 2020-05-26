@@ -17,10 +17,7 @@ import config
 
 from core.global_checks import init_global_checks
 
-# start logger
-log = logging.getLogger(__name__)
-
-__version__ = "0.2 BETA"
+__version__ = "0.3.0.dev"
 
 
 # custom prefix
@@ -32,9 +29,6 @@ async def _prefix_callable(bot, msg):
     if msg.guild is None:
         prefix.append("/")
     else:
-        # because the bot is still in BETA it is offline
-        # a lot meaning that some guilds are not added so
-        # this is a sanity check
         if await bot.pool.fetch("SELECT prefix FROM guild WHERE id = $1", msg.guild.id):
             guild_prefixes = await bot.pool.fetchval(
                 "SELECT prefix FROM guild WHERE id = $1", msg.guild.id
@@ -59,7 +53,6 @@ class Obsidion(commands.AutoShardedBot):
         super().__init__(
             command_prefix=_prefix_callable,
             case_insensitive=True,
-            # help_command=None,
             owner_id=config.owner_id,
             fetch_offline_members=False,
         )
@@ -87,6 +80,7 @@ class Obsidion(commands.AutoShardedBot):
                 traceback.print_exc()
 
         init_global_checks(self)
+        print(1)
 
     def _clear_gateway_data(self):
         one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
@@ -174,9 +168,9 @@ class Obsidion(commands.AutoShardedBot):
         elif isinstance(error, commands.CheckFailure):
             await ctx.send("You do not have permission to use this command.")
 
-        # for when that person tries to mess with your bot
+        # for when that person tries to mess with the bot
         elif isinstance(error, commands.NotOwner):
-            print(f"{ctx.message.author} attempted to run an {ctx.command}")
+            pass
 
         elif isinstance(error, asyncio.TimeoutError):
             await ctx.send(
@@ -184,7 +178,9 @@ class Obsidion(commands.AutoShardedBot):
             )
         else:
             # ignore all other exception types, but print them to stderr
-            print(f"Ignoring exception in command {ctx.command}:", file=sys.stderr)
+            await ctx.send(
+                f"Ignoring exception in command {ctx.command}, If this error persits please report it using `{_prefix_callable(self, ctx)[0]}feedback` or join the [support server](https://discord.gg/invite/7BRD7s6)"
+            )
 
             traceback.print_exception(
                 type(error), error, error.__traceback__, file=sys.stderr
@@ -208,11 +204,11 @@ class Obsidion(commands.AutoShardedBot):
         if ctx.command is None:
             return
 
-        # if ctx.command.name in self.pool["blacklist"][str(ctx.guild.id)]:
-        #    if self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == "All" or self.pool["blacklist"][str(ctx.guild.id)][ctx.command.name] == ctx.message.channel.id:
-        #        if self.pool["guilds"][str(ctx.guild.id)]["silent"]:
-        #            await ctx.send(f"{ctx.message.author.mention}, :x: The command {ctx.command.name} is blacklisted.")
-        #            return
+        # update stats of command use
+        self.pool.execute(
+            "UPDATE command_stats SET uses = uses + 1 WHERE name = $1", ctx.command.name
+        )
+
         await self.invoke(ctx)
 
     ##########################
@@ -232,6 +228,8 @@ class Obsidion(commands.AutoShardedBot):
             )
 
             print(info)
+        else:
+            print(1)
 
         # Sets our bots status to wether operational or testing
         activity = discord.Activity(

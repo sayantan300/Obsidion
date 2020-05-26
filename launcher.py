@@ -17,48 +17,13 @@ else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
-@contextlib.contextmanager
-def setup_logging():
-    try:
-        # __enter__
-        logging.getLogger("discord").setLevel(logging.INFO)
-        logging.getLogger("discord.http").setLevel(logging.WARNING)
-
-        log = logging.getLogger()
-        log.setLevel(logging.INFO)
-        handler = logging.FileHandler(
-            filename="Obsidion.log", encoding="utf-8", mode="w"
-        )
-        dt_fmt = "%Y-%m-%d %H:%M:%S"
-        fmt = logging.Formatter(
-            "[{asctime}] [{levelname:<7}] {name}: {message}", dt_fmt, style="{"
-        )
-        handler.setFormatter(fmt)
-        log.addHandler(handler)
-
-        yield
-    finally:
-        # __exit__
-        handlers = log.handlers[:]
-        for hdlr in handlers:
-            hdlr.close()
-            log.removeHandler(hdlr)
-
-
-async def create_pool(creds):
-    pool = await asyncpg.create_pool(creds)
-    return pool
-
-
 def run_bot():
-    log = logging.getLogger()
     loop = asyncio.get_event_loop()
 
     try:
-        pool = loop.run_until_complete(create_pool(config.postgresql))
+        pool = loop.run_until_complete(connect_pool(config.postgresql))
     except Exception:
         print("Could not load Postgres database", file=sys.stderr)
-        log.exception("Could not load database Exiting.")
         return
 
     bot = Obsidion()
@@ -68,9 +33,13 @@ def run_bot():
 
 def main():
     """Launches the bot."""
-    asyncio.get_event_loop()
-    with setup_logging():
-        run_bot()
+    run_bot()
+
+
+async def connect_pool(password):
+    """connect to the pool"""
+    pool = await asyncpg.create_pool(f"postgresql://discord:{password}@db/discord")
+    return pool
 
 
 if __name__ == "__main__":

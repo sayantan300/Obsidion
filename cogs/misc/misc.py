@@ -37,9 +37,11 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         embed.add_field(
             name="Vote:",
             value="""
-            Discord Bot List: **[VOTE HERE](https://top.gg/bot/691589447074054224)**
+            Top gg: **[VOTE HERE](https://top.gg/bot/691589447074054224)**
             Bots For Discord: **[VOTE HERE](https://botsfordiscord.com/bot/691589447074054224)**
             Discord Boats List: **[VOTE HERE](https://discord.boats/bot/691589447074054224)**
+            Discord Bot List: **[VOTE HERE](https://discordbotlist.com/bots/obsidion)**
+            Discord Labs: **[VOTE HERE](https://bots.discordlabs.org/bot/691589447074054224)**
             Bots On Discord: **[REVIEW HERE](https://bots.ondiscord.xyz/bots/691589447074054224/review)**
             """,
         )
@@ -49,9 +51,11 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     @commands.command()
     async def ping(self, ctx):
         """Check ping of client, message and api"""
+
         latency = round(self.bot.latency * 1000)
         embed = discord.Embed(title="Bot's Ping", color=0x00FF00)
-        embed.add_field(name="API Ping", value=f"`{latency}ms`")
+        embed.add_field(name="Discord Ping", value=f"`{latency}ms`")
+        # embed.add_field(name="API Ping", value=f"`{delay}ms`") # TODO
 
         await ctx.send(embed=embed)
 
@@ -231,7 +235,7 @@ class MyHelpCommand(commands.HelpCommand):
         bot = self.context.bot
         embed = discord.Embed(
             title="Bot support",
-            description=f"Below is a list of commands you can use\nTo use commands type `{self.context.prefix}command` or <@{bot.user.id}> `command`\nTo get more information about a command type: `{self.context.prefix}help command`",
+            description=f"Below is a list of commands you can use\nTo use commands type `{self.context.prefix}<command_name>` or <@{bot.user.id}> `<command_name>`\nTo get more information about a command type: `{self.context.prefix}help <command_name>`",
             colour=0x00FF00,
         )
         embed.set_footer(
@@ -249,7 +253,7 @@ class MyHelpCommand(commands.HelpCommand):
         embed.add_field(
             inline=False,
             name="Support",
-            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={self.context.bot.user.id}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)**",
+            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={self.context.bot.user.id}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
         await self.context.send(embed=embed)
 

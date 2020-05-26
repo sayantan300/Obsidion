@@ -2,7 +2,6 @@ from discord.ext import commands
 import discord
 from utils.utils import get_uuid
 import logging
-from mcstatus import MinecraftServer
 
 log = logging.getLogger(__name__)
 
@@ -148,11 +147,11 @@ class Configurable(commands.Cog, name="Configurable"):
 
             await ctx.send("Server Tracking is all setup and ready for you to enjoy.")
             # loop through every minecraft server
-            try:
-                mc_server = MinecraftServer.lookup(server)
-                data = mc_server.status()
-            except:
-                data = False
+            # try:
+            #     mc_server = MinecraftServer.lookup(server)
+            #     data = mc_server.status()
+            # except:
+            data = False
             channel = self.bot.get_channel(voiceChannel)
             # check
             if data:

@@ -1,5 +1,4 @@
 from discord.ext import tasks, commands
-from mcstatus import MinecraftServer
 import discord
 from random import choice
 import config
@@ -20,15 +19,23 @@ class loops(commands.Cog):
             "SELECT channel, server FROM servertracking"
         ):
             # loop through every minecraft server
-            try:
-                mc_server = MinecraftServer.lookup(server)
-                data = mc_server.status()
-            except:
-                data = False
+            url = f"{self.api}/server/java"
+            if len(server.split(":")) == 2:
+                payload = {
+                    "server": server.split(":")[0],
+                    "port": server.split(":")[1],
+                }
+            else:
+                payload = {"server": server.split(":")[0]}
+            async with self.session.get(url, params=payload) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                else:
+                    data = False
             channel = self.bot.get_channel(channel)
             # check
             if data:
-                name = f"{server.split('.')[-2].title()}: {data.players.online:,} / {data.players.max:,}"
+                name = f"{server.split('.')[0].title()}: {data.players.online:,} / {data.players.max:,}"
                 await channel.edit(name=name)
             else:
                 await channel.edit(name="SERVER IS OFFLINE")

@@ -177,7 +177,7 @@ class admin(commands.Cog, name="admin"):
         )
         for i in range(self.bot.shard_count):
             value = ""
-            value += "Status: :online:\n"
+            value += "Status: Online\n"
             value += f"Guilds: {sum(1 for guild in self.bot.guilds if guild.shard_id == i)}\n"
             value += f"Users: {sum(guild.member_count for guild in self.bot.guilds if guild.shard_id == i)}\n"
             value += f"Channels: {sum((len(guild.voice_channels) + len(guild.text_channels)) for guild in self.bot.guilds if guild.shard_id == i)}\n"

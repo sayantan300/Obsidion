@@ -65,10 +65,11 @@ class Fun(commands.Cog, name="Fun"):
         )
 
     @commands.command(aliases=["funfact"])
-    async def fact(self, ctx, id: int = None):
+    async def fact(self, ctx, id: str = None):
         """Get a fact about minecraft"""
-        if id:
-            if id < len(self.facts):
+        if id and id.isdigit():
+            id = int(id)
+            if id < len(self.facts) and id >= 0:
                 fact_choice = self.facts[id]
             else:
                 await ctx.send(
@@ -125,12 +126,12 @@ class Fun(commands.Cog, name="Fun"):
     @commands.command(aliases=["slay"])
     async def kill(self, ctx, member=None):
         """Kill that pesky friend in a fun and stylish way"""
-        if not member:
-            member = ctx.message.author.mention
-        elif (
-            str(member) == f"<@{self.bot.owner_id}>"
+        if (
+            not member
+            or str(member) == f"<@{self.bot.owner_id}>"
             or str(member) == f"<@!{self.bot.owner_id}>"
-        ):  # owner protection
+        ):
+            # this included some protection for the owners and the bot itself
             member = ctx.message.author.mention
 
         await ctx.send(choice(self.kill_mes).replace("member", member))
@@ -153,26 +154,17 @@ class Fun(commands.Cog, name="Fun"):
     @commands.command()
     async def rps(self, ctx, user_choice=None):
         """play Rock Paper Shears"""
-        if user_choice:
-            options = ["rock", "paper", "shears"]
-            if user_choice in options:
-                c_choice = choice(options)
-                if user_choice == options[options.index(user_choice) - 1]:
-                    await ctx.send(
-                        f"You chose {user_choice}, I chose {c_choice} I win."
-                    )
-                elif c_choice == user_choice:
-                    await ctx.send(
-                        f"You chose {user_choice}, I chose {c_choice} looks like we have a tie."
-                    )
-                else:
-                    await ctx.send(
-                        f"You chose {user_choice}, I chose {c_choice} you win."
-                    )
-            else:
+        options = ["rock", "paper", "shears"]
+        if user_choice and user_choice in options:
+            c_choice = choice(options)
+            if user_choice == options[options.index(user_choice) - 1]:
+                await ctx.send(f"You chose {user_choice}, I chose {c_choice} I win.")
+            elif c_choice == user_choice:
                 await ctx.send(
-                    "That is an invalid option can you please choose from rock, paper or shears"
+                    f"You chose {user_choice}, I chose {c_choice} looks like we have a tie."
                 )
+            else:
+                await ctx.send(f"You chose {user_choice}, I chose {c_choice} you win.")
         else:
             await ctx.send(
                 "That is an invalid option can you please choose from rock, paper or shears"

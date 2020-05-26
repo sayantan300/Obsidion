@@ -4,7 +4,7 @@ import aiohttp
 import config
 import asyncio
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 
 class bot_advertise(commands.Cog):
@@ -13,25 +13,35 @@ class bot_advertise(commands.Cog):
         self.vote_channel = config.upvote_channel
         if config.bots4discordToken:
             self.bfdtoken = config.bots4discordToken
-            self.bg_task = bot.loop.create_task(self.loop_server_count())
+            self.bots4discordcount.start()
         if config.dblToken:
             self.dbltoken = config.dblToken
             self.dblpy = dbl.DBLClient(self.bot, self.dbltoken, autopost=True)
+        if config.boatstoken:
+            self.boatstoken = config.boatstoken
+            self.boats_server_count.start()
 
     # bots3discord
-    async def loop_server_count(self):
+    @tasks.loop(seconds=60)
+    async def bots4discordcount(self):
         await self.bot.wait_until_ready()
-        while not self.bot.is_closed():
-            url = f"https://botsfordiscord.com/api/bot/{self.bot.user.id}"
-            headers = {"Authorization": self.bfdtoken}
-            json = {"server_count": len(self.bot.guilds)}
-            async with aiohttp.ClientSession(headers=headers) as session:
-                await session.post(url, json=json)
-            await asyncio.sleep(600)
+        url = f"https://botsfordiscord.com/api/bot/{self.bot.user.id}"
+        headers = {"Authorization": self.bfdtoken}
+        json = {"server_count": len(self.bot.guilds)}
+        async with aiohttp.ClientSession(headers=headers) as session:
+            await session.post(url, json=json)
 
-    #
+    # discord boats
+    @tasks.loop(seconds=60)
+    async def boats_server_count(self):
+        await self.bot.wait_until_ready()
+        url = f"https://discord.boats/api/bot/{self.bot.user.id}"
+        headers = {"Authorization": self.boatstoken}
+        json = {"server_count": len(self.bot.guilds)}
+        async with aiohttp.ClientSession(headers=headers) as session:
+            await session.post(url, json=json)
+
     # top.gg
-    #
     @commands.Cog.listener()
     async def on_dbl_vote(self, data):
         embed = discord.Embed(
@@ -40,7 +50,3 @@ class bot_advertise(commands.Cog):
         )
         channel = self.bot.get_channel(self.vote_channel)
         await channel.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_guild_post(self):
-        print("Server count posted successfully")

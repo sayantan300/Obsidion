@@ -1,14 +1,13 @@
 from discord.ext import commands
 import discord
 from datetime import datetime
-from utils.utils import get, get_uuid
+from utils.utils import uuid_from_username, get
 from uuid import UUID
-from mcstatus import MinecraftServer
-from py_mcpe_stats import Query
 import base64
 import io
 import re
 import logging
+import config
 
 log = logging.getLogger(__name__)
 
@@ -17,37 +16,25 @@ class Information(commands.Cog, name="Information"):
     def __init__(self, bot):
         self.bot = bot
         self.session = bot.session
+        self.api = config.api
 
     @commands.command(
         aliases=["whois", "p", "names", "namehistory", "pastnames", "namehis"]
     )
     async def profile(self, ctx, username=None):
         """View a players Minecraft UUID, Username history and skin."""
-        log.info("test")
         await ctx.channel.trigger_typing()
-        if username:
-            uuid = await get_uuid(self.session, username)
-        elif await self.bot.pool.fetchval(
-            "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-        ):
-            uuid = await self.bot.pool.fetchval(
-                "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-            )
-            names = await get(
-                self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-            )
-            username = names[-1]["name"]
-        else:
-            uuid = False
-
+        uuid, username = await uuid_from_username(username, self.session, self.bot, ctx)
         if uuid:
+            data = await get(self.session, f"{self.api}/profile/{uuid}")
+        else:
+            data = False
+        if uuid and data:
             long_uuid = (
                 f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
             )
 
-            names = await get(
-                self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-            )
+            names = data["names"]
 
             name_list = ""
             for name in names[::-1][:-1]:
@@ -62,6 +49,8 @@ class Information(commands.Cog, name="Information"):
             uuids = "Short UUID: `" + uuid + "\n" + "`Long UUID: `" + long_uuid + "`"
             information = ""
             information += f"Username Changes: `{len(names)-1}`\n"
+            information += f"Legacy: `{data['legacy']}`\n"
+            information += f"Cached: `{datetime.utcfromtimestamp(float(data['cachetime'])):%Y-%m-%dT%H:%M:%SZ}`"
 
             embed = discord.Embed(
                 title=f"Minecraft profile for {username}", color=0x00FF00
@@ -81,61 +70,6 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send("That username is not been used.")
 
-    @commands.command(aliases=["available", "availability", "namecheck"])
-    async def checkname(self, ctx, username):
-        """Check weather a username is currently in use."""
-        await ctx.channel.trigger_typing()
-        if await get_uuid(self.session, username):
-            # Need to add option to view profile with reaction
-            embed = discord.Embed(color=0x00FF00)
-            embed.add_field(
-                name="Name Checker",
-                value=f"The username: `{username}` is currently unavailable.",
-            )
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(color=0x00FF00)
-            embed.add_field(
-                name="Name Checker",
-                value=f"The username: `{username}` is available! \n Claim the username here: https://account.mojang.com/me",
-            )
-            await ctx.send(embed=embed)
-
-    @commands.command()
-    async def uuid(self, ctx, username=None):
-        """Get a players UUID."""
-        await ctx.channel.trigger_typing()
-        if username:
-            uuid = await get_uuid(self.session, username)
-        elif await self.bot.pool.fetchval(
-            "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-        ):
-            uuid = await self.bot.pool.fetchval(
-                "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-            )
-            names = await get(
-                self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-            )
-            username = names[-1]["name"]
-        else:
-            uuid = False
-        if uuid:
-            long_uuid = (
-                f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16-20]}-{uuid[20:]}"
-            )
-            embed = discord.Embed(
-                title=f"Showing {username}'s Minecraft UUID", color=0x00FF00
-            )
-            embed.add_field(
-                name=f"{username}'s UUID",
-                value=f"Short UUID: `{uuid}` \n Long UUID:  `{long_uuid}`",
-            )
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(
-                f"{ctx.message.author.mention}, :x: the user: `{username}` does not exist!"
-            )
-
     @commands.command(aliases=["serv"])
     async def server(self, ctx, server=None):
         """
@@ -144,94 +78,105 @@ class Information(commands.Cog, name="Information"):
         await ctx.channel.trigger_typing()
         if server:
             try:
-                mc_server = MinecraftServer.lookup(server)
-                data = mc_server.status()
+                url = f"{self.api}/server/java"
+                if len(server.split(":")) == 2:
+                    payload = {
+                        "server": server.split(":")[0],
+                        "port": server.split(":")[1],
+                    }
+                else:
+                    payload = {"server": server.split(":")[0]}
+                async with self.session.get(url, params=payload) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                    else:
+                        data = False
+
             except:
                 data = False
-        elif await self.bot.pool.fetchval(
+        elif ctx.guild and await self.bot.pool.fetchval(
             "SELECT server FROM guild WHERE id = $1", ctx.guild.id
         ):
             server = await self.bot.pool.fetchval(
                 "SELECT server FROM guild WHERE id = $1", ctx.guild.id
             )
             try:
-                mc_server = MinecraftServer.lookup(server)
-                data = mc_server.status()
+                url = f"{self.api}/server/java"
+                if len(server.split(":")) == 2:
+                    payload = {
+                        "server": server.split(":")[0],
+                        "port": server.split(":")[1],
+                    }
+                else:
+                    payload = {"server": server.split(":")[0]}
+                async with self.session.get(url, params=payload) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
             except:
                 data = False
-
         if server:
             if data:
                 embed = discord.Embed(title=f"Java Server: {server}", color=0x00FF00)
-                if "extra" in data.description:
-                    # when they use this other format
-                    motd = ""
-                    for var in data.description["extra"]:
-                        motd += var["text"]
-                elif "text" in data.description:
-                    # nice plain old description
-                    motd = data.description["text"]
-                else:
-                    motd = data.description
-                motd = re.sub(r"(§.)", "", motd)
-                embed.add_field(name="Description", value=motd)
+                embed.add_field(name="Description", value=data["description"])
 
                 embed.add_field(
                     name="Players",
-                    value=f"Online: `{data.players.online:,}` \n Maximum: `{data.players.max:,}`",
+                    value=f"Online: `{data['players']['online']:,}` \n Maximum: `{data['players']['max']:,}`",
                 )
-                if data.players.sample:
+                if data["players"]["sample"]:
                     names = ""
-                    for player in data.players.sample:
-                        names += f"{player.name}\n"
-                    names = re.sub(r"(§.)", "", names)
+                    for player in data["players"]["sample"]:
+                        names += f"{player['name']}\n"
                     embed.add_field(name="Information", value=names, inline=False)
-
                 embed.add_field(
                     name="Version",
-                    value=f"Java Edition \n Running: `{data.version.name}` \n Protocol: `{data.version.protocol}`",
+                    value=f"Java Edition \n Running: `{data['version']['name']}` \n Protocol: `{data['version']['protocol']}`",
                     inline=False,
                 )
-
-                encoded = base64.decodebytes(data.favicon[22:].encode("utf-8"))
-                image_bytesio = io.BytesIO(encoded)
-                favicon = discord.File(image_bytesio, "favicon.png")
-                embed.set_thumbnail(url="attachment://favicon.png")
-
-                await ctx.send(embed=embed, file=favicon)
+                if data["favicon"]:
+                    encoded = base64.decodebytes(data["favicon"][22:].encode("utf-8"))
+                    image_bytesio = io.BytesIO(encoded)
+                    favicon = discord.File(image_bytesio, "favicon.png")
+                    embed.set_thumbnail(url="attachment://favicon.png")
+                    await ctx.send(embed=embed, file=favicon)
+                else:
+                    await ctx.send(embed=embed)
             else:
-                await ctx.send(
-                    "The server is currently offline or could not be requested."
-                )
-        else:
-            if server:
                 await ctx.send(
                     f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested"
                 )
-            else:
-                await ctx.send(f"{ctx.author}, :x: Please provide a server")
+        else:
+            await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
     @commands.command(aliases=["servpe"])
     async def serverpe(self, ctx, server=None):
         """Get information about a Bedrock Edition Server"""
         if server:
             host, port = server.split(":")
+            print(self.api)
+            url = f"{self.api}/server/bedrock"
+            if len(server.split(":")) == 2:
+                payload = {
+                    "server": server.split(":")[0],
+                    "port": server.split(":")[1],
+                }
+            else:
+                payload = {"server": server.split(":")[0]}
+            async with self.session.get(url, params=payload) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
 
-            q = Query(host, int(port))
-            server_data = q.query()
-
-            if server_data.NUM_PLAYERS >= 0:
+            if data:
                 embed = discord.Embed(title=f"Bedrock Server: {server}", color=0x00FF00)
                 # cleanup motd very badly but it does it
-                motd = re.sub(r"(§.)", "", server_data.SERVER_NAME)
-                embed.add_field(name="Description", value=motd, inline=False)
+                embed.add_field(name="Description", value=data["motd"], inline=False)
                 embed.add_field(
                     name="Players",
-                    value=f"Online: `{server_data.NUM_PLAYERS}`\nMax: `{server_data.MAX_PLAYERS}`",
+                    value=f"Online: `{data['CurrentPlayers']}`\nMax: `{data['MaxPlayers']}`",
                 )
                 embed.add_field(
                     name="Version",
-                    value=f"Bedrock Edition\nRunning: `{server_data.GAME_VERSION}`",
+                    value=f"Bedrock Edition\nRunning: `{data['GameVersion']}`",
                 )
                 await ctx.send(embed=embed)
             else:
@@ -241,47 +186,40 @@ class Information(commands.Cog, name="Information"):
         else:
             await ctx.send(f"{ctx.author}, :x: Please provide a server")
 
-    # This has been temporarily disabled due to Mojangs API not updateding
-    # Have spoken to some Mojang Staff and they do not plan to fix it. The
-    # code will stay here if they ever change their mind.
-    # @commands.command()
-    # async def status(self, ctx):
-    #    """Check the status of all the Mojang services"""
-    #    await ctx.channel.trigger_typing()
-    #    data = await get(self.session, "https://status.mojang.com/check")
+    @commands.command()
+    async def status(self, ctx):
+        """Check the status of all the Mojang services"""
+        await ctx.channel.trigger_typing()
+        data = await get(self.session, f"{config.api}/mojang/check")
+        sales_mapping = {
+            "item_sold_minecraft": True,
+            "prepaid_card_redeemed_minecraft": True,
+            "item_sold_cobalt": False,
+            "item_sold_scrolls": False,
+        }
+        payload = {"metricKeys": [k for (k, v) in sales_mapping.items() if v]}
 
-    #    sales_mapping = {
-    #        'item_sold_minecraft': True,
-    #        'prepaid_card_redeemed_minecraft': True,
-    #        'item_sold_cobalt': False,
-    #        'item_sold_scrolls': False
-    #    }
-    #    payload = {
-    #        'metricKeys': [k for (k, v) in sales_mapping.items() if v]
-    #    }
+        url = "https://api.mojang.com/orders/statistics"
+        async with self.session.post(url, json=payload) as resp:
+            if resp.status == 200:
+                sales_data = await resp.json()
 
-    #    url = "https://api.mojang.com/orders/statistics"
-    #    async with self.session.post(url, json=payload) as resp:
-    #        if resp.status == 200:
-    #            sales_data = await resp.json()
+        embed = discord.Embed(title=f"Minecraft Service Status", color=0x00FF00)
+        embed.add_field(
+            name="Minecraft Game Sales",
+            value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**",
+        )
+        services = ""
+        for service in data:
+            if data[service] == "green":
+                services += (
+                    f":green_heart: - {service}: **This service is healthy.** \n"
+                )
+            else:
+                services += f":heart: - {service}: **This service is offline.** \n"
+        embed.add_field(name="Minecraft Services:", value=services, inline=False)
 
-    #    embed = discord.Embed(
-    #        title=f"Minecraft Service Status", color=0x00ff00)
-    #    embed.add_field(name="Minecraft Game Sales",
-    #                    value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**")
-
-    #    services = ""
-    #    for service in data:
-    #        if service[next(iter(service))] == "green":
-    #            services += f":green_heart: - {next(iter(service)).title()}: **This service is healthy.** \n"
-    #        elif service[next(iter(service))] == "yellow":
-    #            services += f":yellow_heart: - {next(iter(service)).title()}: **This service has some issues.** \n"
-    #        else:
-    #            services += f":heart: - {next(iter(service)).title()}: **This service is offline.** \n"
-    #    embed.add_field(name="Minecraft Services:",
-    #                    value=services, inline=False)
-
-    #    await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def sales(self, ctx):
@@ -375,8 +313,28 @@ class Information(commands.Cog, name="Information"):
         await ctx.send(embed=embed)
 
     @uhc.command(name="match")
-    async def match(self, ctx, param):
-        pass
+    async def match(self, ctx, id):
+        await ctx.channel.trigger_typing()
+        data = await get(self.session, f"https://hosts.uhc.gg/api/matches/{id}")
+        if data:
+            embed = discord.Embed(title=id, description=data["content"])
+            embed.add_field(name="author", value=data["author"])
+            embed.add_field(name="address", value=data["address"])
+            embed.add_field(name="opens", value=data["opens"])
+            embed.add_field(name="slots", value=data["slots"])
+            embed.add_field(name="mainVersion", value=data["mainVersion"])
+            embed.add_field(name="version", value=data["version"])
+            embed.add_field(name="length", value=data["length"])
+            embed.add_field(name="mapSize", value=data["mapSize"])
+            embed.add_field(name="pvpEnabledAt", value=data["pvpEnabledAt"])
+            embed.add_field(name="location", value=data["location"])
+            embed.add_field(name="created", value=data["created"])
+            embed.add_field(name="count", value=data["count"])
+            embed.add_field(name="scenarios", value=data["scenarios"].join("\n"))
+            embed.add_field(name="tags", value=data["tags"].join(" "))
+        else:
+            embed = discord.Embed(title=id, description="Match not found.")
+        await ctx.send(embed=embed)
 
     @uhc.command(name="banned")
     async def uhc_banned(self, ctx, user):
@@ -387,7 +345,7 @@ class Information(commands.Cog, name="Information"):
         except ValueError:
             # If it's a value error, then the string
             # is not a valid hex code for a UUID.
-            uuid = await get_uuid(self.session, user)
+            uuid = await uuid_from_username(user, self.bot, self.session, ctx)
             uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
 
         data = await get(self.session, f"https://hosts.uhc.gg/api/ubl/{uuid}")

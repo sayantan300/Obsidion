@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils.utils import get_uuid, get
+from utils.utils import uuid_from_username
 import logging
 import os.path
 from random import choice
@@ -14,28 +14,23 @@ class images(commands.Cog, name="Images"):
         self.bot = bot
 
     @commands.command(aliases=["ach", "advancement"])
-    async def achievement(self, ctx, block_id, title, word1, word2=None, word3=None):
-        """Create your very own custom Minecraft achievements!
-        
-        Block IDS:
-        stone: 1\ndiamond: 2\nsword: 3\ncreeper: 4\npig: 5\nTNT: 6\ncookie: 7\nheart: 8\nbed: 9\ncake: 10
-        sign: 11\nrail: 12\ncrafting table: 13\nredstone: 14\nfire: 15\ncobweb: 16\nchest: 17\nfurnace: 18\nbook: 19\nstone: 20
-        wooden plank: 21\niron: 22\ngold: 23\nwooden door: 24\niron door: 25\nchestplate: 26\nflint and steel: 27\npotion: 28\nsplash potion: 29\nspawn egg: 30
-        coal: 31\niron sword: 32\nbow: 33\narrow: 34\niron chestplate: 35\nbucket: 36\nwater bucket: 37\nlava bucket: 38\nmilk bucket:39"""
+    async def achievement(self, ctx, block_name, title, text):
+        """Create your very own custom Minecraft achievements"""
         await ctx.channel.trigger_typing()
         embed = discord.Embed(color=0x00FF00)
-        if word2 is None:
-            embed.set_image(
-                url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}"
-            )
-        elif word3 is None:
-            embed.set_image(
-                url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}+{word2}"
-            )
-        else:
-            embed.set_image(
-                url=f"https://minecraftskinstealer.com/achievement/a.php?i={block_id}&h={title}&t={word1}+{word2}+{word3}"
-            )
+        embed.set_image(
+            url=f"https://api.bowie-co.nz/api/v1/images/advancement?item={block_name}&title={title}&text={text}"
+        )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def sign(self, ctx, line1, line2="%20", line3="%20", line4="%20"):
+        """Create your very own custom Minecraft achievements"""
+        await ctx.channel.trigger_typing()
+        embed = discord.Embed(color=0x00FF00)
+        embed.set_image(
+            url=f"https://api.bowie-co.nz/api/v1/images/sign?line1={line1}&line2={line2}&line3={line3}&line4={line4}"
+        )
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -63,7 +58,7 @@ class images(commands.Cog, name="Images"):
             embed.set_image(url=f"attachment://{name}.png")
             await ctx.send(file=file, embed=embed)
         else:
-            await ctx.send("Item not found")
+            await ctx.send("Painting not found")
 
     @commands.command()
     async def effect(self, ctx, name=None):
@@ -84,23 +79,7 @@ class images(commands.Cog, name="Images"):
     async def avatar(self, ctx, username=None):
         """Renders a Minecraft players face."""
         await ctx.channel.trigger_typing()
-        if username:
-            uuid = await get_uuid(self.session, username)
-        if await self.bot.pool.fetchval(
-            "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-        ):
-            if await self.bot.pool.fetchval(
-                "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-            ):
-                uuid = await self.bot.pool.fetchval(
-                    "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-                )
-                names = await get(
-                    self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-                )
-                username = names[-1]["name"]
-            else:
-                uuid = False
+        uuid, username = await uuid_from_username(username, self.session, self.bot, ctx)
         if uuid:
             embed = discord.Embed(
                 description=f"Here is: `{username}`'s Face! \n **[DOWNLOAD](https://visage.surgeplay.com/face/512/{uuid})**",
@@ -118,18 +97,7 @@ class images(commands.Cog, name="Images"):
     async def skull(self, ctx, username=None):
         """Renders a Minecraft players skull."""
         await ctx.channel.trigger_typing()
-        if username:
-            uuid = await get_uuid(self.session, username)
-        elif await self.bot.pool.fetchval(
-            "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-        ):
-            uuid = await self.bot.pool.fetchval(
-                "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-            )
-            names = await get(
-                self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-            )
-            username = names[-1]["name"]
+        uuid, username = await uuid_from_username(username, self.session, self.bot, ctx)
         if uuid:
             embed = discord.Embed(
                 description=f"Here is: `{username}`'s Skull! \n **[DOWNLOAD](https://visage.surgeplay.com/head/512/{uuid})**",
@@ -147,18 +115,7 @@ class images(commands.Cog, name="Images"):
     async def skin(self, ctx, username=None):
         """Renders a Minecraft players skin."""
         await ctx.channel.trigger_typing()
-        if username:
-            uuid = await get_uuid(self.session, username)
-        elif await self.bot.pool.fetchval(
-            "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-        ):
-            uuid = await self.bot.pool.fetchval(
-                "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-            )
-            names = await get(
-                self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-            )
-            username = names[-1]["name"]
+        uuid, username = await uuid_from_username(username, self.session, self.bot, ctx)
         if uuid:
             embed = discord.Embed(
                 description=f"Here is: `{username}`'s Skin! \n **[DOWNLOAD](https://visage.surgeplay.com/full/512/{uuid})**",
@@ -173,23 +130,14 @@ class images(commands.Cog, name="Images"):
             )
 
     @commands.command()
-    async def render(self, ctx, username=None, type=None):
+    async def render(self, ctx, type=None, username=None):
         """Renders a Minecraft players skin in 6 different ways. You can choose from these 6 render types: face, front, frontfull, head, bust & skin."""
         await ctx.channel.trigger_typing()
         renders = ["face", "front", "frontfull", "head", "bust", "skin"]
         if type in renders:
-            if username:
-                uuid = await get_uuid(self.session, username)
-            elif await self.bot.pool.fetchval(
-                "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-            ):
-                uuid = await self.bot.pool.fetchval(
-                    "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
-                )
-                names = await get(
-                    self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-                )
-                username = names[-1]["name"]
+            uuid, username = await uuid_from_username(
+                username, self.session, self.bot, ctx
+            )
             if uuid:
                 embed = discord.Embed(
                     description=f"Here is: `{username}`'s {type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{type}/512/{uuid})**",
@@ -204,5 +152,5 @@ class images(commands.Cog, name="Images"):
                 )
         else:
             await ctx.send(
-                f"{ctx.message.author.mention}, Please supply a render type. Your options are:\n `face`, `front`, `frontfull`, `head`, `bust`, `skin` \n Type: ?render <username> <render type>"
+                f"{ctx.message.author.mention}, Please supply a render type. Your options are:\n `face`, `front`, `frontfull`, `head`, `bust`, `skin` \n Type: ?render <render type> <username>"
             )
