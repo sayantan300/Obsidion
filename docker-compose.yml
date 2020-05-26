@@ -1,0 +1,19 @@
+version: "3.0"
+services:
+  bot:
+    build: .
+    volumes:
+      - .:/code
+    links:
+      - db
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: discord
+      POSTGRES_PASSWORD: mDji4vNV6NLG9rZxRAVm94ZEZh!%bH&9
+      POSTGRES_DB: discord
+    volumes:
+      - postgresdb:/var/lib/postgresql/data
+
+volumes:
+  postgresdb:
