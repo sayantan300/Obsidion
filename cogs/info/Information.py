@@ -157,17 +157,17 @@ class Information(commands.Cog, name="Information"):
             url = f"{self.api}/server/bedrock"
             if len(server.split(":")) == 2:
                 payload = {
-                    "server": server.split(":")[0],
-                    "port": server.split(":")[1],
+                    "server": host,
+                    "port": port,
                 }
             else:
-                payload = {"server": server.split(":")[0]}
+                payload = {"server": host}
             async with self.session.get(url, params=payload) as resp:
                 if resp.status == 200:
                     data = await resp.json()
 
             if data:
-                embed = discord.Embed(title=f"Bedrock Server: {server}", color=0x00FF00)
+                embed = discord.Embed(title=f"Bedrock Server: {host}", color=0x00FF00)
                 # cleanup motd very badly but it does it
                 embed.add_field(name="Description", value=data["motd"], inline=False)
                 embed.add_field(
