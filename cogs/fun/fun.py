@@ -130,8 +130,11 @@ class Fun(commands.Cog, name="Fun"):
             not member
             or str(member) == f"<@{self.bot.owner_id}>"
             or str(member) == f"<@!{self.bot.owner_id}>"
+            or str(member) == "<@691589447074054224>"
+            or str(member) == "<@!691589447074054224>"
         ):
             # this included some protection for the owners and the bot itself
+            await ctx.send("Good Try!")
             member = ctx.message.author.mention
 
         await ctx.send(choice(self.kill_mes).replace("member", member))

@@ -76,45 +76,33 @@ class Information(commands.Cog, name="Information"):
         Request information about a Minecraft Java edition multiplayer server.
         """
         await ctx.channel.trigger_typing()
-        if server:
-            try:
-                url = f"{self.api}/server/java"
-                if len(server.split(":")) == 2:
-                    payload = {
-                        "server": server.split(":")[0],
-                        "port": server.split(":")[1],
-                    }
-                else:
-                    payload = {"server": server.split(":")[0]}
-                async with self.session.get(url, params=payload) as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-                    else:
-                        data = False
-
-            except:
-                data = False
-        elif ctx.guild and await self.bot.pool.fetchval(
-            "SELECT server FROM guild WHERE id = $1", ctx.guild.id
-        ):
-            server = await self.bot.pool.fetchval(
+        if (
+            server
+            or ctx.guild
+            and await self.bot.pool.fetchval(
                 "SELECT server FROM guild WHERE id = $1", ctx.guild.id
             )
-            try:
-                url = f"{self.api}/server/java"
-                if len(server.split(":")) == 2:
-                    payload = {
-                        "server": server.split(":")[0],
-                        "port": server.split(":")[1],
-                    }
+        ):
+            server = (
+                server
+                if server
+                else await self.bot.pool.fetchval(
+                    "SELECT server FROM guild WHERE id = $1", ctx.guild.id
+                )
+            )
+            url = f"{self.api}/server/java"
+            if len(server.split(":")) == 2:
+                payload = {
+                    "server": server.split(":")[0],
+                    "port": server.split(":")[1],
+                }
+            else:
+                payload = {"server": server.split(":")[0]}
+            async with self.session.get(url, params=payload) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
                 else:
-                    payload = {"server": server.split(":")[0]}
-                async with self.session.get(url, params=payload) as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-            except:
-                data = False
-        if server:
+                    data = False
             if data:
                 embed = discord.Embed(title=f"Java Server: {server}", color=0x00FF00)
                 embed.add_field(name="Description", value=data["description"])

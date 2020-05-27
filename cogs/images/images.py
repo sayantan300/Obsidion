@@ -34,12 +34,12 @@ class images(commands.Cog, name="Images"):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def item(self, ctx, *, name):
+    async def item(self, ctx, *, name: str):
         """view the image for a item"""
         name = name.replace(" ", "_").lower()
         if os.path.isfile(f"cogs/images/items/{name}.png"):
             file = discord.File(f"cogs/images/items/{name}.png", filename=f"{name}.png")
-            embed = discord.Embed(title=name, color=0x00FF00)
+            embed = discord.Embed(title=name.replace("_", " ").title(), color=0x00FF00)
             embed.set_image(url=f"attachment://{name}.png")
             await ctx.send(file=file, embed=embed)
         else:
@@ -47,14 +47,14 @@ class images(commands.Cog, name="Images"):
 
     @commands.command()
     async def painting(self, ctx, name=None):
-        """view the image for a item"""
+        """View a minecraft painting"""
         if not name:
             name = choice([f for f in os.listdir("cogs/images/painting")]).split(".")[0]
         if os.path.isfile(f"cogs/images/painting/{name}.png"):
             file = discord.File(
                 f"cogs/images/painting/{name}.png", filename=f"{name}.png"
             )
-            embed = discord.Embed(title=name, color=0x00FF00)
+            embed = discord.Embed(title=name.replace("_", " ").title(), color=0x00FF00)
             embed.set_image(url=f"attachment://{name}.png")
             await ctx.send(file=file, embed=embed)
         else:

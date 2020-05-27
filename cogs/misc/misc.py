@@ -36,14 +36,14 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         embed = discord.Embed(color=0x00FF00)
         embed.add_field(
             name="Vote:",
-            value="""
-            Top gg: **[VOTE HERE](https://top.gg/bot/691589447074054224)**
-            Bots For Discord: **[VOTE HERE](https://botsfordiscord.com/bot/691589447074054224)**
-            Discord Boats List: **[VOTE HERE](https://discord.boats/bot/691589447074054224)**
-            Discord Bot List: **[VOTE HERE](https://discordbotlist.com/bots/obsidion)**
-            Discord Labs: **[VOTE HERE](https://bots.discordlabs.org/bot/691589447074054224)**
-            Bots On Discord: **[REVIEW HERE](https://bots.ondiscord.xyz/bots/691589447074054224/review)**
-            """,
+            value=(
+                "Top gg: **[VOTE HERE](https://top.gg/bot/691589447074054224)**"
+                "Bots For Discord: **[VOTE HERE](https://botsfordiscord.com/bot/691589447074054224)**"
+                "Discord Boats List: **[VOTE HERE](https://discord.boats/bot/691589447074054224)**"
+                "Discord Bot List: **[VOTE HERE](https://discordbotlist.com/bots/obsidion)**"
+                "Discord Labs: **[VOTE HERE](https://bots.discordlabs.org/bot/691589447074054224)**"
+                "Bots On Discord: **[REVIEW HERE](https://bots.ondiscord.xyz/bots/691589447074054224/review)**"
+            ),
         )
 
         await ctx.send(embed=embed)
@@ -73,21 +73,23 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
 
         ram = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (2 ** 20), 2)
 
-        statics = ""
-        statics += f"Guilds: `{len(self.bot.guilds):,}`\n"
-        statics += f"Users: `{total_users:,}`\n"
-        statics += f"Channels: `{text_channels+voice_channels:,}`\n"
-        statics += f"Memory Usage: `{ram:,}MB`\n"
-        statics += f"Uptime: `{text}`\n"
-        statics += f"Discord.py: `v{discord.__version__}`"
+        statics = (
+            f"Guilds: `{len(self.bot.guilds):,}`\n"
+            f"Users: `{total_users:,}`\n"
+            f"Channels: `{text_channels+voice_channels:,}`\n"
+            f"Memory Usage: `{ram:,}MB`\n"
+            f"Uptime: `{text}`\n"
+            f"Discord.py: `v{discord.__version__}`"
+        )
 
-        links = ""
-        links += "[INVITE BOT](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448)\n"
-        links += "[GITHUB](https://github.com/Darkflame72/Obsidion)\n"
-        links += "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
-        links += "[VOTE](https://top.gg/bot/691589447074054224)\n"
-        links += "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)\n"
-        links += "[WEBSITE](http://obsidion.bowie-co.nz)"
+        links = (
+            "[INVITE BOT](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448)\n"
+            "[GITHUB](https://github.com/Darkflame72/Obsidion)\n"
+            "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
+            "[VOTE](https://top.gg/bot/691589447074054224)\n"
+            "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)\n"
+            "[WEBSITE](http://obsidion.bowie-co.nz)"
+        )
 
         embed = discord.Embed(title="Stats", color=0x00FF00)
         embed.add_field(name=":newspaper: STATS", value=statics, inline=True)
@@ -133,8 +135,19 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         )
         embed.add_field(
             name="Staff",
-            value="[Abhishek Rameshand#8069](https://www.youtube.com/channel/UC0L0CPqIoZzKeV7ndIXjZZw)",
+            value=(
+                "[Abhishek Rameshand#8069](https://www.youtube.com/channel/UC0L0CPqIoZzKeV7ndIXjZZw)\n"
+                "deathlord12217049#4289"
+            ),
         )
+
+        # embed.add_field(
+        #     name="Testers",
+        #     value=(
+        #         "\n"
+        #     ),
+        # )
+
         embed.add_field(
             name="Contribute",
             value="[Contribute on Github](https://github.com/Darkflame72/Obsidion/)\n[Track on Trello](https://trello.com/b/qZhxHkTq/obsidion)",
@@ -144,27 +157,26 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
             name="Inspiration",
             value="[Crafty](https://www.craftybot.xyz/) by [TJ#0215](https://github.com/talle117)",
         )
-        third_party = ""
-        third_party += "This bot uses some external services to add extra features.\n"
-        third_party += (
+        third_party = (
+            "This bot uses some external services to add extra features.\n"
             "Skin renders - [Visage](https://visage.surgeplay.com/index.html)\n"
+            "Mojang API - [Wiki.vg](https://wiki.vg/Mojang_API)\n"
+            "Discord.py - [Github](https://github.com/Rapptz/discord.py)"
         )
-        third_party += "Mojang API - [Wiki.vg](https://wiki.vg/Mojang_API)\n"
-        third_party += "Discord.py - [Github](https://github.com/Rapptz/discord.py)"
         embed.add_field(name="Third Party Stuff", value=third_party, inline=False)
 
         embed.set_footer(text="Version: 0.1 | Author: Darkflame72#1150")
         await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.cooldown(rate=1, per=60.0, type=commands.BucketType.user)
+    @commands.cooldown(rate=1, per=600.0, type=commands.BucketType.user)
     async def feedback(self, ctx, *, content: str):
         """Gives feedback about the bot.
         This is a quick way to request features or bug fixes
         without being in the bot's server.
         The bot will communicate with you via PM about the status
         of your request if possible.
-        You can only request feedback once a minute.
+        You can only request feedback once every 10 minutes.
         """
 
         e = discord.Embed(title="Feedback", colour=0x00FF00)
