@@ -7,11 +7,7 @@ services:
     links:
       - db
   db:
-    image: postgres
-    environment:
-      POSTGRES_USER: discord
-      POSTGRES_PASSWORD: password_here
-      POSTGRES_DB: discord
+    image: postgres:12-alpine
     volumes:
       - postgresdb:/var/lib/postgresql/data
 
