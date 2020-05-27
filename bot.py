@@ -5,12 +5,10 @@ import discord
 import datetime
 import asyncio
 import json
-import logging
 import traceback
 import aiohttp
 import sys
 from collections import deque, defaultdict
-import time
 
 # import environment variables
 import config
