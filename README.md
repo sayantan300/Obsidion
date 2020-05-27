@@ -2,6 +2,8 @@
 
 [INVITE LINK](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6) | [WEBSITE](https://obsidion.bowie-co.nz) | [API](https://api.bowie-co.nz)
 
+[![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/Darkflame72/Obsidion/?ref=repository-badge)
+
 ## About This Bot
 
 This is a configurable, fun and useful Minecraft themed Discord Bot.It has a wide range of commands available and can be customised on a per server basis. It includes features such as server tracking, wiki lookup, profile viewing and much more. It uses the [Discord.py](https://github.com/Rapptz/discord.py) library and is fully asynchronous.
