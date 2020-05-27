@@ -1,9 +1,6 @@
 import sys
-import logging
 import asyncio
-import contextlib
 import asyncpg
-import os
 
 import config
 
