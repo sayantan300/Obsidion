@@ -7,7 +7,6 @@ import base64
 import io
 import logging
 import config
-from utils.chat_formatting import *
 
 log = logging.getLogger(__name__)
 
@@ -472,7 +471,7 @@ class Information(commands.Cog, name="Information"):
 
                 embed = discord.Embed(
                     title=f"Minecraft Gamepedia: {title}",
-                    description="\u2063\n{}\n\u2063".format(description),
+                    description=f"\u2063\n{description}\n\u2063",
                     color=0x00FF00,
                     url=url,
                 )
@@ -498,3 +497,5 @@ class Information(commands.Cog, name="Information"):
                 name="Text format code",
                 value=f"To format text start it with `{colours[color]['code']}` and end it with `§r` eg `{colours[color]['code']}text§r`",
             )
+
+        await ctx.send(embed=embed)
