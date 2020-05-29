@@ -2,6 +2,7 @@ from discord.ext import commands
 import discord
 import logging
 from math import floor, ceil
+import re
 
 log = logging.getLogger(__name__)
 
@@ -16,7 +17,18 @@ class Redstone(commands.Cog, name="Redstone"):
     @commands.command()
     async def chest(self, ctx, items: int):
         """calculate how many chests you need for that number of items"""
-        await ctx.send(f"you need {round(items/(64*54)+1, None): ,} chests")
+        chest_count = round(items / (64 * 54) + 1, None)
+
+        if chest_count > 1:
+            double_chests = int(chest_count / 2)
+            single_chests = chest_count % 2
+            await ctx.send(
+                f"You need {double_chests} double chests and {single_chests} chest or {chest_count} shulkers"
+            )
+        else:
+            await ctx.send(
+                f"you need {round(items/(64*54)+1, None): ,} chest or shulker box"
+            )
 
     @commands.command()
     async def comparator(self, ctx, item_count: int):
@@ -41,3 +53,40 @@ class Redstone(commands.Cog, name="Redstone"):
         """Convert ticks to seconds"""
         ticks = seconds * 20
         await ctx.send(f"There are {ticks} ticks in {seconds} seconds")
+
+    @commands.command()
+    async def minecraftformat(self, ctx, *, text):
+        """format discord markdown into minecraft text formating"""
+        # underline
+        if "__" in text:
+            text = re.sub(
+                "(__)",
+                lambda m, c=itertools.count(): m.group() if next(c) % 5 else "§n",
+                text,
+            ).replace("__", "§r")
+
+        # bold
+        if "**" in text:
+            text = re.sub(
+                "(**)",
+                lambda m, c=itertools.count(): m.group() if next(c) % 5 else "§l",
+                text,
+            ).replace("**", "§r")
+
+        # italic
+        if "*" in text:
+            text = re.sub(
+                "(*)",
+                lambda m, c=itertools.count(): m.group() if next(c) % 5 else "§l",
+                text,
+            ).replace("*", "§r")
+
+        # strikethrough
+        if "~~" in text:
+            text = re.sub(
+                "(~~)",
+                lambda m, c=itertools.count(): m.group() if next(c) % 5 else "§m",
+                text,
+            ).replace("~~", "§r")
+
+        await ctx.send(text)

@@ -2,9 +2,9 @@ from discord.ext import commands
 import discord
 import resource
 import datetime
-import time
 import logging
 import config
+from utils.chat_formatting import humanize_timedelta
 
 log = logging.getLogger(__name__)
 
@@ -55,6 +55,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         latency = round(self.bot.latency * 1000)
         embed = discord.Embed(title="Bot's Ping", color=0x00FF00)
         embed.add_field(name="Discord Ping", value=f"`{latency}ms`")
+
         # embed.add_field(name="API Ping", value=f"`{delay}ms`") # TODO
 
         await ctx.send(embed=embed)
@@ -63,22 +64,22 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     async def stats(self, ctx):
         """View statistics about the bot"""
 
-        current_time = time.time()
-        difference = int(round(current_time - self.bot.start_time))
-        text = str(datetime.timedelta(seconds=difference))
+        since = self.bot.uptime.strftime("%Y-%m-%d %H:%M:%S")
+        delta = datetime.datetime.utcnow() - self.bot.uptime
+        uptime_str = humanize_timedelta(timedelta=delta)
 
         total_users = sum(len(guild.members) for guild in self.bot.guilds)
         text_channels = sum(len(guild.text_channels) for guild in self.bot.guilds)
         voice_channels = sum(len(guild.voice_channels) for guild in self.bot.guilds)
 
-        ram = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (2 ** 20), 2)
+        ram = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, 2)
 
         statics = (
             f"Guilds: `{len(self.bot.guilds):,}`\n"
             f"Users: `{total_users:,}`\n"
             f"Channels: `{text_channels+voice_channels:,}`\n"
             f"Memory Usage: `{ram:,}MB`\n"
-            f"Uptime: `{text}`\n"
+            f"Uptime: `{uptime_str}`\n"
             f"Discord.py: `v{discord.__version__}`"
         )
 
@@ -94,7 +95,7 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
         embed = discord.Embed(title="Stats", color=0x00FF00)
         embed.add_field(name=":newspaper: STATS", value=statics, inline=True)
         embed.add_field(name=":link: LINKS", value=links, inline=True)
-        embed.set_footer(text="Version: 0.1 | Authors: Darkflame72#1150")
+        embed.set_footer(text=f"{self.bot.version} | Authors: Darkflame72#1150")
 
         await ctx.send(embed=embed)
 

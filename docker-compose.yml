@@ -13,3 +13,6 @@ services:
 
 volumes:
   postgresdb:
+
+networks:
+  obsidion-discord-bot:

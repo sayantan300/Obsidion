@@ -13,6 +13,7 @@ import textwrap
 import copy
 import time
 from typing import Optional
+from utils.chat_formatting import text_to_file
 
 log = logging.getLogger(__name__)
 
@@ -325,7 +326,10 @@ class admin(commands.Cog, name="admin"):
             try:
                 if fmt is not None:
                     if len(fmt) > 2000:
-                        await ctx.send("Content too big to be printed.")
+                        await ctx.send(
+                            "Text is too big to send by itself, sent as file instead.",
+                            file=text_to_file(fmt),
+                        )
                     else:
                         await ctx.send(fmt)
             except discord.Forbidden:

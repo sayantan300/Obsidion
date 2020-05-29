@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from datetime import datetime
+import datetime
 from utils.utils import uuid_from_username, get
 from uuid import UUID
 import base64
@@ -8,8 +8,29 @@ import io
 import re
 import logging
 import config
+from utils.chat_formatting import *
 
 log = logging.getLogger(__name__)
+
+colours = {
+    "black": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_blue": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_green": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_green": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_aqua": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_red": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_purple": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "gold": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "gray": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_gray": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "blue": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "green": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "aqua": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "red": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "light_purple": {"code": "§0", "rgb": "000", "background-rgb": "",},
+    "yellow": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "white": {"code": "§0", "rgb": "000", "background-rgb": ""},
+}
 
 
 class Information(commands.Cog, name="Information"):
@@ -39,7 +60,7 @@ class Information(commands.Cog, name="Information"):
             name_list = ""
             for name in names[::-1][:-1]:
                 name1 = name["name"]
-                date = datetime.utcfromtimestamp(
+                date = datetime.datetime.utcfromtimestamp(
                     int(str(name["changedToAt"])[:-3])
                 ).strftime("%b %d, %Y")
                 name_list += f"**{names.index(name)+1}.** `{name1}` - {date} " + "\n"
@@ -48,9 +69,11 @@ class Information(commands.Cog, name="Information"):
 
             uuids = "Short UUID: `" + uuid + "\n" + "`Long UUID: `" + long_uuid + "`"
             information = ""
-            information += f"Username Changes: `{len(names)-1}`\n"
-            information += f"Legacy: `{data['legacy']}`\n"
-            information += f"Cached: `{datetime.utcfromtimestamp(float(data['cachetime'])):%Y-%m-%dT%H:%M:%SZ}`"
+            information = (
+                f"Username Changes: `{len(names)-1}`\n"
+                f"Legacy: `{data['legacy']}`\n"
+                f"Cached: `{datetime.datetime.utcfromtimestamp(float(data['cachetime'])):%H:%M:%S}`"
+            )
 
             embed = discord.Embed(
                 title=f"Minecraft profile for {username}", color=0x00FF00
@@ -232,10 +255,12 @@ class Information(commands.Cog, name="Information"):
 
             embed = discord.Embed(color=0x00FF00)
 
-            sale = f"Total Sales: `{sales_data['total']:,}`\n"
-            sale += f"Sales in the last 24 hours: `{sales_data['last24h']:,}`\n"
-            sale += f"Sales per second: `{sales_data['saleVelocityPerSeconds']}`\n"
-            sale += "[BUY MINECRAFT](https://my.minecraft.net/en-us/store/minecraft/)"
+            sale = (
+                f"Total Sales: `{sales_data['total']:,}`\n"
+                f"Sales in the last 24 hours: `{sales_data['last24h']:,}`\n"
+                f"Sales per second: `{sales_data['saleVelocityPerSeconds']}`\n"
+                "[BUY MINECRAFT](https://my.minecraft.net/en-us/store/minecraft/)"
+            )
 
             embed.add_field(name="Minecraft Sales", value=sale)
 
@@ -286,15 +311,16 @@ class Information(commands.Cog, name="Information"):
             tournament = match["tournament"]
             match_id = match["id"]
 
-            info = ""
-            info += f"Opens: {opens}\n"
-            info += f"Author: {author}\n"
-            info += f"Region: {region}\n"
-            info += f"Version: {version}\n"
-            info += f"Slots: {slots}\n"
-            info += f"Length: {length} minutes\n"
-            info += f"Tournament: {tournament}\n"
-            info += f"id: {match_id}"
+            info = (
+                f"Opens: {opens}\n"
+                f"Author: {author}\n"
+                f"Region: {region}\n"
+                f"Version: {version}\n"
+                f"Slots: {slots}\n"
+                f"Length: {length} minutes\n"
+                f"Tournament: {tournament}\n"
+                f"id: {match_id}"
+            )
 
             embed.add_field(name=address, value=info)
 
@@ -340,12 +366,13 @@ class Information(commands.Cog, name="Information"):
         if data:
             embed = discord.Embed(color=0x00FF00)
             for ban in data:
-                value = ""
-                value += f"Date: {ban['created']}\n"
-                value += f"Expires: {ban['expires']}\n"
-                value += f"Reason: {ban['reason']}\n"
-                value += f"Link: {ban['link']}\n"
-                value += f"Created by: {ban['createdBy']}"
+                value = (
+                    f"Date: {ban['created']}\n"
+                    f"Expires: {ban['expires']}\n"
+                    f"Reason: {ban['reason']}\n"
+                    f"Link: {ban['link']}\n"
+                    f"Created by: {ban['createdBy']}"
+                )
                 embed.add_field(name=ban["id"], value=value)
 
             await ctx.send(embed=embed)
@@ -370,17 +397,19 @@ class Information(commands.Cog, name="Information"):
                     url=f"https://bugs.mojang.com/browse/{bug}",
                 )
 
-                info = ""
-                info += f"Version: {data['fields']['project']['name']}\n"
-                info += f"Reporter: {data['fields']['creator']['displayName']}\n"
-                info += f"Created: {data['fields']['created']}\n"
-                info += f"Votes: {data['fields']['votes']['votes']}\n"
-                info += f"Updates: {data['fields']['updated']}\n"
-                info += f"Watchers: {data['fields']['watches']['watchCount']}"
+                info = (
+                    f"Version: {data['fields']['project']['name']}\n"
+                    f"Reporter: {data['fields']['creator']['displayName']}\n"
+                    f"Created: {data['fields']['created']}\n"
+                    f"Votes: {data['fields']['votes']['votes']}\n"
+                    f"Updates: {data['fields']['updated']}\n"
+                    f"Watchers: {data['fields']['watches']['watchCount']}"
+                )
 
-                details = ""
-                details += f"Type: {data['fields']['issuetype']['name']}\n"
-                details += f"Status: {data['fields']['status']['name']}\n"
+                details = (
+                    f"Type: {data['fields']['issuetype']['name']}\n"
+                    f"Status: {data['fields']['status']['name']}\n"
+                )
                 if data["fields"]["resolution"]["name"]:
                     details += f"Resolution: {data['fields']['resolution']['name']}\n"
                 if "version" in data["fields"]:
@@ -457,35 +486,19 @@ class Information(commands.Cog, name="Information"):
             except KeyError:
                 await ctx.send(f"I'm sorry, I couldn't find \"{query}\" on Gamepedia")
 
-    # @commands.command()
-    # async def version(self, ctx, version):
-    # """View all of Minecraft Java edition versions or a specific version."""
+    @commands.command()
+    async def colorcodes(self, ctx, color=None):
+        """get information on colour codes"""
+        if color in colours:
+            embed = discord.Embed(
+                title=color, color=("%02x%02x%02x" % colours[color]["rgb"])
+            )
+            embed.add_field(
+                name="Color Information",
+                value=f"RGB: {colours[color]['rgb']}\nHEX: {'%02x%02x%02x' % colours[color]['rgb']}\n BACKGROUND-COLOR RGB: {colours[color]['background-rgb']}\nHEX: {'%02x%02x%02x' % colours[color]['background-rgb']}\n ",
+            )
 
-    # await ctx.send("Still in progress")
-
-    # @commands.command(aliases=["latestver", "latestversion"])
-    # async def latest(self, ctx, snapshot):
-    #    """View the latest version or snapshot within the Minecraft Java launcher."""
-
-    #    embed = discord.Embed(title="Latest JAVA release", color=0x00ff00)
-
-    #    current = ""
-    #    current += f"Version: `{}`\n"
-    #    current += f"Latest Snapshot: `{}`"
-    #    embed.add_field(name="Current Release", value="")
-
-    #    latest = 0
-    #    latest += f"{}\n"
-    #    latest += f"Time Published: `{}`\n"
-    #    latest += f"Type: `{}`\n"
-    #    latest += f"URL: [{} | snapshot]({})"
-
-    #    embed.add_field(name="Latest Version", value=latest)
-
-    #    await ctx.send(embed=embed)
-
-    # @commands.command(aliases=["latestarticle", "minecraftnews", "latestnews"])
-    # async def news(self, ctx):
-    #    """See the latest post on Minecraft.net."""
-    #
-    #    await ctx.send("Still in progress")
+            embed.add_field(
+                name="Text format code",
+                value=f"To format text start it with `{colours[color]['code']}` and end it with `§r` eg `{colours[color]['code']}text§r`",
+            )

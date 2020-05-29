@@ -15,7 +15,7 @@ import time
 # import environment variables
 import config
 
-from core.global_checks import init_global_checks
+from utils.global_checks import init_global_checks
 
 __version__ = "0.3.0.dev"
 
@@ -62,8 +62,8 @@ class Obsidion(commands.AutoShardedBot):
         self.hypixel_api = config.hypixel_key
         self._prev_events = deque(maxlen=10)
         self.uptime = None
+        self.version = __version__
 
-        # shard_id: List[datetime.datetime]
         # shows the last attempted IDENTIFYs and RESUMEs
         self.resumes = defaultdict(list)
         self.identifies = defaultdict(list)
@@ -80,7 +80,6 @@ class Obsidion(commands.AutoShardedBot):
                 traceback.print_exc()
 
         init_global_checks(self)
-        print(1)
 
     def _clear_gateway_data(self):
         one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
@@ -121,6 +120,8 @@ class Obsidion(commands.AutoShardedBot):
         # Anything in ignored will return and prevent anything happening.
         if isinstance(error, ignored):
             return
+
+        await ctx.send(error)
 
         if isinstance(error, commands.BotMissingPermissions):
             missing = [
@@ -205,9 +206,9 @@ class Obsidion(commands.AutoShardedBot):
             return
 
         # update stats of command use
-        self.pool.execute(
-            "UPDATE command_stats SET uses = uses + 1 WHERE name = $1", ctx.command.name
-        )
+        # await self.pool.execute(
+        #     "UPDATE command_stats SET uses = uses + 1 WHERE name = $1", ctx.command.name
+        # )
 
         await self.invoke(ctx)
 

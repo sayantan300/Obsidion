@@ -1,3 +1,5 @@
+from typing import Optional, SupportsInt
+import datetime
 
 
 async def get(session, url):
@@ -19,6 +21,7 @@ async def get_uuid(session, username):
             return uuid
         return False
 
+
 async def uuid_from_username(username, session, bot, ctx):
     """get the uuid or check in db"""
     if username:
@@ -29,13 +32,11 @@ async def uuid_from_username(username, session, bot, ctx):
         uuid = await bot.pool.fetchval(
             "SELECT uuid FROM discord_user WHERE id = $1", ctx.author.id
         )
-        names = await get(
-            session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-        )
+        names = await get(session, f"https://api.mojang.com/user/profiles/{uuid}/names")
         username = names[-1]["name"]
     else:
         uuid = False
-    
+
     return uuid, username
 
 
