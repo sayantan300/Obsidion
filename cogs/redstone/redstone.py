@@ -1,5 +1,4 @@
 from discord.ext import commands
-import discord
 import logging
 from math import floor, ceil
 import re

@@ -2,7 +2,6 @@
 import dbl
 import aiohttp
 import config
-import asyncio
 import discord
 from discord.ext import commands, tasks
 

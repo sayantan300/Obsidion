@@ -5,7 +5,6 @@ from utils.utils import uuid_from_username, get
 from uuid import UUID
 import base64
 import io
-import re
 import logging
 import config
 from utils.chat_formatting import *
