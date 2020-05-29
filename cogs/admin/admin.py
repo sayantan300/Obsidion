@@ -99,7 +99,7 @@ class admin(commands.Cog, name="admin"):
             process = subprocess.Popen(
                 command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
-            result = await self.bot.loop.run_in_executor(None, process.communicate)
+            await self.bot.loop.run_in_executor(None, process.communicate)
 
     @staticmethod
     def cleanup_code(content):

@@ -2,6 +2,7 @@ from discord.ext import commands
 import logging
 from math import floor, ceil
 import re
+import itertools
 
 log = logging.getLogger(__name__)
 

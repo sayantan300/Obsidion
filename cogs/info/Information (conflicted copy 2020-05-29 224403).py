@@ -7,27 +7,26 @@ import base64
 import io
 import logging
 import config
-from utils.chat_formatting import *
 
 log = logging.getLogger(__name__)
 
 colours = {
-    "black": {"code": "§0", "hex": "000000", "background-hex": "000000"},
-    "dark_blue": {"code": "§0", "hex": "0000AA", "background-hex": "00002A"},
-    "dark_green": {"code": "§0", "hex": "00AA00", "background-hex": "002A00"},
-    "dark_aqua": {"code": "§0", "hex": "00AAAA", "background-hex": "002A2A"},
-    "dark_red": {"code": "§0", "hex": "AA0000", "background-hex": "2A0000"},
-    "dark_purple": {"code": "§0", "hex": "AA00AA", "background-hex": "2A002A"},
-    "gold": {"code": "§0", "hex": "FFAA00", "background-hex": "2A2A00"},
-    "gray": {"code": "§0", "hex": "AAAAAA", "background-hex": "2A2A2A"},
-    "dark_gray": {"code": "§0", "hex": "555555", "background-hex": "151515"},
-    "blue": {"code": "§0", "hex": "5555FF", "background-hex": "15153F"},
-    "green": {"code": "§0", "hex": "55FF55", "background-hex": "153F15"},
-    "aqua": {"code": "§0", "hex": "55FFFF", "background-hex": "153F3F"},
-    "red": {"code": "§0", "hex": "FF5555", "background-hex": "3F1515"},
-    "light_purple": {"code": "§0", "hex": "FF55FF", "background-hex": "3F153F",},
-    "yellow": {"code": "§0", "hex": "FFFF55", "background-hex": "3F3F15"},
-    "white": {"code": "§0", "hex": "FFFFFF", "background-hex": "3F3F3F"},
+    "black": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_blue": {"code": "§0", "rgb": "00170", "background-rgb": ""},
+    "dark_green": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_aqua": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_red": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_purple": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "gold": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "gray": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "dark_gray": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "blue": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "green": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "aqua": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "red": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "light_purple": {"code": "§0", "rgb": "000", "background-rgb": "",},
+    "yellow": {"code": "§0", "rgb": "000", "background-rgb": ""},
+    "white": {"code": "§0", "rgb": "000", "background-rgb": ""},
 }
 
 
@@ -488,10 +487,12 @@ class Information(commands.Cog, name="Information"):
     async def colorcodes(self, ctx, color=None):
         """get information on colour codes"""
         if color in colours:
-            embed = discord.Embed(title=color, color=colours[color]["hex"])
+            embed = discord.Embed(
+                title=color, color=("%02x%02x%02x" % colours[color]["rgb"])
+            )
             embed.add_field(
                 name="Color Information",
-                value=f"HEX: {colours[color]['hex']}\n BACKGROUND-HEX: {colours[color]['background-hex']}",
+                value=f"RGB: {colours[color]['rgb']}\nHEX: {'%02x%02x%02x' % colours[color]['rgb']}\n BACKGROUND-COLOR RGB: {colours[color]['background-rgb']}\nHEX: {'%02x%02x%02x' % colours[color]['background-rgb']}\n ",
             )
 
             embed.add_field(

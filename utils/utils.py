@@ -1,5 +1,4 @@
 from typing import Optional, SupportsInt
-import datetime
 
 
 async def get(session, url):

@@ -1,4 +1,3 @@
-import itertools
 import datetime
 from typing import Sequence, Iterator, List, Optional, Union, SupportsInt
 from io import BytesIO

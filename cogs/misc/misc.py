@@ -64,7 +64,6 @@ class Miscellaneous(commands.Cog, name="Miscellaneous"):
     async def stats(self, ctx):
         """View statistics about the bot"""
 
-        since = self.bot.uptime.strftime("%Y-%m-%d %H:%M:%S")
         delta = datetime.datetime.utcnow() - self.bot.uptime
         uptime_str = humanize_timedelta(timedelta=delta)
 
