@@ -352,18 +352,6 @@ class admin(commands.Cog, name="admin"):
         await self.bot.invoke(new_ctx)
 
     @commands.command(hidden=True)
-    async def do(self, ctx, times: int, *, command):
-        """Repeats a command a specified number of times."""
-        msg = copy.copy(ctx.message)
-        msg.content = ctx.prefix + command
-
-        new_ctx = await self.bot.get_context(msg, cls=type(ctx))
-        new_ctx._db = ctx._db
-
-        for _ in range(times):
-            await new_ctx.reinvoke()
-
-    @commands.command(hidden=True)
     async def perf(self, ctx, *, command):
         """Checks the timing of a command, attempting to suppress HTTP and DB calls."""
 
@@ -438,7 +426,7 @@ class admin(commands.Cog, name="admin"):
 
         await self.say_permissions(ctx, member, channel)
 
-    @commands.command(name="quit", hidden=True)
+    @commands.command(aliases=["stop", "shutdown"], name="quit", hidden=True)
     @commands.is_owner()
     async def _quit(self, ctx):
         """Quits the bot."""
@@ -483,8 +471,3 @@ class admin(commands.Cog, name="admin"):
 
         final_url = f"<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>"
         await ctx.send(final_url)
-
-    @commands.command(hidden=True)
-    async def hello(self, ctx):
-        """Displays my intro message."""
-        await ctx.send("Hello! I'm a bot! Darkflame72#1150 made me.")

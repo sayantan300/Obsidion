@@ -96,65 +96,61 @@ class Information(commands.Cog, name="Information"):
         Request information about a Minecraft Java edition multiplayer server.
         """
         await ctx.channel.trigger_typing()
-        if (
+        if not (
             server
             or ctx.guild
             and await self.bot.pool.fetchval(
                 "SELECT server FROM guild WHERE id = $1", ctx.guild.id
             )
         ):
-            server = (
-                server
-                if server
-                else await self.bot.pool.fetchval(
-                    "SELECT server FROM guild WHERE id = $1", ctx.guild.id
-                )
-            )
-            url = f"{self.api}/server/java"
-            if len(server.split(":")) == 2:
-                payload = {
-                    "server": server.split(":")[0],
-                    "port": server.split(":")[1],
-                }
-            else:
-                payload = {"server": server.split(":")[0]}
-            async with self.session.get(url, params=payload) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                else:
-                    data = False
-            if data:
-                embed = discord.Embed(title=f"Java Server: {server}", color=0x00FF00)
-                embed.add_field(name="Description", value=data["description"])
-
-                embed.add_field(
-                    name="Players",
-                    value=f"Online: `{data['players']['online']:,}` \n Maximum: `{data['players']['max']:,}`",
-                )
-                if data["players"]["sample"]:
-                    names = ""
-                    for player in data["players"]["sample"]:
-                        names += f"{player['name']}\n"
-                    embed.add_field(name="Information", value=names, inline=False)
-                embed.add_field(
-                    name="Version",
-                    value=f"Java Edition \n Running: `{data['version']['name']}` \n Protocol: `{data['version']['protocol']}`",
-                    inline=False,
-                )
-                if data["favicon"]:
-                    encoded = base64.decodebytes(data["favicon"][22:].encode("utf-8"))
-                    image_bytesio = io.BytesIO(encoded)
-                    favicon = discord.File(image_bytesio, "favicon.png")
-                    embed.set_thumbnail(url="attachment://favicon.png")
-                    await ctx.send(embed=embed, file=favicon)
-                else:
-                    await ctx.send(embed=embed)
-            else:
-                await ctx.send(
-                    f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested"
-                )
-        else:
             await ctx.send(f"{ctx.author}, :x: Please provide a server")
+            return
+        server = (
+            server
+            if server
+            else await self.bot.pool.fetchval(
+                "SELECT server FROM guild WHERE id = $1", ctx.guild.id
+            )
+        )
+        url = f"{self.api}/server/java"
+        if len(server.split(":")) == 2:
+            payload = {
+                "server": server.split(":")[0],
+                "port": server.split(":")[1],
+            }
+        else:
+            payload = {"server": server.split(":")[0]}
+        data = await get(self.session, url, payload)
+        if not data:
+            await ctx.send(
+                f"{ctx.author}, :x: The Jave edition Minecraft server `{server}` is currently not online or cannot be requested"
+            )
+            return
+        embed = discord.Embed(title=f"Java Server: {server}", color=0x00FF00)
+        embed.add_field(name="Description", value=data["description"])
+
+        embed.add_field(
+            name="Players",
+            value=f"Online: `{data['players']['online']:,}` \n Maximum: `{data['players']['max']:,}`",
+        )
+        if data["players"]["sample"]:
+            names = ""
+            for player in data["players"]["sample"]:
+                names += f"{player['name']}\n"
+            embed.add_field(name="Information", value=names, inline=False)
+        embed.add_field(
+            name="Version",
+            value=f"Java Edition \n Running: `{data['version']['name']}` \n Protocol: `{data['version']['protocol']}`",
+            inline=False,
+        )
+        if data["favicon"]:
+            encoded = base64.decodebytes(data["favicon"][22:].encode("utf-8"))
+            image_bytesio = io.BytesIO(encoded)
+            favicon = discord.File(image_bytesio, "favicon.png")
+            embed.set_thumbnail(url="attachment://favicon.png")
+            await ctx.send(embed=embed, file=favicon)
+        else:
+            await ctx.send(embed=embed)
 
     @commands.command(aliases=["servpe"])
     async def serverpe(self, ctx, server=None):
@@ -427,24 +423,22 @@ class Information(commands.Cog, name="Information"):
             await ctx.send(f"{ctx.message.author.mention},  :x: Please provide a bug.")
 
     @commands.command()
-    async def wiki(self, ctx, *, query):
+    async def wiki(self, ctx, *, query: str):
         """Get an article from the minecraft wiki"""
         async with ctx.channel.typing():
 
             def generate_payload(query):
                 """Generate the payload for Gamepedia based on a query string."""
-                payload = {}
-                payload["action"] = "query"
-                payload["titles"] = query.replace(" ", "_")
-                payload["format"] = "json"
-                payload["formatversion"] = "2"  # Cleaner json results
-                # Include extract in returned results
-                payload["prop"] = "extracts"
-                # Only return summary paragraph(s) before main content
-                payload["exintro"] = "1"
-                payload["redirects"] = "1"  # Follow redirects
-                # Make sure it's plaintext (not HTML)
-                payload["explaintext"] = "1"
+                payload = {
+                    "action": "query",
+                    "titles": query.replace(" ", "_"),
+                    "format": "json",
+                    "formatversion": "2",  # Cleaner json results
+                    "prop": "extracts",  # Include extract in returned results
+                    "exintro": "1",  # Only return summary paragraph(s) before main content
+                    "redirects": "1",  # Follow redirects
+                    "explaintext": "1",  # Make sure it's plaintext (not HTML)
+                }
                 return payload
 
             base_url = "https://minecraft.gamepedia.com/api.php"
@@ -455,8 +449,7 @@ class Information(commands.Cog, name="Information"):
 
             payload = generate_payload(query)
 
-            async with self.session.get(base_url, params=payload) as resp:
-                result = await resp.json()
+            result = await get(self.session, base_url, payload)
 
             try:
                 # Get the last page. Usually this is the only page.

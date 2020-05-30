@@ -1,9 +1,9 @@
 from typing import Optional, SupportsInt
 
 
-async def get(session, url):
+async def get(session, url, params={}):
     """get the json from a webpage"""
-    async with session.get(url) as resp:
+    async with session.get(url, params=params) as resp:
         if resp.status == 200:
             data = await resp.json()
             return data
