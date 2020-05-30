@@ -1,6 +1,5 @@
 # Handles automatic posting
 import dbl
-import aiohttp
 import config
 import discord
 from discord.ext import commands, tasks
