@@ -49,7 +49,7 @@ class bot_advertise(commands.Cog):
 
     # discordbotlist
     @tasks.loop(seconds=60)
-    async def boats_server_count(self):
+    async def discordbotlist(self):
         await self.bot.wait_until_ready()
         url = f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}/stats"
         headers = {"Authorization": self.discordbotlisttoken}
@@ -58,7 +58,7 @@ class bot_advertise(commands.Cog):
 
     # discordlabs
     @tasks.loop(seconds=60)
-    async def boats_server_count(self):
+    async def discordlabs(self):
         await self.bot.wait_until_ready()
         url = f"https://bots.discordlabs.org/v2/bot/{self.bot.user.id}/stats"
         json = {"server_count": len(self.bot.guilds), "token": self.discordlabstoken}
@@ -66,7 +66,7 @@ class bot_advertise(commands.Cog):
 
     # botsondiscord
     @tasks.loop(seconds=60)
-    async def boats_server_count(self):
+    async def botsondiscord(self):
         await self.bot.wait_until_ready()
         url = f"https://bots.ondiscord.xyz/bot-api/bots/{self.bot.user.id}/guilds"
         headers = {"Authorization": self.boatstoken}
