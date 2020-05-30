@@ -1,7 +1,6 @@
 # Handles automatic posting
 import dbl
 import config
-import discord
 from discord.ext import commands, tasks
 
 
