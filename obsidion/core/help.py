@@ -66,7 +66,7 @@ class MyHelpCommand(commands.HelpCommand):
     async def send_cog_help(self, cog):
         embed = discord.Embed(
             title=f"{cog.qualified_name} Help",
-            description=f"Below is a list of all the commands and their desriptions that belong to this module.",
+            description="Below is a list of all the commands and their desriptions that belong to this module.",
             colour=0x00FF00,
         )
         embed.set_footer(

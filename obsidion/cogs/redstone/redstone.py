@@ -17,7 +17,7 @@ class redstone(commands.Cog):
         chest_count = round(items / (64 * 54) + 1, None)
 
         if chest_count == 1:
-            await ctx.send(f"You need 1 chest or shulker box")
+            await ctx.send("You need 1 chest or shulker box")
             return
         double_chests = int(chest_count / 2)
         shulker_chests = round(chest_count / (64 * 54) + 1, None)
