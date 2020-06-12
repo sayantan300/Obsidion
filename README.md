@@ -3,7 +3,7 @@
   <br>
 </h1>
 
-<h4 align="center">Minecraft, Info, Fun, Server and More</h4>
+<h4 align="center">Minecraft, Info, Fun, Hypixel and More</h4>
 
 <p align="center">
   <a href="https://discord.gg/invite/7BRD7s6">

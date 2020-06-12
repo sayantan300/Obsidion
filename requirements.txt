@@ -4,3 +4,12 @@ asyncpg
 uvloop
 black
 dblpy
+feedparser
+statsd
+aioredis
+fakeredis
+pyyaml
+aiodns
+fuzzywuzzy
+beautifulsoup4
+aiohypixel

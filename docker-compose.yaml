@@ -1,0 +1,34 @@
+version: "3.7"
+services:
+  bot:
+    build: .
+    volumes:
+      # this is for development only as it makes our code accesable from the host pc
+      # remove for production
+      - .:/obsidion
+    links:
+      - db
+      - redis
+      - graphite
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgresdb:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: discord
+      POSTGRES_PASSWORD: hunter12
+      POSTGRES_USER: dsicord
+  redis:
+    image: redis:alpine
+  graphite:
+    image: graphiteapp/graphite-statsd
+
+    ports:
+      - 80:80
+      - 2003-2004:2003-2004
+      - 2023-2024:2023-2024
+      - 8125:8125/udp
+      - 8126:8126
+
+volumes:
+  postgresdb:

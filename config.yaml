@@ -1,0 +1,35 @@
+bot:
+  clientid: 695061551916515439
+  discord_token: Njk1MDYxNTUxOTE2NTE1NDM5.Xo2RzA.EMmnZT8QQfHy6rkP7IqoGbjdDwU
+  owner_id: 456217109236809748
+  api: https://api.bowie-co.nz/api/v1
+  hypixelapi_token: ecdcbe5e-3d63-4a90-a374-87bc5a9357f7
+  status: for @Obsidion help
+  default_prefix: .
+channels:
+  new_guild_channel: none
+  upvote_channel: none
+  bugs_channel: 720498128498982922
+  feedback_channel: 695009307384873041
+discord_bot_lists:
+  voting_enabled: false
+  dbl_token: none
+  bots4discord_token: none
+  discordboats_token: none
+  discordbotlist_token: none
+  discodlabs_token: none
+  botsondiscord_token: none
+database:
+  username: discord
+  server: db
+  password: mDji4vNV6NLG9rZxRAVm94ZEZh!%bH&9
+  database: discord
+redis:
+  enabled: false
+  host: none
+  port: none
+  password: none
+stats:
+  enabled: true
+  statsd_host: "graphite"
+  presence_update_timeout: 300
