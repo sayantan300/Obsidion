@@ -1,5 +1,3 @@
-import string
-from datetime import datetime
 
 from discord.ext.commands import Cog, Context
 

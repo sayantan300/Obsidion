@@ -11,7 +11,6 @@ import aioredis
 import discord
 import fakeredis.aioredis
 from discord.ext import commands
-from discord.ext.commands import when_mentioned_or
 
 from obsidion import constants
 
