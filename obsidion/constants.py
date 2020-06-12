@@ -14,7 +14,6 @@ their default values from `config-default.yaml`.
 import logging
 import os
 from collections.abc import Mapping
-from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional
 

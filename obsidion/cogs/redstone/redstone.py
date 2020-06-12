@@ -1,10 +1,6 @@
 import logging
 from math import ceil, floor
-
-import discord
 from discord.ext import commands
-
-from obsidion import constants
 
 log = logging.getLogger(__name__)
 
