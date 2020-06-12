@@ -15,7 +15,7 @@ class AsyncStatsClient(StatsClientBase):
         prefix: str = None,
     ):
         """Create a new client."""
-        family, _, _, _, addr = socket.getaddrinfo(
+        _, _, _, _, addr = socket.getaddrinfo(
             host, port, socket.AF_INET, socket.SOCK_DGRAM
         )[0]
         self._addr = addr

@@ -12,7 +12,10 @@ log = logging.getLogger(__name__)
 class MyHelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(
-            command_attrs={"help": "Shows help about the bot, a command, or a category", "hidden": True}
+            command_attrs={
+                "help": "Shows help about the bot, a command, or a category",
+                "hidden": True,
+            }
         )
 
     async def on_help_command_error(self, ctx, error):
@@ -61,7 +64,6 @@ class MyHelpCommand(commands.HelpCommand):
         await self.context.send(embed=embed)
 
     async def send_cog_help(self, cog):
-        bot = self.context.bot
         embed = discord.Embed(
             title=f"{cog.qualified_name} Help",
             description=f"Below is a list of all the commands and their desriptions that belong to this module.",

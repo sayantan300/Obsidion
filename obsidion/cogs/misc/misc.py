@@ -125,7 +125,6 @@ class miscellaneous(commands.Cog):
         days_since = (datetime.datetime.utcnow() - since).days
         dpy_version = f"[{discord.__version__}]({dpy_repo})"
         python_version = "[{}.{}.{}]({})".format(*sys.version_info[:3], python_url)
-        app_info = await self.bot.application_info()
         about = (
             f"This bot is an instance of [Obsidion, an open source Discord bot]({obsidion_repo}) "
             f"created by [Darkflame72]({author_repo})\n\n"
