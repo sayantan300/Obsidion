@@ -66,7 +66,7 @@ class development(commands.Cog):
         pass
 
     @commands.command(hidden=True)
-    async def reboot(self, ctx: commands.Context):
+    async def reboot(self, _ctx: commands.Context):
         """shutdown the bot"""
         # TODO
         self.bot._recreate()
