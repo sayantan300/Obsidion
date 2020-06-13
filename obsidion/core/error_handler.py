@@ -1,4 +1,5 @@
 import logging
+import traceback
 
 from discord.ext.commands import Cog, Context, errors
 import discord
@@ -133,17 +134,21 @@ class ErrorHandler(Cog):
     @staticmethod
     async def handle_unexpected_error(ctx: Context, e: errors.CommandError) -> None:
         """Send a generic error message in `ctx` and log the exception as an error with exc_info."""
-        embed = discord.Embed(title="Feedback", colour=0x00FF00)
-
         await ctx.send(
             f"Sorry, an unexpected error occurred. It has been recorded and should be fixed soon!\n\n"
-            f"```{e.__class__.__name__}: {e}```"
+            # f"```{e.__class__.__name__}: {e}```"
         )
-
-        channel = ctx.bot.get_channel(constants.Channels.feedback_channel)
+        embed = discord.Embed(title="Bug", colour=0x00FF00)
+        channel = ctx.bot.get_channel(constants.Channels.bugs_channel)
 
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
-        embed.description = e
+        embed.add_field(name="Command", value=ctx.command)
+        embed.add_field(
+            name="Traceback",
+            value=f"```{''.join(traceback.format_tb(e.__traceback__))}\n{e}```",
+            inline=False,
+        )
+        # embed.add_field("Error",)
         embed.timestamp = ctx.message.created_at
 
         if ctx.guild is not None:

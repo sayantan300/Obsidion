@@ -39,12 +39,12 @@ bot.load_extension("obsidion.cogs.misc")
 bot.load_extension("obsidion.cogs.redstone")
 bot.load_extension("obsidion.cogs.fun")
 bot.load_extension("obsidion.cogs.info")
+bot.load_extension("obsidion.cogs.images")
+bot.load_extension("obsidion.cogs.hypixel")
 
 # TODO
 # bot.load_extension("obsidion.cogs.config")
-# bot.load_extension("obsidion.cogs.hypixel")
 # bot.load_extension("obsidion.cogs.servers")
-# bot.load_extension("obsidion.cogs.images")
 
 # run bot
 bot.run(constants.Bot.discord_token)

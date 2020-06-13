@@ -195,7 +195,7 @@ class miscellaneous(commands.Cog):
         """
 
         embed = discord.Embed(title="Feedback", colour=0x00FF00)
-        channel = self.bot.get_channel(constants.Channels.feedback_channel)
+        channel = ctx.bot.get_channel(constants.Channels.feedback_channel)
         if channel is None:
             await ctx.send(
                 "Feedback is currently disabled please join our support server [here](https://discord.gg/invite/7BRD7s6) to give it in person."
