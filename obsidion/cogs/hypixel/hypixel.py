@@ -42,6 +42,3 @@ class hypixel(commands.Cog):
             colour=0x00FF00,
         )
         await ctx.send(embed=embed)
-
-    @commands.command() 
-    async def 

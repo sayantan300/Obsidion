@@ -135,8 +135,7 @@ class ErrorHandler(Cog):
     async def handle_unexpected_error(ctx: Context, e: errors.CommandError) -> None:
         """Send a generic error message in `ctx` and log the exception as an error with exc_info."""
         await ctx.send(
-            f"Sorry, an unexpected error occurred. It has been recorded and should be fixed soon!\n\n"
-            # f"```{e.__class__.__name__}: {e}```"
+            "Sorry, an unexpected error occurred. It has been recorded and should be fixed soon!\n\n"
         )
         embed = discord.Embed(title="Bug", colour=0x00FF00)
         channel = ctx.bot.get_channel(constants.Channels.bugs_channel)
