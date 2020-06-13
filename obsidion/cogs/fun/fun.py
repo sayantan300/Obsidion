@@ -1,4 +1,5 @@
 import logging
+from random import choice
 
 from discord.ext import commands
 
@@ -48,11 +49,22 @@ alphabet = "abcdefghijklmnopqrstuvwxyz123456789"
 log = logging.getLogger(__name__)
 
 
+def load_from_file(file):
+    """load a file"""
+    with open(f"obsidion/cogs/fun/resources/{file}.txt") as f:
+        content = f.readlines()
+    print([x.strip() for x in content])
+    return [x.strip() for x in content]
+
+
 class fun(commands.Cog):
     """commands that are bot related"""
 
     def __init__(self, bot):
         self.bot = bot
+        self.pvp_mes = load_from_file("kill")
+        self.kill_mes = load_from_file("pvp")
+        self.build_ideas_mes = load_from_file("build_ideas")
 
     @commands.command(aliases=["villagerspeak", "villagerspeech", "hmm"])
     async def villager(self, ctx: commands.Context, *, speech: str):
@@ -90,3 +102,61 @@ class fun(commands.Cog):
     async def creeper(self, ctx):
         """Aw man"""
         await ctx.send("Aw man")
+
+    @commands.command(aliases=["idea", "bidea"])
+    async def buildidea(self, ctx: commands.Context):
+        """Get an idea for a new idea"""
+        # await ctx.send(self.build_ideas)
+        await ctx.send(
+            f"Here is something cool to build: {choice(self.build_ideas_mes)}."
+        )
+
+    @commands.command(aliases=["slay"])
+    async def kill(self, ctx, member=None):
+        """Kill that pesky friend in a fun and stylish way"""
+        if (
+            not member
+            or str(member) == f"<@{self.bot.owner_id}>"
+            or str(member) == f"<@!{self.bot.owner_id}>"
+            or str(member) == "<@691589447074054224>"
+            or str(member) == "<@!691589447074054224>"
+        ):
+            # this included some protection for the owners and the bot itself
+            await ctx.send("Good Try!")
+            member = ctx.message.author.mention
+
+        await ctx.send(choice(self.kill_mes).replace("member", member))
+
+    @commands.command(aliases=["battle"])
+    async def pvp(self, ctx, member1=None, member2=None):
+        """Duel someone"""
+        if member1:
+            if not member2:
+                member2 = ctx.message.author.mention
+
+            await ctx.send(
+                choice(self.pvp_mes)
+                .replace("member1", member1)
+                .replace("member2", member2)
+            )
+        else:
+            await ctx.send("Please provide 2 people to fight")
+
+    @commands.command()
+    async def rps(self, ctx, user_choice=None):
+        """play Rock Paper Shears"""
+        options = ["rock", "paper", "shears"]
+        if user_choice and user_choice in options:
+            c_choice = choice(options)
+            if user_choice == options[options.index(user_choice) - 1]:
+                await ctx.send(f"You chose {user_choice}, I chose {c_choice} I win.")
+            elif c_choice == user_choice:
+                await ctx.send(
+                    f"You chose {user_choice}, I chose {c_choice} looks like we have a tie."
+                )
+            else:
+                await ctx.send(f"You chose {user_choice}, I chose {c_choice} you win.")
+        else:
+            await ctx.send(
+                "That is an invalid option can you please choose from rock, paper or shears"
+            )

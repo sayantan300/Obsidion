@@ -97,18 +97,20 @@ class images(commands.Cog, name="Images"):
             )
 
     @commands.command()
-    async def render(self, ctx: commands.Context, type_: str, username: str):
+    async def render(self, ctx: commands.Context, render_type: str, username: str):
         """Renders a Minecraft players skin in 6 different ways. You can choose from these 6 render types: face, front, frontfull, head, bust & skin."""
         await ctx.channel.trigger_typing()
         renders = ["face", "front", "frontfull", "head", "bust", "skin"]
-        if type_ in renders:
+        if render_type in renders:
             uuid = uuid = await get_uuid(self.session, username)
             if uuid:
                 embed = discord.Embed(
-                    description=f"Here is: `{username}`'s {type_}! \n **[DOWNLOAD](https://visage.surgeplay.com/{type_}/512/{uuid})**",
+                    description=f"Here is: `{username}`'s {render_type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{type_}/512/{uuid})**",
                     color=0x00FF00,
                 )
-                embed.set_image(url=f"https://visage.surgeplay.com/{type_}/512/{uuid}")
+                embed.set_image(
+                    url=f"https://visage.surgeplay.com/{render_type}/512/{uuid}"
+                )
 
                 await ctx.send(embed=embed)
             else:
