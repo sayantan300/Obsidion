@@ -1,4 +1,6 @@
 import logging
+import base64
+import io
 
 from obsidion.utils.utils import get
 from obsidion import constants
@@ -16,6 +18,60 @@ class info(commands.Cog):
         """initialise the bot"""
         self.bot = bot
         self.session = bot.http_session
+
+    @staticmethod
+    def get_server(ip: str, port: int) -> (str, int):
+        """returns the server icon"""
+        if ":" in ip: # deal with them providing port in string instead of seperate
+            ip, port = ip.split(":")
+            return (ip, port)
+        if port:
+            return (ip, port)
+        return (ip, None)
+
+
+    @commands.command()
+    async def server(self, ctx: commands.Context, server_ip:str, port: int=None):
+        """Get info on a minecraft server"""
+        await ctx.channel.trigger_typing()
+        url = f"{constants.Bot.api}/server/java"
+        server_ip, port = self.get_server(server_ip, port)
+        payload = {"server": server_ip}
+        if port:
+            payload["port"]: port
+        data = await get(self.session, url, payload)
+        if not data:
+            await ctx.send(
+                f"{ctx.author}, :x: The Jave edition Minecraft server `{server_ip}` is currently not online or cannot be requested"
+            )
+            return
+        embed = discord.Embed(title=f"Java Server: {server_ip}", color=0x00FF00)
+        embed.add_field(name="Description", value=data["description"])
+
+        embed.add_field(
+            name="Players",
+            value=f"Online: `{data['players']['online']:,}` \n Maximum: `{data['players']['max']:,}`",
+        )
+        if data["players"]["sample"]:
+            names = ""
+            for player in data["players"]["sample"]:
+                names += f"{player['name']}\n"
+            embed.add_field(name="Information", value=names, inline=False)
+        embed.add_field(
+            name="Version",
+            value=f"Java Edition \n Running: `{data['version']['name']}` \n Protocol: `{data['version']['protocol']}`",
+            inline=False,
+        )
+        if data["favicon"]:
+            encoded = base64.decodebytes(data["favicon"][22:].encode("utf-8"))
+            image_bytesio = io.BytesIO(encoded)
+            favicon = discord.File(image_bytesio, "favicon.png")
+            embed.set_thumbnail(url="attachment://favicon.png")
+            await ctx.send(embed=embed, file=favicon)
+        else:
+            await ctx.send(embed=embed)
+
+
 
     @commands.group(aliases=["uhcgg", "uhc.gg"])
     async def uhc(self, ctx: commands.Context):
