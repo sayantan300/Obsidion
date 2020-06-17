@@ -35,7 +35,6 @@ class info(commands.Cog):
     )
     async def profile(self, ctx: commands.Context, username: str):
         """View a players Minecraft UUID, Username history and skin."""
-        log.info("test")
         await ctx.channel.trigger_typing()
         if username:
             uuid = await self.get_uuid(self.session, username)
