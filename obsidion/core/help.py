@@ -18,9 +18,6 @@ class MyHelpCommand(commands.HelpCommand):
             }
         )
 
-    async def on_help_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandInvokeError):
-            await ctx.send(str(error.original))
 
     def get_command_signature(self, command):
         parent = command.full_parent_name
@@ -38,11 +35,11 @@ class MyHelpCommand(commands.HelpCommand):
         bot = self.context.bot
         embed = discord.Embed(
             title="Bot support",
-            description=f"Below is a list of commands you can use\nTo use commands type `{self.context.prefix}<command_name>` or <@{bot.user.id}> `<command_name>`\nTo get more information about a command type: `{self.context.prefix}help <command_name>`",
+            description=f"Below is a list of commands you can use",
             colour=0x00FF00,
         )
         embed.set_footer(
-            text=f'Use "{self.context.prefix}help command" for more info on a command.'
+            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
         )
 
         for cog in bot.cogs:
@@ -88,14 +85,18 @@ class MyHelpCommand(commands.HelpCommand):
             name="Support",
             value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
+        embed.set_footer(
+            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
+        )
         await self.context.send(embed=embed)
 
-    def common_command_formatting(self, page_or_embed, command):
-        page_or_embed.title = self.get_command_signature(command)
+    def common_command_formatting(self, page_or_embed: discord.Embed, command):
+        # page_or_embed.author = "Obsidion Help Menu"
+        _help = f"`Syntax: {self.context.prefix}{command.qualified_name} {command.signature}`"
         if command.description:
-            page_or_embed.description = f"{command.description}\n\n{command.help}"
+            page_or_embed.description = _help
         else:
-            page_or_embed.description = command.help or "No help found..."
+            page_or_embed.description = _help or "No help found..."
 
     async def send_command_help(self, command):
         embed = discord.Embed(colour=0x00FF00)
@@ -116,6 +117,9 @@ class MyHelpCommand(commands.HelpCommand):
             Name: `{command.name}`
             Category: `{command.cog_name}`""",
             )
+        embed.set_footer(
+            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
+        )
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
@@ -154,6 +158,9 @@ class MyHelpCommand(commands.HelpCommand):
             Name: `{group.name}`
             Category: `{group.cog_name}`""",
             )
+        embed.set_footer(
+            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
+        )
 
         await self.context.send(embed=embed)
 
