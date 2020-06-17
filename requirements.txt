@@ -2,7 +2,6 @@ discord.py
 aiohttp
 asyncpg
 uvloop
-black
 dblpy
 feedparser
 statsd
