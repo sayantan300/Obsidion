@@ -1,4 +1,3 @@
-
 """
 Loads bot configuration from YAML files.
 By default, this simply loads the default
@@ -36,7 +35,7 @@ def _env_var_constructor(loader, node):
     default = None
 
     # Check if the node is a plain string value
-    if node.id == 'scalar':
+    if node.id == "scalar":
         value = loader.construct_scalar(node)
         key = str(value)
     else:
@@ -110,7 +109,7 @@ def check_required_keys(keys):
     for key_path in keys:
         lookup = _CONFIG_YAML
         try:
-            for key in key_path.split('.'):
+            for key in key_path.split("."):
                 lookup = lookup[key]
                 if lookup is None:
                     raise KeyError(key)
@@ -123,7 +122,7 @@ def check_required_keys(keys):
 
 
 try:
-    required_keys = _CONFIG_YAML['config']['required_keys']
+    required_keys = _CONFIG_YAML["config"]["required_keys"]
 except KeyError:
     pass
 else:
@@ -152,11 +151,14 @@ class YAMLGetter(type):
                 return _CONFIG_YAML[cls.section][cls.subsection][name]
             return _CONFIG_YAML[cls.section][name]
         except KeyError:
-            dotted_path = '.'.join(
+            dotted_path = ".".join(
                 (cls.section, cls.subsection, name)
-                if cls.subsection is not None else (cls.section, name)
+                if cls.subsection is not None
+                else (cls.section, name)
             )
-            log.critical(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
+            log.critical(
+                f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found."
+            )
             raise
 
     def __getitem__(cls, name):
@@ -175,10 +177,11 @@ class Bot(metaclass=YAMLGetter):
     clientid: str
     discord_token: str
     owner_id: str
-    api: str 
+    api: str
     hypixelapi_token: str
     status: str
     default_prefix: str
+
 
 class Channels(metaclass=YAMLGetter):
     section = "channels"
@@ -188,13 +191,15 @@ class Channels(metaclass=YAMLGetter):
     bugs_channel: int
     feedback_channel: int
 
+
 class Database(metaclass=YAMLGetter):
     section = "database"
-    
+
     username: str
     server: str
     password: str
     database: str
+
 
 class Redis(metaclass=YAMLGetter):
     section = "redis"
@@ -203,6 +208,7 @@ class Redis(metaclass=YAMLGetter):
     host: str
     port: int
     password: Optional[str]
+
 
 class Stats(metaclass=YAMLGetter):
     section = "stats"

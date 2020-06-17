@@ -44,9 +44,7 @@ class info(commands.Cog):
             await ctx.send("That username is not been used.")
             return
 
-        long_uuid = (
-            f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
-        )
+        long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
 
         names = await get(
             self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
@@ -66,9 +64,7 @@ class info(commands.Cog):
         information = ""
         information += f"Username Changes: `{len(names)-1}`\n"
 
-        embed = discord.Embed(
-            title=f"Minecraft profile for {username}", color=0x00FF00
-        )
+        embed = discord.Embed(title=f"Minecraft profile for {username}", color=0x00FF00)
 
         embed.add_field(name="UUID's", inline=False, value=uuids)
         embed.add_field(
@@ -85,16 +81,15 @@ class info(commands.Cog):
     @staticmethod
     def get_server(ip: str, port: int) -> (str, int):
         """returns the server icon"""
-        if ":" in ip: # deal with them providing port in string instead of seperate
+        if ":" in ip:  # deal with them providing port in string instead of seperate
             ip, port = ip.split(":")
             return (ip, port)
         if port:
             return (ip, port)
         return (ip, None)
 
-
     @commands.command()
-    async def server(self, ctx: commands.Context, server_ip:str, port: int=None):
+    async def server(self, ctx: commands.Context, server_ip: str, port: int = None):
         """Get info on a minecraft server"""
         await ctx.channel.trigger_typing()
         url = f"{constants.Bot.api}/server/java"
@@ -133,8 +128,6 @@ class info(commands.Cog):
             await ctx.send(embed=embed, file=favicon)
         else:
             await ctx.send(embed=embed)
-
-
 
     @commands.group(aliases=["uhcgg", "uhc.gg"])
     async def uhc(self, ctx: commands.Context):

@@ -1,4 +1,3 @@
-
 from discord.ext.commands import Cog, Context
 
 from obsidion.bot import Obsidion
