@@ -1,6 +1,7 @@
 import logging
 import base64
 import io
+from datetime import datetime
 
 from obsidion.utils.utils import get
 from obsidion import constants
@@ -18,6 +19,68 @@ class info(commands.Cog):
         """initialise the bot"""
         self.bot = bot
         self.session = bot.http_session
+
+    @staticmethod
+    async def get_uuid(session, username: str):
+        url = f"https://api.mojang.com/users/profiles/minecraft/{username}"
+        async with session.get(url) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                uuid = data["id"]
+                return uuid
+            return False
+
+    @commands.command(
+        aliases=["whois", "p", "names", "namehistory", "pastnames", "namehis"]
+    )
+    async def profile(self, ctx: commands.Context, username: str):
+        """View a players Minecraft UUID, Username history and skin."""
+        log.info("test")
+        await ctx.channel.trigger_typing()
+        if username:
+            uuid = await self.get_uuid(self.session, username)
+
+        if not uuid:
+            await ctx.send("That username is not been used.")
+            return
+
+        long_uuid = (
+            f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
+        )
+
+        names = await get(
+            self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
+        )
+
+        name_list = ""
+        for name in names[::-1][:-1]:
+            name1 = name["name"]
+            date = datetime.utcfromtimestamp(
+                int(str(name["changedToAt"])[:-3])
+            ).strftime("%b %d, %Y")
+            name_list += f"**{names.index(name)+1}.** `{name1}` - {date} " + "\n"
+        original = names[0]["name"]
+        name_list += f"**1.** `{original}` - First Username"
+
+        uuids = "Short UUID: `" + uuid + "\n" + "`Long UUID: `" + long_uuid + "`"
+        information = ""
+        information += f"Username Changes: `{len(names)-1}`\n"
+
+        embed = discord.Embed(
+            title=f"Minecraft profile for {username}", color=0x00FF00
+        )
+
+        embed.add_field(name="UUID's", inline=False, value=uuids)
+        embed.add_field(
+            name="Textures",
+            inline=True,
+            value=f"Skin: [Open Skin](https://visage.surgeplay.com/bust/{uuid})",
+        )
+        embed.add_field(name="Information", inline=True, value=information)
+        embed.add_field(name="Name History", inline=False, value=name_list)
+        embed.set_thumbnail(url=(f"https://visage.surgeplay.com/bust/{uuid}"))
+
+        await ctx.send(embed=embed)
 
     @staticmethod
     def get_server(ip: str, port: int) -> (str, int):
