@@ -192,6 +192,18 @@ class Channels(metaclass=YAMLGetter):
     feedback_channel: int
 
 
+class Discord_bot_list(metaclass=YAMLGetter):
+    section = "channels"
+
+    voting_enabled: bool
+    dbl_token: str
+    bots4discord_token: str
+    discordboats_token: str
+    discordbotlist_token: str
+    discodlabs_token: str
+    botsondiscord_token: str
+
+
 class Database(metaclass=YAMLGetter):
     section = "database"
 
