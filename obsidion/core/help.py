@@ -2,7 +2,6 @@ import logging
 
 import discord
 from discord.ext import commands
-
 from obsidion import constants
 from obsidion.bot import Obsidion
 
@@ -17,7 +16,6 @@ class MyHelpCommand(commands.HelpCommand):
                 "hidden": True,
             }
         )
-
 
     def get_command_signature(self, command):
         parent = command.full_parent_name
@@ -39,7 +37,7 @@ class MyHelpCommand(commands.HelpCommand):
             colour=0x00FF00,
         )
         embed.set_footer(
-            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
+            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
         )
 
         for cog in bot.cogs:
@@ -86,7 +84,7 @@ class MyHelpCommand(commands.HelpCommand):
             value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
         embed.set_footer(
-            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
+            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
         )
         await self.context.send(embed=embed)
 
@@ -118,7 +116,7 @@ class MyHelpCommand(commands.HelpCommand):
             Category: `{command.cog_name}`""",
             )
         embed.set_footer(
-            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
+            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
         )
         await self.context.send(embed=embed)
 
@@ -159,7 +157,7 @@ class MyHelpCommand(commands.HelpCommand):
             Category: `{group.cog_name}`""",
             )
         embed.set_footer(
-            text=f'Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category.'
+            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
         )
 
         await self.context.send(embed=embed)

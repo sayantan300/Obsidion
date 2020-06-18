@@ -27,7 +27,9 @@ class hypixel(commands.Cog):
         embed.add_field(name="Rolling Daily", value=f"{data.rolling_daily:,}")
         embed.add_field(name="Last Minute", value=f"{data.last_minute:,}")
         embed.add_field(name="Staff Total", value=f"{data.staff_total:,}")
-        embed.add_field(name="Staff Rolling Daily", value=f"{data.staff_rolling_daily:,}")
+        embed.add_field(
+            name="Staff Rolling Daily", value=f"{data.staff_rolling_daily:,}"
+        )
         embed.timestamp = ctx.message.created_at
         await ctx.send(embed=embed)
 
