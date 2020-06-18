@@ -31,5 +31,5 @@ redis:
   password: none
 stats:
   enabled: false
-  statsd_host: "graphite"
+  statsd_host: "127.0.0.1"
   presence_update_timeout: 300
