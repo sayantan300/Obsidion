@@ -5,11 +5,12 @@ before_install:
   - python --version
   - pip install -U pip
   - pip install codecov
+  - pip ins
 # command to install dependencies
 install:
   - pip install -r requirements.txt
 # command to run tests
 script:
-  - unittest # run tests
+  - python -m unittest # run tests
 after_success:
   - codecov # submit coverage
