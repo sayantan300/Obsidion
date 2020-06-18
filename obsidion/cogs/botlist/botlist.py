@@ -18,7 +18,12 @@ class botlist(commands.Cog):
 
         # bot lists
         self.dblpy = dbl.DBLClient(
-            self.bot, constants.Discord_bot_list.dbl_token, autopost=True
+            self.bot,
+            constants.Discord_bot_list.dbl_token,
+            autopost=True,
+            webhook_path="/dblwebhook",
+            webhook_auth="password",
+            webhook_port=5000,
         )
 
         self.botsfordiscord.start()
