@@ -42,7 +42,7 @@ bot.load_extension("obsidion.cogs.info")
 bot.load_extension("obsidion.cogs.images")
 bot.load_extension("obsidion.cogs.hypixel")
 
-if constants.Discord_bot_list.enabled:
+if constants.Discord_bot_list.voting_enabled:
     bot.load_extension("cogs.botlist")
 
 # TODO

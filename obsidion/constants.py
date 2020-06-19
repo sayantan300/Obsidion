@@ -193,7 +193,7 @@ class Channels(metaclass=YAMLGetter):
 
 
 class Discord_bot_list(metaclass=YAMLGetter):
-    section = "channels"
+    section = "discord_bot_lists"
 
     voting_enabled: bool
     dbl_token: str
