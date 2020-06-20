@@ -18,7 +18,6 @@ class info(commands.Cog):
     def __init__(self, bot):
         """initialise the bot"""
         self.bot = bot
-        self.session = bot.http_session
 
     @staticmethod
     async def get_uuid(session, username: str):
@@ -36,8 +35,9 @@ class info(commands.Cog):
     async def profile(self, ctx: commands.Context, username: str):
         """View a players Minecraft UUID, Username history and skin."""
         await ctx.channel.trigger_typing()
+        # await ctx.send(ctx.bot.http_session)
         if username:
-            uuid = await self.get_uuid(self.session, username)
+            uuid = await self.get_uuid(ctx.bot.http_session, username)
 
         if not uuid:
             await ctx.send("That username is not been used.")
@@ -46,7 +46,7 @@ class info(commands.Cog):
         long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
 
         names = await get(
-            self.session, f"https://api.mojang.com/user/profiles/{uuid}/names"
+            ctx.bot.http_session, f"https://api.mojang.com/user/profiles/{uuid}/names"
         )
 
         name_list = ""
@@ -78,7 +78,7 @@ class info(commands.Cog):
         await ctx.send(embed=embed)
 
     @staticmethod
-    def get_server(ip: str, port: int) -> (str, int):
+    def get_server(ip: str, port):
         """returns the server icon"""
         if ":" in ip:  # deal with them providing port in string instead of seperate
             ip, port = ip.split(":")
@@ -92,11 +92,15 @@ class info(commands.Cog):
         """Get info on a minecraft server"""
         await ctx.channel.trigger_typing()
         url = f"{constants.Bot.api}/server/java"
-        server_ip, port = self.get_server(server_ip, port)
-        payload = {"server": server_ip}
+        server_ip, _port = self.get_server(server_ip, port)
         if port:
-            payload["port"]: port
-        data = await get(self.session, url, payload)
+            payload = {"server": server_ip, "port": port}
+        elif _port:
+            payload = {"server": server_ip, "port": _port}
+        else:
+            payload = {"server": server_ip}
+
+        data = await get(ctx.bot.http_session, url, payload)
         if not data:
             await ctx.send(
                 f"{ctx.author}, :x: The Jave edition Minecraft server `{server_ip}` is currently not online or cannot be requested"
@@ -138,7 +142,9 @@ class info(commands.Cog):
     async def uhc_upcoming(self, ctx: commands.Context):
         """View upcoming Matches on uhc.gg."""
         await ctx.channel.trigger_typing()
-        data = await get(self.session, "https://hosts.uhc.gg/api/matches/upcoming")
+        data = await get(
+            ctx.bot.http_session, "https://hosts.uhc.gg/api/matches/upcoming"
+        )
 
         embed = discord.Embed(
             title="UHC.gg upcoming UHC games",
@@ -175,7 +181,7 @@ class info(commands.Cog):
     async def status(self, ctx: commands.Context):
         """Check the status of all the Mojang services"""
         await ctx.channel.trigger_typing()
-        data = await get(self.session, f"{constants.Bot.api}/mojang/check")
+        data = await get(ctx.bot.http_session, f"{constants.Bot.api}/mojang/check")
         sales_mapping = {
             "item_sold_minecraft": True,
             "prepaid_card_redeemed_minecraft": True,
@@ -185,7 +191,7 @@ class info(commands.Cog):
         payload = {"metricKeys": [k for (k, v) in sales_mapping.items() if v]}
 
         url = "https://api.mojang.com/orders/statistics"
-        async with self.session.post(url, json=payload) as resp:
+        async with ctx.bot.http_session.post(url, json=payload) as resp:
             if resp.status == 200:
                 sales_data = await resp.json()
 
@@ -219,7 +225,7 @@ class info(commands.Cog):
         payload = {"metricKeys": [k for (k, v) in sales_mapping.items() if v]}
 
         url = "https://api.mojang.com/orders/statistics"
-        async with self.session.post(url, json=payload) as resp:
+        async with ctx.bot.http_session.post(url, json=payload) as resp:
             if resp.status == 200:
                 sales_data = await resp.json()
 
@@ -249,7 +255,7 @@ class info(commands.Cog):
             return
         await ctx.channel.trigger_typing()
         data = await get(
-            self.session, f"https://bugs.mojang.com/rest/api/latest/issue/{bug}"
+            ctx.bot.http_session, f"https://bugs.mojang.com/rest/api/latest/issue/{bug}"
         )
         if not data:
             await ctx.send(
@@ -318,7 +324,7 @@ class info(commands.Cog):
 
         payload = generate_payload(query)
 
-        result = await get(self.session, base_url, payload)
+        result = await get(ctx.bot.http_session, base_url, payload)
 
         try:
             # Get the last page. Usually this is the only page.

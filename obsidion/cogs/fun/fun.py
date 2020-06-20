@@ -53,7 +53,6 @@ def load_from_file(file):
     """load a file"""
     with open(f"obsidion/cogs/fun/resources/{file}.txt") as f:
         content = f.readlines()
-    print([x.strip() for x in content])
     return [x.strip() for x in content]
 
 
