@@ -42,7 +42,7 @@
   •
   <a href="#commands">Commands</a>
   •
-  <a href="https://obsidion.bowie-co.nz">Website</a>
+  <a href="https://discord.obsidion-dev.com">Website</a>
   •
   <a href="https://api.bowie-co.nz">API</a>
   •

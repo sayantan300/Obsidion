@@ -102,7 +102,7 @@ class miscellaneous(commands.Cog):
             "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
             "[VOTE](https://top.gg/bot/691589447074054224)\n"
             "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)\n"
-            "[WEBSITE](http://obsidion.bowie-co.nz)"
+            "[WEBSITE](http://discord.obsidion-dev.com)"
         )
 
         embed = discord.Embed(title="Stats", color=0x00FF00)
