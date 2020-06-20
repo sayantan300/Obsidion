@@ -130,6 +130,9 @@ class info(commands.Cog):
             embed.set_thumbnail(url="attachment://favicon.png")
             await ctx.send(embed=embed, file=favicon)
         else:
+            embed.set_thumbnail(
+                url="https://media.discordapp.net/attachments/493764139290984459/602058959284863051/unknown.png"
+            )
             await ctx.send(embed=embed)
 
     @commands.group(aliases=["uhcgg", "uhc.gg"])
