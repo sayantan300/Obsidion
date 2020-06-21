@@ -56,6 +56,7 @@ class miscellaneous(commands.Cog):
                 "Discord Boats List: **[VOTE HERE](https://discord.boats/bot/691589447074054224)**\n"
                 "Discord Bot List: **[VOTE HERE](https://discordbotlist.com/bots/obsidion)**\n"
                 "Discord Labs: **[VOTE HERE](https://bots.discordlabs.org/bot/691589447074054224)**\n"
+                "Botlist.space: **[VOTE HERE](https://botlist.space/bot/691589447074054224/upvote)**\n"
                 "Bots On Discord: **[REVIEW HERE](https://bots.ondiscord.xyz/bots/691589447074054224/review)**\n"
             ),
         )
