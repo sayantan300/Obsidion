@@ -2,6 +2,14 @@ discord.py
 aiohttp
 asyncpg
 uvloop
-mcstatus
-py_mcpe_stats
-black
+dblpy
+feedparser
+statsd
+aioredis
+fakeredis
+pyyaml
+aiodns
+fuzzywuzzy
+beautifulsoup4
+aiohypixel
+lxml
