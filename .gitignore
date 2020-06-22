@@ -69,3 +69,4 @@ config.yaml
 # Mac OS .DS_Store, which is a file that stores custom attributes of its containing folder
 .DS_Store
 config-default.yaml
+config-default.yaml
