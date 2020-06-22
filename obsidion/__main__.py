@@ -41,13 +41,13 @@ bot.load_extension("obsidion.cogs.fun")
 bot.load_extension("obsidion.cogs.info")
 bot.load_extension("obsidion.cogs.images")
 bot.load_extension("obsidion.cogs.hypixel")
+bot.load_extension("obsidion.cogs.servers")
 
 if constants.Discord_bot_list.voting_enabled:
     bot.load_extension("cogs.botlist")
 
 # TODO
 # bot.load_extension("obsidion.cogs.config")
-# bot.load_extension("obsidion.cogs.servers")
 
 # run bot
 bot.run(constants.Bot.discord_token)

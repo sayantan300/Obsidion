@@ -56,3 +56,22 @@ class servers(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+    @commands.command()
+    async def hiverank(self, ctx: commands.Context, username: str):
+        """get stats from minesage"""
+        await ctx.trigger_typing()
+        data = await hiveMCRank(username, ctx.bot.http_session)
+        if not data:
+            await ctx.send(
+                f"`{username}` has not logged onto Hive or there are no ranks available."
+            )
+            return
+        embed = discord.Embed(title=f"`{username}`'s hive Rank", color=0x00FF00)
+        embed.add_field(
+            name="rank",
+            value=(
+                f"Rank: `{data['rank']}`"
+            ),
+        )
+        await ctx.send(embed=embed)
+

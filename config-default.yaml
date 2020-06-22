@@ -1,11 +1,11 @@
 bot:
-  clientid: node
-  discord_token: none
-  owner_id: 456217109236809748
+  clientid: 695061492235763712
+  discord_token: Njk1MDYxNDkyMjM1NzYzNzEy.Xu_WXQ.knAQ6P05oIZfd4-BM8o5QmvQ3mI
+  owner_id: 267452404528709632
   api: https://api.bowie-co.nz/api/v1
   hypixelapi_token: node
   status: for @Obsidion help
-  default_prefix: /
+  default_prefix: ","
 channels:
   new_guild_channel: none
   upvote_channel: none
