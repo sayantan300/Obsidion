@@ -56,6 +56,7 @@ class servers(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
     @commands.command()
     async def hiverank(self, ctx: commands.Context, username: str):
         """get stats from minesage"""
@@ -67,11 +68,5 @@ class servers(commands.Cog):
             )
             return
         embed = discord.Embed(title=f"`{username}`'s hive Rank", color=0x00FF00)
-        embed.add_field(
-            name="rank",
-            value=(
-                f"Rank: `{data['rank']}`"
-            ),
-        )
+        embed.add_field(name="rank", value=(f"Rank: `{data['rank']}`"))
         await ctx.send(embed=embed)
-
