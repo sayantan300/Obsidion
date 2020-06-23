@@ -59,7 +59,6 @@ class servers(commands.Cog):
 
     @commands.command()
     async def hiverank(self, ctx: commands.Context, username: str):
-        """get stats from minesage"""
         await ctx.trigger_typing()
         data = await hiveMCRank(username, ctx.bot.http_session)
         if not data:
@@ -67,6 +66,25 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto Hive or there are no ranks available."
             )
             return
-        embed = discord.Embed(title=f"`{username}`'s hive Rank", color=0x00FF00)
-        embed.add_field(name="rank", value=(f"Rank: `{data['rank']}`"))
+        embed = discord.Embed(title=f"`{username}`'s Hive Rank", color=0x00FF00)
+        embed.add_field(name="rank", value=(f"Rank: `{data['rank'][0]}`"))
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def hivestatus(self, ctx: commands.Context, username: str):
+        await ctx.trigger_typing()
+        data = await hiveMCStatus(username, ctx.bot.http_session)
+        if not data:
+            await ctx.send(
+                f"`{username}` has not logged onto Hive or their status is not available."
+            )
+            return
+        embed = discord.Embed(
+            title=f"`{username}`'s current Hive Status", color=0x00FF00
+        )
+        embed.add_field(
+            name="description",
+            value=(f"Description: `{data['status'][0]['description']}`"),
+        )
+        embed.add_field(name="game", value=(f"Game: `{data['status'][0]['game']}`"))
         await ctx.send(embed=embed)

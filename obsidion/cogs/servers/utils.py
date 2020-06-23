@@ -26,6 +26,8 @@ async def hiveMCAchievements(username, session):
     str_json = json.dumps(json_data)
     json_new = json.loads(str_json)
     data = {"all_achievements": []}
+    if json_new == False:
+        return False
     for ach in json_new["achievements"]:
         data["all_achievements"].append(ach)
     return data
@@ -36,6 +38,8 @@ async def hiveMCStatus(username, session):
     json_data = await get_json(url, session)
     str_json = json.dumps(json_data)
     json_new = json.loads(str_json)
+    if json_new == False:
+        return False
     data = {"status": []}
     for _ in json_new["status"]:
         thing = json_new["status"]
@@ -48,6 +52,8 @@ async def hiveMCGameStats(username, game, session):
     json_data = await get_json(url, session)
     str_json = json.dumps(json_data)
     json_new = json.loads(str_json)
+    if json_new == False:
+        return False
     data = {"stats": [json_new]}
     return data
 
@@ -57,6 +63,8 @@ async def hiveMCRank(username, session):
     json_data = await get_json(url, session)
     str_json = json.dumps(json_data)
     json_new = json.loads(str_json)
+    if json_new == False:
+        return False
     rank = json_new["rankName"]
     data = {"rank": [rank]}
     return data
@@ -136,17 +144,14 @@ async def minesaga(username, session):
     html = await get_html(url, session)
     soup = BeautifulSoup(html, "lxml")
     main_info = soup.find("div", {"class": ["dd-profile-details"]})
-    try:
-        joined = main_info.find("h4").get_text().strip()
-    except:
-        return False
+    joined = main_info.find("h4").get_text().strip()
     last_seen = main_info.findAll("span")[1].get_text().strip()
     play_time = main_info.findAll("span")[2].get_text().strip()
     data = {
         "joined": joined,
         "last_seen": last_seen,
         "play_time": play_time,
-        "game_stats": [],
+        "game_stats": {},
     }
 
     for game in soup.find_all("div", {"class": "dd-section col-md-4"}):
@@ -238,4 +243,3 @@ async def veltpvp(username, session):
             stats[stat_name] = stat_val
         data["game_stats"].append({game_name: stats})
     return data
-
