@@ -17,7 +17,7 @@ async def get(session, url: str, params: dict = None, json: dict = None) -> dict
         return False
 
 
-async def usernameToUUID(self, username: str, session) -> str:
+async def usernameToUUID(username: str, session) -> str:
     """Takes in an mc username and tries to convert it to a mc uuid.
 
     Args:
@@ -34,13 +34,13 @@ async def usernameToUUID(self, username: str, session) -> str:
 
     data = await response.json()
 
-    if response.status == 204 or data == [] or data.get("error") is not None:
+    if response.status == 204 or data == []:
         return False
 
     return data[0]["id"]
 
 
-async def UUIDToUsername(self, uuid: str, session) -> str:
+async def UUIDToUsername(uuid: str, session) -> str:
     """Takes in a minecraft UUID and converts it to a minecraft username.
 
     Args:

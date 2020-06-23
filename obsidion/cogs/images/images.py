@@ -1,14 +1,14 @@
 import discord
 from discord.ext import commands
 
-from obsidion.utils.utils import get_uuid
+from obsidion.utils.utils import usernameToUUID
 
 import logging
 
 log = logging.getLogger(__name__)
 
 
-class images(commands.Cog, name="Images"):
+class images(commands.Cog):
     def __init__(self, bot):
         self.session = bot.http_session
         self.bot = bot
@@ -46,7 +46,7 @@ class images(commands.Cog, name="Images"):
     async def avatar(self, ctx: commands.Context, username: str):
         """Renders a Minecraft players face."""
         await ctx.channel.trigger_typing()
-        uuid = await get_uuid(self.session, username)
+        uuid = await usernameToUUID(username, ctx.bot.http_session)
         if uuid:
             embed = discord.Embed(
                 description=f"Here is: `{username}`'s Face! \n **[DOWNLOAD](https://visage.surgeplay.com/face/512/{uuid})**",
@@ -64,7 +64,7 @@ class images(commands.Cog, name="Images"):
     async def skull(self, ctx: commands.Context, username: str = None):
         """Renders a Minecraft players skull."""
         await ctx.channel.trigger_typing()
-        uuid = uuid = await get_uuid(self.session, username)
+        uuid = await usernameToUUID(username, ctx.bot.http_session)
         if uuid:
             embed = discord.Embed(
                 description=f"Here is: `{username}`'s Skull! \n **[DOWNLOAD](https://visage.surgeplay.com/head/512/{uuid})**",
@@ -82,7 +82,7 @@ class images(commands.Cog, name="Images"):
     async def skin(self, ctx: commands.Context, username: str):
         """Renders a Minecraft players skin."""
         await ctx.channel.trigger_typing()
-        uuid = uuid = await get_uuid(self.session, username)
+        uuid = await usernameToUUID(username, ctx.bot.http_session)
         if uuid:
             embed = discord.Embed(
                 description=f"Here is: `{username}`'s Skin! \n **[DOWNLOAD](https://visage.surgeplay.com/full/512/{uuid})**",
@@ -102,7 +102,7 @@ class images(commands.Cog, name="Images"):
         await ctx.channel.trigger_typing()
         renders = ["face", "front", "frontfull", "head", "bust", "skin"]
         if render_type in renders:
-            uuid = uuid = await get_uuid(self.session, username)
+            uuid = await usernameToUUID(username, ctx.bot.http_session)
             if uuid:
                 embed = discord.Embed(
                     description=f"Here is: `{username}`'s {render_type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{type_}/512/{uuid})**",
