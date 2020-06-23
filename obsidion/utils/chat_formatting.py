@@ -1,52 +1,122 @@
 import datetime
 from io import BytesIO
-from typing import Iterator, List, Optional, Sequence, SupportsInt, Union
+from typing import List, Optional, Sequence, SupportsInt
 
 import discord
 
 
 def error(text: str) -> str:
+    """Create an Error sign to the start of the message.
+
+    Args:
+        text (str): Text to go in the message.
+
+    Returns:
+        str: Updated Message
+    """
     return f"\N{NO ENTRY SIGN} {text}"
 
 
 def warning(text: str) -> str:
+    """Create an Warning sign to the start of the message.
+
+    Args:
+        text (str): Text to go in the message.
+
+    Returns:
+        str: Updated Message
+    """
     return f"\N{WARNING SIGN} {text}"
 
 
 def info(text: str) -> str:
+    """Create an Info sign to the start of the message.
+
+    Args:
+        text (str): Text to go in the message.
+
+    Returns:
+        str: Updated Message
+    """
     return f"\N{INFORMATION SOURCE} {text}"
 
 
 def question(text: str) -> str:
+    """Create an Question sign to the start of the message.
+
+    Args:
+        text (str): Text to go in the message.
+
+    Returns:
+        str: Updated Message
+    """
     return f"\N{BLACK QUESTION MARK ORNAMENT} {text}"
 
 
 def bold(text: str, escape_formatting: bool = True) -> str:
+    """Turns the text to bold.
+
+    Args:
+        text (str): Text to go in the message.
+
+    Returns:
+        str: Updated Message
+    """
     text = escape(text, formatting=escape_formatting)
     return f"**{text}**"
 
 
 def box(text: str, lang: str = "") -> str:
-    """Get the given text in a code block."""
+    """Get the given text in a code block.
+
+    Args:
+        text (str): Text to go in the message.
+
+    Returns:
+        str: Updated Message
+    """
     ret = f"```{lang}\n{text}\n```"
     return ret
 
 
 def inline(text: str) -> str:
-    """Get the given text as inline code."""
+    """Get the given text as inline code.
+
+    Args:
+        text (str): Text to go in the message.
+
+    Returns:
+        str: Updated Message
+    """
     if "`" in text:
         return f"``{text}``"
     return f"`{text}`"
 
 
 def italics(text: str, escape_formatting: bool = True) -> str:
-    """Get the given text in italics."""
+    """Convert text into italics
+
+    Args:
+        text (str): Text to convert
+        escape_formatting (bool, optional): Wether to escape formatting. Defaults to True.
+
+    Returns:
+        str: italic text
+    """
     text = escape(text, formatting=escape_formatting)
     return f"*{text}*"
 
 
 def underline(text: str, escape_formatting: bool = True) -> str:
-    """Get the given text with an underline."""
+    """Get the given text with an underline.
+
+    Args:
+        text (str): text to underline
+        escape_formatting (bool, optional): Wether to escape formatting. Defaults to True.
+
+    Returns:
+        str: Underlined text.
+    """
     text = escape(text, formatting=escape_formatting)
     return f"__{text}__"
 
@@ -54,13 +124,29 @@ def underline(text: str, escape_formatting: bool = True) -> str:
 def strikethrough(text: str, escape_formatting: bool = True) -> str:
     """Get the given text with a strikethrough.
     Note: By default, this function will escape ``text`` prior to applying a strikethrough.
+    
+    Args:
+        text (str): text to underline
+        escape_formatting (bool, optional): Wether to escape formatting. Defaults to True.
+
+    Returns:
+        str: underlined text
     """
     text = escape(text, formatting=escape_formatting)
     return f"~~{text}~~"
 
 
 def escape(text: str, *, mass_mentions: bool = False, formatting: bool = False) -> str:
-    """Get text with all mass mentions or markdown escaped."""
+    """Escape text with markdown or mass mentions removed
+
+    Args:
+        text (str): text to escape
+        mass_mentions (bool, optional): Wether to espace mass mentions. Defaults to False.
+        formatting (bool, optional): Wether to escape markdown. Defaults to False.
+
+    Returns:
+        str: escaped text
+    """
     if mass_mentions:
         text = text.replace("@everyone", "@\u200beveryone")
         text = text.replace("@here", "@\u200bhere")
@@ -72,7 +158,17 @@ def escape(text: str, *, mass_mentions: bool = False, formatting: bool = False) 
 def humanize_list(items: Sequence[str]) -> str:
     """Get comma-separted list, with the last element joined with *and*.
     This uses an Oxford comma, because without one, items containing
-    the word *and* would make the output difficult to interpret."""
+    the word *and* would make the output difficult to interpret.
+
+    Args:
+        items (Sequence[str]): list to humanize
+
+    Raises:
+        IndexError: Empty sequence provided
+
+    Returns:
+        str: humanized list
+    """
     if len(items) == 1:
         return items[0]
     try:
@@ -84,7 +180,14 @@ def humanize_list(items: Sequence[str]) -> str:
 def format_perms_list(perms: discord.Permissions) -> str:
     """Format a list of permission names.
     This will return a humanized list of the names of all enabled
-    permissions in the provided `discord.Permissions` object."""
+    permissions in the provided `discord.Permissions` object.
+
+    Args:
+        perms (discord.Permissions): [description]
+
+    Returns:
+        str: [description]
+    """
     perm_names: List[str] = []
     for perm, value in perms:
         if value is True:
@@ -98,11 +201,20 @@ def humanize_timedelta(
     timedelta: Optional[datetime.timedelta] = None,
     seconds: Optional[SupportsInt] = None,
 ) -> str:
-    """
-    Get a locale aware human timedelta representation.
+    """Get a locale aware human timedelta representation.
     This works with either a timedelta object or a number of seconds.
     Fractional values will be omitted, and values less than 1 second
     an empty string.
+
+    Args:
+        timedelta (Optional[datetime.timedelta], optional): Timedelta to convert. Defaults to None.
+        seconds (Optional[SupportsInt], optional): Seconds to convert. Defaults to None.
+
+    Raises:
+        ValueError: Not a valid timedelta
+
+    Returns:
+        str: String of the timedelta.
     """
 
     try:
@@ -138,10 +250,19 @@ def text_to_file(
     *,
     spoiler: bool = False,
     encoding: str = "utf-8",
-):
+) -> discord.File:
     """Prepares text to be sent as a file on Discord, without character limit.
-    This writes text into a bytes object that can be used for the ``file`` or ``files`` parameters
-    of :meth:`discord.abc.Messageable.send`.
+    This writes text into a bytes object that can be used for the ``file`` or 
+    ``files`` parameters of :meth:`discord.abc.Messageable.send`.
+
+    Args:
+        text (str): Contents of file.
+        filename (str, optional): Name of the file. Defaults to "file.txt".
+        spoiler (bool, optional): Wether the file will have a spoiler. Defaults to False.
+        encoding (str, optional): Encoding which the file will use. Defaults to "utf-8".
+
+    Returns:
+        discord.File: File ready to be sent into discord
     """
     file = BytesIO(text.encode(encoding))
     return discord.File(file, filename, spoiler=spoiler)
