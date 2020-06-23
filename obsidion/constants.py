@@ -208,9 +208,10 @@ class Database(metaclass=YAMLGetter):
     section = "database"
 
     username: str
-    server: str
+    host: str
     password: str
     database: str
+    port: int
 
 
 class Redis(metaclass=YAMLGetter):

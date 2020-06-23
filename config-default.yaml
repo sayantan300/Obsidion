@@ -21,9 +21,10 @@ discord_bot_lists:
   botsondiscord_token: none
 database:
   username: discord
-  server: db
+  host: db
   password: reallystrongpassword
   database: discord
+  port: 5432
 redis:
   enabled: false
   host: none
