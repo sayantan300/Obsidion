@@ -29,16 +29,25 @@ class MyHelpCommand(commands.HelpCommand):
             alias = command.name if not parent else f"{parent} {command.name}"
         return f"{alias} {command.signature}"
 
+    async def generate_embed(self, ctx, prefix=None):
+        embed = discord.Embed(color=0x00FF00)
+        if not prefix:
+            prefix = ctx.prefix
+        embed.set_author(name="Obsidion Help", icon_url=ctx.me.avatar_url)
+        embed.set_footer(
+            text=f"Type {prefix}help <command> for more info on a command. You can also type {prefix}help <category> for more info on a category."
+        )
+        return embed
+
     async def send_bot_help(self, mapping):
         bot = self.context.bot
-        embed = discord.Embed(
-            title="Bot support",
-            description=f"Below is a list of commands you can use",
-            colour=0x00FF00,
-        )
-        embed.set_footer(
-            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
-        )
+        if "@" in str(self.context.prefix):
+            prefix = f"@{self.context.bot.user.name}"
+        else:
+            prefix = self.context.prefix
+        embed = await self.generate_embed(self.context, prefix)
+        embed.title = f"Bot Help"
+        embed.description = "Categories and commands enabled on the bot."
 
         for cog in bot.cogs:
             cog_commands = bot.get_cog(cog).get_commands()
@@ -59,14 +68,12 @@ class MyHelpCommand(commands.HelpCommand):
         await self.context.send(embed=embed)
 
     async def send_cog_help(self, cog):
-        embed = discord.Embed(
-            title=f"{cog.qualified_name} Help",
-            description="Below is a list of all the commands and their desriptions that belong to this module.",
-            colour=0x00FF00,
-        )
-        embed.set_footer(
-            text=f'Use "{self.context.prefix}help command" for more info on a command.'
-        )
+        if "@" in str(self.context.prefix):
+            prefix = f"@{self.context.bot.user.name}"
+        else:
+            prefix = self.context.prefix
+        embed = await self.generate_embed(self.context, prefix)
+        embed.title = f"{cog.qualified_name.capitalize()} Help"
 
         cog_commands = cog.get_commands()
         command_list = [(c.name, c.help, c.hidden) for c in cog_commands]
@@ -83,23 +90,17 @@ class MyHelpCommand(commands.HelpCommand):
             name="Support",
             value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
-        embed.set_footer(
-            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
-        )
+
         await self.context.send(embed=embed)
 
-    def common_command_formatting(self, page_or_embed: discord.Embed, command):
-        # page_or_embed.author = "Obsidion Help Menu"
-        _help = f"`Syntax: {self.context.prefix}{command.qualified_name} {command.signature}`"
-        if command.description:
-            page_or_embed.description = _help
-        else:
-            page_or_embed.description = _help or "No help found..."
-
     async def send_command_help(self, command):
-        embed = discord.Embed(colour=0x00FF00)
-
-        self.common_command_formatting(embed, command)
+        if "@" in str(self.context.prefix):
+            prefix = f"@{self.context.bot.user.name}"
+        else:
+            prefix = self.context.prefix
+        embed = await self.generate_embed(self.context, prefix)
+        embed.title = f"{command.qualified_name.capitalize()} Help"
+        embed.description = f"`Syntax: {prefix}{command.qualified_name} {command.signature}`\n\n{command.help}"
         if len(command.aliases) > 0:
             embed.add_field(
                 name=command.name,
@@ -110,14 +111,9 @@ class MyHelpCommand(commands.HelpCommand):
             )
         else:
             embed.add_field(
-                name=command.name,
-                value=f"""
-            Name: `{command.name}`
-            Category: `{command.cog_name}`""",
+                name="Info",
+                value=f"Name: `{command.name}`\nCategory: `{command.cog_name}`",
             )
-        embed.set_footer(
-            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
-        )
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
