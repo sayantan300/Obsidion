@@ -66,7 +66,7 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto Hive or there are no ranks available."
             )
             return
-        embed = discord.Embed(title=f"`{username}`'s Hive Rank", color=0x00FF00)
+        embed = discord.Embed(title=f"`{username}`'s Hive Rank", color=0xFFAF03)
         embed.add_field(name="rank", value=(f"Rank: `{data['rank'][0]}`"))
         await ctx.send(embed=embed)
 
@@ -80,7 +80,7 @@ class servers(commands.Cog):
             )
             return
         embed = discord.Embed(
-            title=f"`{username}`'s current Hive Status", color=0x00FF00
+            title=f"`{username}`'s current Hive Status", color=0xFFAF03
         )
         embed.add_field(
             name="description",
@@ -88,3 +88,26 @@ class servers(commands.Cog):
         )
         embed.add_field(name="game", value=(f"Game: `{data['status'][0]['game']}`"))
         await ctx.send(embed=embed)
+        
+    @commands.command()
+    async def hiveach(self, ctx: commands.Context, username: str):
+        await ctx.trigger_typing()
+        data = await hiveMCAchievements(username, ctx.bot.http_session)
+        
+        if not data:
+            await ctx.send(
+                f"`{username}` has not logged onto Hive or they have no achievements."
+            )
+            return
+        new_ach = []
+        for ach in data['all_achievements']
+        new_ach += ach
+            """embed = discord.Embed(
+                title=f"`{username}`'s Hive achievements", color=0xFFAF03
+            )
+            embed.add_field(
+                name="description",
+                value=(f"Description: `{new_ach}`"),
+            )"""
+        await ctx.send(new_ach)
+        
