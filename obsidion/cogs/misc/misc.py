@@ -109,7 +109,9 @@ class miscellaneous(commands.Cog):
         embed = discord.Embed(title="Stats", color=0x00FF00)
         embed.add_field(name=":newspaper: STATS", value=statics, inline=True)
         embed.add_field(name=":link: LINKS", value=links, inline=True)
-        embed.set_footer(text=f"{__version__} | Created by: Darkflame72#1150")
+        embed.set_footer(
+            text=f"{__version__} | Created by: Darkflame72#1150 with the help of the community"
+        )
 
         await ctx.send(embed=embed)
 
