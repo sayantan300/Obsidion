@@ -63,7 +63,7 @@ class MyHelpCommand(commands.HelpCommand):
         embed.add_field(
             inline=False,
             name="Support",
-            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
+            value=f"**[ADD TO SERVER](https://discord.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
         await self.context.send(embed=embed)
 
@@ -88,7 +88,7 @@ class MyHelpCommand(commands.HelpCommand):
         embed.add_field(
             inline=False,
             name="Support",
-            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
+            value=f"**[ADD TO SERVER](https://discord.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
 
         await self.context.send(embed=embed)
