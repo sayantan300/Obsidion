@@ -13,3 +13,4 @@ fuzzywuzzy
 beautifulsoup4
 aiohypixel
 lxml
+asyncrcon
