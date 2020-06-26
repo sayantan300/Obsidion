@@ -35,20 +35,21 @@ bot.load_extension("obsidion.core.help")
 bot.load_extension("obsidion.core.error_handler")
 
 # extensions and main features
-bot.load_extension("obsidion.cogs.misc")
-bot.load_extension("obsidion.cogs.redstone")
 bot.load_extension("obsidion.cogs.fun")
-bot.load_extension("obsidion.cogs.info")
-bot.load_extension("obsidion.cogs.images")
 bot.load_extension("obsidion.cogs.hypixel")
+bot.load_extension("obsidion.cogs.images")
+bot.load_extension("obsidion.cogs.info")
+bot.load_extension("obsidion.cogs.misc")
 bot.load_extension("obsidion.cogs.rcon")
+bot.load_extension("obsidion.cogs.redstone")
+bot.load_extension("obsidion.cogs.servers")
+bot.load_extension("obsidion.cogs.servertracking")
+
+# bot.load_extension("obsidion.cogs.events")
+# bot.load_extension("obsidion.cogs.config")
 
 if constants.Discord_bot_list.voting_enabled:
     bot.load_extension("cogs.botlist")
-
-# TODO
-# bot.load_extension("obsidion.cogs.config")
-# bot.load_extension("obsidion.cogs.servers")
 
 # run bot
 bot.run(constants.Bot.discord_token)
