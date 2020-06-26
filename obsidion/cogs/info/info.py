@@ -135,6 +135,44 @@ class info(commands.Cog):
             )
             await ctx.send(embed=embed)
 
+    @commands.command()
+    async def serverpe(self, ctx: commands.Context, server_ip: str, port: int = None):
+        """Get info on a minecraft server"""
+        await ctx.channel.trigger_typing()
+        url = f"{constants.Bot.api}/server/bedrock"
+        server_ip, _port = self.get_server(server_ip, port)
+        if port:
+            payload = {"server": server_ip, "port": port}
+        elif _port:
+            payload = {"server": server_ip, "port": _port}
+        else:
+            payload = {"server": server_ip}
+
+        data = await get(ctx.bot.http_session, url, payload)
+        if not data:
+            await ctx.send(
+                f"{ctx.author}, :x: The Bedrock edition Minecraft server `{server_ip}` is currently not online or cannot be requested"
+            )
+            return
+        embed = discord.Embed(title=f"Bedrock Server: {server_ip}", color=0x00FF00)
+        embed.add_field(name="Description", value=data["motd"])
+
+        embed.add_field(
+            name="Players",
+            value=f"Online: `{data['players']['online']:,}` \n Maximum: `{data['players']['max']:,}`",
+        )
+        embed.add_field(
+            name="Version",
+            value=f"Bedrock Edition \n Running: `{data['software']['version']}` \n Map: `{data['map']}`",
+            inline=True,
+        )
+        if data["players"]["names"]:
+            names = ""
+            for player in data["players"]["names"][:10]:
+                names += f"{player}\n"
+            embed.add_field(name="Players Online", value=names, inline=False)
+        await ctx.send(embed=embed)
+
     @commands.group(aliases=["uhcgg", "uhc.gg"])
     async def uhc(self, ctx: commands.Context):
         """View info about uhc matches."""
