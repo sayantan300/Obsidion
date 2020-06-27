@@ -2,10 +2,25 @@ import logging
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import Command
 from obsidion import constants
 from obsidion.bot import Obsidion
+from fuzzywuzzy import fuzz, process
 
 log = logging.getLogger(__name__)
+
+
+class HelpQueryNotFound(ValueError):
+    """
+    Raised when a HelpSession Query doesn't match a command or cog.
+    Contains the custom attribute of ``possible_matches``.
+    Instances of this object contain a dictionary of any command(s) that were close to matching the
+    query, where keys are the possible matched command names and values are the likeness match scores.
+    """
+
+    def __init__(self, arg: str, possible_matches: dict = None):
+        super().__init__(arg)
+        self.possible_matches = possible_matches
 
 
 class MyHelpCommand(commands.HelpCommand):
@@ -16,6 +31,75 @@ class MyHelpCommand(commands.HelpCommand):
                 "hidden": True,
             }
         )
+
+    async def get_all_help_choices(self) -> set:
+        """
+        Get all the possible options for getting help in the bot.
+        This will only display commands the author has permission to run.
+        These include:
+        - Category names
+        - Cog names
+        - Group command names (and aliases)
+        - Command names (and aliases)
+        - Subcommand names (with parent group and aliases for subcommand, but not including aliases for group)
+        Options and choices are case sensitive.
+        """
+        # first get all commands including subcommands and full command name aliases
+        choices = set()
+        for command in await self.filter_commands(self.context.bot.walk_commands()):
+            # the the command or group name
+            choices.add(str(command))
+
+            if isinstance(command, Command):
+                # all aliases if it's just a command
+                choices.update(command.aliases)
+            else:
+                # otherwise we need to add the parent name in
+                choices.update(
+                    f"{command.full_parent_name} {alias}" for alias in command.aliases
+                )
+
+        # all cog names
+        choices.update(self.context.bot.cogs)
+
+        # all category names
+        choices.update(
+            cog.category
+            for cog in self.context.bot.cogs.values()
+            if hasattr(cog, "category")
+        )
+        return choices
+
+    async def subcommand_not_found(
+        self, command: Command, string: str
+    ) -> "HelpQueryNotFound":
+        """
+        Redirects the error to `command_not_found`.
+        `command_not_found` deals with searching and getting best choices for both commands and subcommands.
+        """
+        return await self.command_not_found(f"{command.qualified_name} {string}")
+
+    async def send_error_message(self, error: HelpQueryNotFound) -> None:
+        """Send the error message to the channel."""
+        embed = discord.Embed(colour=discord.Colour.red(), title=str(error))
+
+        if getattr(error, "possible_matches", None):
+            matches = "\n".join(f"`{match}`" for match in error.possible_matches)
+            embed.description = f"**Did you mean:**\n{matches}"
+
+            await self.context.send(embed=embed)
+
+    async def command_not_found(self, string: str) -> "HelpQueryNotFound":
+        """
+        Handles when a query does not match a valid command, group, cog or category.
+        Will return an instance of the `HelpQueryNotFound` exception with the error message and possible matches.
+        """
+        choices = await self.get_all_help_choices()
+        result = process.extractBests(
+            string, choices, scorer=fuzz.ratio, score_cutoff=60
+        )
+
+        return HelpQueryNotFound(f'Query "{string}" not found.', dict(result))
 
     def get_command_signature(self, command):
         parent = command.full_parent_name
