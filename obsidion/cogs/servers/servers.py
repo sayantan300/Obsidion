@@ -107,17 +107,100 @@ class servers(commands.Cog):
             value=(f"Description: `{data['all_achievements'][0]}`"),
         )
         await ctx.send(embed=embed)
+
     @commands.command()
     async def hivestats(self, ctx: commands.Context, username: str, game: str):
         await ctx.trigger_typing()
-        if game.lower() == 'survival games':
+        if game.lower() == 'survival_games':
             data = await hiveMCGameStats(username, 'SG', ctx.bot.http_session)
-            await ctx.send(data)
             if not data:
                 await ctx.send(
-                    f"{username} has not logged onto Hive or they have no gane stats"
+                    f"{username} has not logged onto Hive or they have no game stats"
                 )
                 return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for Survival Games.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="Survival Game Stats",
+                value=(f"Victories: `{data['stats'][0]['victories']}`\nTotal points: `{data['stats'][0]['total_points']}`\nTotal games played: `{data['stats'][0]['gamesplayed']}`\nTotal number of death matches: `{data['stats'][0]['deathmatches']}`\nTotal kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`"),
+            )
+            await ctx.send(embed=embed)
+        elif game.lower() == 'blockparty':
+            data = await hiveMCGameStats(username, 'BP', ctx.bot.http_session)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no game stats"
+                )
+                return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for BlockParty.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="Survival Game Stats",
+                value=(f"Total games played: `{data['stats'][0]['games_played']}`\nTotal eliminations: `{data['stats'][0]['total_eliminations']}`\nTotal placings: `{data['stats'][0]['total_placing']}`\nTotal points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`"),
+            )
+            await ctx.send(embed=embed)
+        elif game.lower() == 'cowboys_and_indians':
+            data = await hiveMCGameStats(username, 'CAI', ctx.bot.http_session)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no game stats"
+                )
+                return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for Cowboys and Indians.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="Survival Game Stats",
+                value=(f"Total points: `{data['stats'][0]['total_points']}`\nTimes captured: `{data['stats'][0]['captured']}`\nTotal captures: `{data['stats'][0]['captures']}`\nTotal catches: `{data['stats'][0]['catches']}`\nTimes caught: `{data['stats'][0]['caught']}`\nGames played: `{data['stats'][0]['gamesplayed']}`\nVictories: `{data['stats'][0]['victories']}`"),
+            )
+            await ctx.send(embed=embed)
+        elif game.lower() == 'cranked':
+            data = await hiveMCGameStats(username, 'CR', ctx.bot.http_session)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no game stats"
+                )
+                return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for Cranked.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="Survival Game Stats",
+                value=(f"Total points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`\nTotal kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`\nGames played: `{data['stats'][0]['gamesplayed']}`\nRccat count: `{data['stats'][0]['rccat_count']}`\nRccat kills: `{data['stats'][0]['rccat_kills']}`\nAirstrike count: `{data['stats'][0]['airstrike_count']}`\nAirstrike kills: `{data['stats'][0]['airstrike_kills']}`\nSonicsquid count: `{data['stats'][0]['sonicsquid_count']}`\nSonicsquid kills: `{data['stats'][0]['sonicsquid_kills']}`"),
+            )
+            await ctx.send(embed=embed)
+        elif game.lower() == 'deathrun':
+            data = await hiveMCGameStats(username, 'DR', ctx.bot.http_session)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no game stats"
+                )
+                return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for DeathRun.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="Survival Game Stats",
+                value=(f"Total points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`\nTotal kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`\nGames played: `{data['stats'][0]['games_played']}`"),
+            )
+            await ctx.send(embed=embed)
+        elif game.lower() == 'the_herobrine':
+            data = await hiveMCGameStats(username, 'HB', ctx.bot.http_session)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no game stats"
+                )
+                return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for DeathRun.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="Survival Game Stats",
+                value=(f"Total captures: `{data['stats'][0]['captures']}`\nTotal Kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`\nTotal points: `{data['stats'][0]['points']}`\nCurrent class: `{data['stats'][0]['active_class']}`"),
+            )
+            await ctx.send(embed=embed)
         else:
             await ctx.send(
                 "Sorry that game was not recognized as a Hive game"
