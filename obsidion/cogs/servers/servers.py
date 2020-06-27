@@ -99,15 +99,28 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto Hive or they have no achievements."
             )
             return
-        new_ach = []
-        for ach in data['all_achievements']
-        new_ach += ach
-            """embed = discord.Embed(
-                title=f"`{username}`'s Hive achievements", color=0xFFAF03
+        embed = discord.Embed(
+            title=f"`{username}`'s Hive achievements", color=0xFFAF03
+        )
+        embed.add_field(
+            name="description",
+            value=(f"Description: `{data['all_achievements'][0]}`"),
+        )
+        await ctx.send(embed=embed)
+    @commands.command()
+    async def hivestats(self, ctx: commands.Context, username: str, game: str):
+        await ctx.trigger_typing()
+        if game.lower() == 'survival games':
+            data = await hiveMCGameStats(username, 'SG', ctx.bot.http_session)
+            await ctx.send(data)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no gane stats"
+                )
+                return
+        else:
+            await ctx.send(
+                "Sorry that game was not recognized as a Hive game"
             )
-            embed.add_field(
-                name="description",
-                value=(f"Description: `{new_ach}`"),
-            )"""
-        await ctx.send(new_ach)
+            
         
