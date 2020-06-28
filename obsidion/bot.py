@@ -60,7 +60,7 @@ class Obsidion(commands.AutoShardedBot):
         """
         self.db_pool = await asyncpg.create_pool(
             database=constants.Database.database,
-            user=constants.Database.user,
+            user=constants.Database.username,
             password=constants.Database.password,
             host=constants.Database.host,
             port=constants.Database.port,
