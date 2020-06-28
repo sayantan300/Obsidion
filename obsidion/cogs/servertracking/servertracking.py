@@ -1,5 +1,4 @@
 from discord.ext import commands, tasks
-import asyncio
 from obsidion import constants
 from obsidion.utils.utils import get
 
