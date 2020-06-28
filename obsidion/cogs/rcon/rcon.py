@@ -11,14 +11,14 @@ class rcon(commands.Cog):
         """Send an rcon message to a minecraft server."""
         await ctx.trigger_typing()
 
-        rcon = AsyncRCON(addr, pw)
+        _rcon = AsyncRCON(addr, pw)
         try:
-            await rcon.open_connection()
+            await _rcon.open_connection()
         except AuthenticationException:
             await ctx.send("Login failed: Unauthorized.")
             return
 
-        res = await rcon.command(message)
+        res = await _rcon.command(message)
         await ctx.send(res)
 
         rcon.close()
