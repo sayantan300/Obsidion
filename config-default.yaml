@@ -9,7 +9,7 @@ bot:
 channels:
   new_guild_channel: none
   upvote_channel: none
-  bugs_channel: none
+  stack_trace_channel: none
   feedback_channel: none
   bug_channel: none
 discord_bot_lists:

@@ -189,7 +189,7 @@ class Channels(metaclass=YAMLGetter):
 
     new_guild_channel: int
     upvote_channel: int
-    bugs_channel: int
+    stack_trace_channel: int
     feedback_channel: int
     bug_channel: int
 

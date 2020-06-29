@@ -132,7 +132,7 @@ class ErrorHandler(Cog):
             "Sorry, an unexpected error occurred. It has been recorded and should be fixed soon!\n\n"
         )
         embed = discord.Embed(title="Bug", colour=0x00FF00)
-        channel = ctx.bot.get_channel(constants.Channels.bugs_channel)
+        channel = ctx.bot.get_channel(constants.Channels.stack_trace_channel)
 
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
         embed.add_field(name="Command", value=ctx.command)
@@ -141,7 +141,6 @@ class ErrorHandler(Cog):
             value=f"```{''.join(traceback.format_tb(e.__traceback__))}\n{e}```",
             inline=False,
         )
-        # embed.add_field("Error",)
         embed.timestamp = ctx.message.created_at
 
         if ctx.guild is not None:
