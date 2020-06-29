@@ -37,7 +37,7 @@ class miscellaneous(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx: commands.Context):
-        """invite the bot to your server"""
+        """invite the bot to your server."""
         embed = discord.Embed(
             description=f"**[Click here to add {self.bot.user.name} to your Discord server](https://discordapp.com/oauth2/authorize?client_id=691589447074054224&scope=bot&permissions=314432)**",
             color=0x00FF00,
@@ -76,7 +76,7 @@ class miscellaneous(commands.Cog):
 
     @commands.command(aliases=["statistics", "botstats"])
     async def stats(self, ctx):
-        """View statistics about the bot"""
+        """View statistics about the bot."""
 
         delta = datetime.datetime.utcnow() - self.bot.uptime
         uptime_str = humanize_timedelta(timedelta=delta)

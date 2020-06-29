@@ -67,12 +67,6 @@ class ErrorHandler(Cog):
     ) -> None:
         """
         Send an error message in `ctx` for UserInputError, sometimes invoking the help command too.
-        * MissingRequiredArgument: send an error message with arg name and the help command
-        * TooManyArguments: send an error message and the help command
-        * BadArgument: send an error message and the help command
-        * BadUnionArgument: send an error message including the error produced by the last converter
-        * ArgumentParsingError: send an error message
-        * Other: send an error message and the help command
         """
         prepared_help_command = self.get_help_command(ctx)
 

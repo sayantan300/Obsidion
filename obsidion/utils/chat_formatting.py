@@ -108,7 +108,8 @@ def italics(text: str, escape_formatting: bool = True) -> str:
 
 
 def underline(text: str, escape_formatting: bool = True) -> str:
-    """Get the given text with an underline.
+    """
+    Get the given text with an underline.
 
     Args:
         text (str): text to underline
@@ -123,6 +124,7 @@ def underline(text: str, escape_formatting: bool = True) -> str:
 
 def strikethrough(text: str, escape_formatting: bool = True) -> str:
     """Get the given text with a strikethrough.
+
     Note: By default, this function will escape ``text`` prior to applying a strikethrough.
     
     Args:

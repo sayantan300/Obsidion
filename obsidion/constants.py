@@ -1,5 +1,6 @@
 """
 Loads bot configuration from YAML files.
+
 By default, this simply loads the default
 configuration located at `config-default.yaml`.
 If a file called `config.yaml` is found in the
@@ -14,7 +15,7 @@ import logging
 import os
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import yaml
 
