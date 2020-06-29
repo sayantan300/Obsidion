@@ -101,23 +101,23 @@ class images(commands.Cog):
         """Renders a Minecraft players skin in 6 different ways. You can choose from these 6 render types: face, front, frontfull, head, bust & skin."""
         await ctx.channel.trigger_typing()
         renders = ["face", "front", "frontfull", "head", "bust", "skin"]
-        if render_type in renders:
-            uuid = await usernameToUUID(username, ctx.bot.http_session)
-            if uuid:
-                embed = discord.Embed(
-                    description=f"Here is: `{username}`'s {render_type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{render_type}/512/{uuid})**",
-                    color=0x00FF00,
-                )
-                embed.set_image(
-                    url=f"https://visage.surgeplay.com/{render_type}/512/{uuid}"
-                )
-
-                await ctx.send(embed=embed)
-            else:
-                await ctx.send(
-                    f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!"
-                )
-        else:
+        if render_type not in renders:
             await ctx.send(
                 f"{ctx.message.author.mention}, Please supply a render type. Your options are:\n `face`, `front`, `frontfull`, `head`, `bust`, `skin` \n Type: ?render <render type> <username>"
+            )
+            return
+        uuid = await usernameToUUID(username, ctx.bot.http_session)
+        if uuid:
+            embed = discord.Embed(
+                description=f"Here is: `{username}`'s {render_type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{render_type}/512/{uuid})**",
+                color=0x00FF00,
+            )
+            embed.set_image(
+                url=f"https://visage.surgeplay.com/{render_type}/512/{uuid}"
+            )
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(
+                f"{ctx.message.author.mention}, :x: The user: `{username}` does not exist!"
             )
