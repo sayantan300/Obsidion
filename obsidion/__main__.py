@@ -8,7 +8,7 @@ from discord.ext.commands import when_mentioned_or
 # Set the event loop policies here so any subsequent `new_event_loop()`
 # calls, in particular those as a result of the following imports,
 # return the correct loop object.
-from obsidion import __version__, _update_event_loop_policy, constants
+from obsidion import _update_event_loop_policy, constants
 from obsidion.bot import Obsidion
 
 _update_event_loop_policy()

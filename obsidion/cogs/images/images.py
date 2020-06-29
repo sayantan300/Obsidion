@@ -105,7 +105,7 @@ class images(commands.Cog):
             uuid = await usernameToUUID(username, ctx.bot.http_session)
             if uuid:
                 embed = discord.Embed(
-                    description=f"Here is: `{username}`'s {render_type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{type_}/512/{uuid})**",
+                    description=f"Here is: `{username}`'s {render_type}! \n **[DOWNLOAD](https://visage.surgeplay.com/{render_type}/512/{uuid})**",
                     color=0x00FF00,
                 )
                 embed.set_image(
