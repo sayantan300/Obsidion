@@ -68,7 +68,6 @@ class development(commands.Cog):
         """shutdown the bot"""
         # TODO
         self.bot._recreate()
-        pass
 
 
 def setup(bot) -> None:
