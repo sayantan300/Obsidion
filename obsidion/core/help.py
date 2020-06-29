@@ -101,7 +101,8 @@ class MyHelpCommand(commands.HelpCommand):
 
         return HelpQueryNotFound(f'Query "{string}" not found.', dict(result))
 
-    def get_command_signature(self, command):
+    @staticmethod
+    def get_command_signature(command):
         parent = command.full_parent_name
         if len(command.aliases) > 0:
             aliases = "|".join(command.aliases)
