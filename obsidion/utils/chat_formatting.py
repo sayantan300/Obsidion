@@ -126,7 +126,6 @@ def strikethrough(text: str, escape_formatting: bool = True) -> str:
     """Get the given text with a strikethrough.
 
     Note: By default, this function will escape ``text`` prior to applying a strikethrough.
-    
     Args:
         text (str): text to underline
         escape_formatting (bool, optional): Wether to escape formatting. Defaults to True.
@@ -254,7 +253,7 @@ def text_to_file(
     encoding: str = "utf-8",
 ) -> discord.File:
     """Prepares text to be sent as a file on Discord, without character limit.
-    This writes text into a bytes object that can be used for the ``file`` or 
+    This writes text into a bytes object that can be used for the ``file`` or
     ``files`` parameters of :meth:`discord.abc.Messageable.send`.
 
     Args:
