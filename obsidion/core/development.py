@@ -61,7 +61,7 @@ class development(commands.Cog):
     async def shutdown(self, ctx: commands.Context):
         """shutdown the bot"""
         # TODO
-        pass
+        self.bot.close()
 
     @commands.command(hidden=True)
     async def reboot(self, _ctx: commands.Context):
