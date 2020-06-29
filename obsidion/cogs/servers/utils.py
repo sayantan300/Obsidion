@@ -236,4 +236,3 @@ async def veltpvp(username, session):
             stats[stat_name] = stat_val
         data["game_stats"].append({game_name: stats})
     return data
-

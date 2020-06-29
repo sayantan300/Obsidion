@@ -99,4 +99,3 @@ class botlist(commands.Cog):
             headers=headers,
             json=json,
         )
-
