@@ -190,6 +190,7 @@ class Channels(metaclass=YAMLGetter):
     upvote_channel: int
     bugs_channel: int
     feedback_channel: int
+    bug_channel: int
 
 
 class Discord_bot_list(metaclass=YAMLGetter):

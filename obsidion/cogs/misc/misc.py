@@ -3,6 +3,7 @@ import inspect
 import logging
 import resource
 import sys
+import os
 
 import discord
 from discord.ext import commands
@@ -147,15 +148,16 @@ class miscellaneous(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def source(self, ctx, *, command: str = None):
-        """Displays my full source code or for a specific command.
+        """
+        Displays my full source code or for a specific command.
         To display the source code of a subcommand you can separate it by
         periods, e.g. account.link for the link subcommand of the account command
         or by spaces.
         """
         source_url = "https://github.com/Darkflame72/Obsidion"
-        branch = "master"
+        branch = "V0.3"
         if command is None:
             return await ctx.send(source_url)
 
@@ -186,10 +188,11 @@ class miscellaneous(commands.Cog):
         final_url = f"<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>"
         await ctx.send(final_url)
 
-    @commands.command()
+    @commands.command(aliases=["contact", "suggestion"])
     @commands.cooldown(rate=1, per=600.0, type=commands.BucketType.user)
     async def feedback(self, ctx: commands.Context, *, content: str):
-        """Gives feedback about the bot.
+        """
+        Gives feedback about the bot.
         This is a quick way to request features or bug fixes
         without being in the bot's server.
         The bot will communicate with you via PM about the status
@@ -197,11 +200,30 @@ class miscellaneous(commands.Cog):
         You can only request feedback once every 10 minutes.
         """
 
-        embed = discord.Embed(title="Feedback", colour=0x00FF00)
         channel = ctx.bot.get_channel(constants.Channels.feedback_channel)
         if channel is None:
             await ctx.send(
                 "Feedback is currently disabled please join our support server [here](https://discord.gg/invite/7BRD7s6) to give it in person."
+            )
+            return
+        embed = discord.Embed(title="Feedback", colour=0x00FF00)
+
+        embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
+        embed.description = content
+        embed.timestamp = ctx.message.created_at
+        await channel.send(embed=embed)
+        await ctx.send("Successfully sent feedback")
+
+    @commands.command()
+    @commands.cooldown(rate=1, per=120.0, type=commands.BucketType.user)
+    async def bugreport(self, ctx: commands.Context, *, content: str):
+        """Sends a bug report"""
+
+        embed = discord.Embed(title="Bug Report", colour=0x00FF00)
+        channel = ctx.bot.get_channel(constants.Channels.bug_channel)
+        if channel is None:
+            await ctx.send(
+                "Bug reporting is currently disabled please join our support server [here](https://discord.gg/invite/7BRD7s6) to give it in person."
             )
             return
 
@@ -209,17 +231,5 @@ class miscellaneous(commands.Cog):
         embed.description = content
         embed.timestamp = ctx.message.created_at
 
-        if ctx.guild is not None:
-            embed.add_field(
-                name="Server",
-                value=f"{ctx.guild.name} (ID: {ctx.guild.id})",
-                inline=False,
-            )
-
-        embed.add_field(
-            name="Channel", value=f"{ctx.channel} (ID: {ctx.channel.id})", inline=False
-        )
-        embed.set_footer(text=f"Author ID: {ctx.author.id}")
-
         await channel.send(embed=embed)
-        await ctx.send("Successfully sent feedback")
+        await ctx.send("Successfully sent bug report")

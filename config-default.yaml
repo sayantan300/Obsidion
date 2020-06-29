@@ -11,6 +11,7 @@ channels:
   upvote_channel: none
   bugs_channel: none
   feedback_channel: none
+  bug_channel: none
 discord_bot_lists:
   voting_enabled: false
   dbl_token: none
