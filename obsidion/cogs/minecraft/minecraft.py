@@ -22,5 +22,5 @@ class minecraft:
         pass
 
     @commands.commamd()
-    async def command(self, ctx, command):
+    async def minecraft_command(self, ctx, com):
         pass
