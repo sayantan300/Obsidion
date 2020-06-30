@@ -46,6 +46,7 @@ bot.load_extension("obsidion.cogs.servers")
 bot.load_extension("obsidion.cogs.servertracking")
 bot.load_extension("obsidion.cogs.events")
 bot.load_extension("obsidion.cogs.config")
+bot.load_extension("obsidion.cogs.minecraft")
 
 if constants.Discord_bot_list.voting_enabled:
     bot.load_extension("cogs.botlist")
