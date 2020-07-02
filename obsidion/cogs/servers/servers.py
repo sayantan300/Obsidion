@@ -137,7 +137,7 @@ class servers(commands.Cog):
                 title=f"`{username}`'s Hive stats for BlockParty.", color=0xFFAF03
             )
             embed.add_field(
-                name="Survival Game Stats",
+                name="BlockParty Stats",
                 value=(f"Total games played: `{data['stats'][0]['games_played']}`\nTotal eliminations: `{data['stats'][0]['total_eliminations']}`\nTotal placings: `{data['stats'][0]['total_placing']}`\nTotal points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`"),
             )
             await ctx.send(embed=embed)
@@ -152,7 +152,7 @@ class servers(commands.Cog):
                 title=f"`{username}`'s Hive stats for Cowboys and Indians.", color=0xFFAF03
             )
             embed.add_field(
-                name="Survival Game Stats",
+                name="Cowboys And Indians Stats",
                 value=(f"Total points: `{data['stats'][0]['total_points']}`\nTimes captured: `{data['stats'][0]['captured']}`\nTotal captures: `{data['stats'][0]['captures']}`\nTotal catches: `{data['stats'][0]['catches']}`\nTimes caught: `{data['stats'][0]['caught']}`\nGames played: `{data['stats'][0]['gamesplayed']}`\nVictories: `{data['stats'][0]['victories']}`"),
             )
             await ctx.send(embed=embed)
@@ -167,7 +167,7 @@ class servers(commands.Cog):
                 title=f"`{username}`'s Hive stats for Cranked.", color=0xFFAF03
             )
             embed.add_field(
-                name="Survival Game Stats",
+                name="Cranked Stats",
                 value=(f"Total points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`\nTotal kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`\nGames played: `{data['stats'][0]['gamesplayed']}`\nRccat count: `{data['stats'][0]['rccat_count']}`\nRccat kills: `{data['stats'][0]['rccat_kills']}`\nAirstrike count: `{data['stats'][0]['airstrike_count']}`\nAirstrike kills: `{data['stats'][0]['airstrike_kills']}`\nSonicsquid count: `{data['stats'][0]['sonicsquid_count']}`\nSonicsquid kills: `{data['stats'][0]['sonicsquid_kills']}`"),
             )
             await ctx.send(embed=embed)
@@ -182,7 +182,7 @@ class servers(commands.Cog):
                 title=f"`{username}`'s Hive stats for DeathRun.", color=0xFFAF03
             )
             embed.add_field(
-                name="Survival Game Stats",
+                name="DeathRun Stats",
                 value=(f"Total points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`\nTotal kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`\nGames played: `{data['stats'][0]['games_played']}`"),
             )
             await ctx.send(embed=embed)
@@ -194,11 +194,41 @@ class servers(commands.Cog):
                 )
                 return
             embed = discord.Embed(
-                title=f"`{username}`'s Hive stats for DeathRun.", color=0xFFAF03
+                title=f"`{username}`'s Hive stats for The Herobrine.", color=0xFFAF03
             )
             embed.add_field(
-                name="Survival Game Stats",
+                name="The Herobrine Stats",
                 value=(f"Total captures: `{data['stats'][0]['captures']}`\nTotal Kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`\nTotal points: `{data['stats'][0]['points']}`\nCurrent class: `{data['stats'][0]['active_class']}`"),
+            )
+            await ctx.send(embed=embed)
+        elif game.lower() == 'sg:heros':
+            data = await hiveMCGameStats(username, 'HERO', ctx.bot.http_session)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no game stats"
+                )
+                return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for SG:Heros.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="SG:Heros Stats",
+                value=(f"Total points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`\nTotal kills: `{data['stats'][0]['kills']}`\nTotal deaths: `{data['stats'][0]['deaths']}`\nCurrent One V One Wins: `{data['stats'][0]['one_vs_ones_wins']}`\nTotal Game Plays: `{data['stats'][0]['games_played']}`\nTotal Deathmatches: `{data['stats'][0]['deathmatches']}`\nTotal TNT Used: `{data['stats'][0]['tnt_used']}`"),
+            )
+            await ctx.send(embed=embed)
+        elif game.lower() == 'hide_and_seek':
+            data = await hiveMCGameStats(username, 'HIDE', ctx.bot.http_session)
+            if not data:
+                await ctx.send(
+                    f"{username} has not logged onto Hive or they have no game stats"
+                )
+                return
+            embed = discord.Embed(
+                title=f"`{username}`'s Hive stats for Hide And Seek.", color=0xFFAF03
+            )
+            embed.add_field(
+                name="Hide And Seek Stats",
+                value=(f"Total points: `{data['stats'][0]['total_points']}`\nVictories: `{data['stats'][0]['victories']}`\nTotal Hider Kills: `{data['stats'][0]['hiderkills']}`\nTotal Seeker Kills: `{data['stats'][0]['seekerkills']}`\nTotal Deaths: `{data['stats'][0]['deaths']}`\nTotal Games Played: `{data['stats'][0]['gamesplayed']}`"),
             )
             await ctx.send(embed=embed)
         else:
