@@ -19,6 +19,7 @@ class images(commands.Cog):
     ):
         """Create your very own custom Minecraft achievements"""
         await ctx.channel.trigger_typing()
+        text = text.replace(" ", "%20")
         embed = discord.Embed(color=0x00FF00)
         embed.set_image(
             url=f"https://api.bowie-co.nz/api/v1/images/advancement?item={block_name}&title={title}&text={text}"
@@ -31,7 +32,11 @@ class images(commands.Cog):
     ):
         """Create your very own custom Minecraft achievements"""
         await ctx.channel.trigger_typing()
-        line1, line2, line3, line4, line5 = text.replace(" ", "%20").split("|")
+        split = text.replace(" ", "%20").split("|")
+        line1 = split[0] if len(split) >= 1 else "%20"
+        line2 = split[1] if len(split) >= 2 else "%20"
+        line3 = split[2] if len(split) >= 3 else "%20"
+        line4 = split[3] if len(split) >= 4 else "%20"
         embed = discord.Embed(color=0x00FF00)
         embed.set_image(
             url=f"https://api.bowie-co.nz/api/v1/images/sign?line1={line1}&line2={line2}&line3={line3}&line4={line4}"
