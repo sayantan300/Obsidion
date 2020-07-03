@@ -15,7 +15,7 @@ class images(commands.Cog):
 
     @commands.command(aliases=["ach", "advancement"])
     async def achievement(
-        self, ctx: commands.Context, block_name: str, title: str, text: str
+        self, ctx: commands.Context, block_name: str, title: str, *, text: str
     ):
         """Create your very own custom Minecraft achievements"""
         await ctx.channel.trigger_typing()
@@ -27,15 +27,11 @@ class images(commands.Cog):
 
     @commands.command()
     async def sign(
-        self,
-        ctx: commands.Context,
-        line1: str,
-        line2: str = "%20",
-        line3: str = "%20",
-        line4: str = "%20",
+        self, ctx: commands.Context, *, text: str,
     ):
         """Create your very own custom Minecraft achievements"""
         await ctx.channel.trigger_typing()
+        line1, line2, line3, line4, line5 = text.replace(" ", "%20").split("|")
         embed = discord.Embed(color=0x00FF00)
         embed.set_image(
             url=f"https://api.bowie-co.nz/api/v1/images/sign?line1={line1}&line2={line2}&line3={line3}&line4={line4}"
