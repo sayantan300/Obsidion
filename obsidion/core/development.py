@@ -14,6 +14,9 @@ class development(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        return await self.bot.is_owner(ctx.author)
+
     # for live development
     @commands.command(hidden=True)
     async def load(self, ctx: commands.Context, *, module: str):
