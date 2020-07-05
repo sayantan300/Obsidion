@@ -204,8 +204,6 @@ class MyHelpCommand(commands.HelpCommand):
     async def send_group_help(self, group):
         embed = discord.Embed(colour=0x00FF00)
 
-        self.common_command_formatting(embed, group)
-
         subcommands = group.commands
         if len(subcommands) == 0:
             return await self.send_command_help(group)
