@@ -61,8 +61,8 @@ class fun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.pvp_mes = load_from_file("kill")
-        self.kill_mes = load_from_file("pvp")
+        self.pvp_mes = load_from_file("pvp")
+        self.kill_mes = load_from_file("kill")
         self.build_ideas_mes = load_from_file("build_ideas")
 
     @commands.command(aliases=["villagerspeak", "villagerspeech", "hmm"])
