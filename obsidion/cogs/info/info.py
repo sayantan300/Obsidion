@@ -176,52 +176,6 @@ class info(commands.Cog):
             embed.add_field(name="Players Online", value=names, inline=False)
         await ctx.send(embed=embed)
 
-    @commands.group(aliases=["uhcgg", "uhc.gg"])
-    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
-    async def uhc(self, ctx: commands.Context):
-        """View info about uhc matches."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
-
-    @uhc.command(name="upcoming")
-    async def uhc_upcoming(self, ctx: commands.Context):
-        """View upcoming Matches on uhc.gg."""
-        await ctx.channel.trigger_typing()
-        data = await get(
-            ctx.bot.http_session, "https://hosts.uhc.gg/api/matches/upcoming"
-        )
-
-        embed = discord.Embed(
-            title="UHC.gg upcoming UHC games",
-            description="Displayed the top 6 upcoming UHC games on [hosts.uhc.gg](https://hosts.uhc.gg)\n",
-            color=0x00FF00,
-        )
-
-        for match in data[:6]:
-            address = match["address"]
-            opens = match["opens"]
-            author = match["author"]
-            region = match["region"]
-            version = match["version"]
-            slots = match["slots"]
-            length = match["length"]
-            tournament = match["tournament"]
-            _id = match["id"]
-
-            info = ""
-            info += f"Opens: {opens}\n"
-            info += f"Author: {author}\n"
-            info += f"Region: {region}\n"
-            info += f"Version: {version}\n"
-            info += f"Slots: {slots}\n"
-            info += f"Length: {length} minutes\n"
-            info += f"Tournament: {tournament}\n"
-            info += f"id: {_id}"
-
-            embed.add_field(name=address, value=info)
-
-        await ctx.send(embed=embed)
-
     @commands.command()
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def status(self, ctx: commands.Context):
