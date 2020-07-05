@@ -84,15 +84,16 @@ class Obsidion(commands.AutoShardedBot):
             )
             self.redis_session = await fakeredis.aioredis.create_redis_pool()
         else:
-            if constants.Redis.password:
-                self.redis_session = await aioredis.create_redis_pool(
-                    address=(constants.Redis.host, constants.Redis.port),
-                    password=constants.Redis.password,
-                )
-            else:
-                self.redis_session = await aioredis.create_redis_pool(
-                    address=(constants.Redis.host, constants.Redis.port),
-                )
+            # print(constants.Redis.password == None)
+            # if constants.Redis.password is not None:
+            #     self.redis_session = await aioredis.create_redis_pool(
+            #         address=(constants.Redis.host, constants.Redis.port),
+            #         password=constants.Redis.password,
+            #     )
+            # else:
+            self.redis_session = await aioredis.create_redis_pool(
+                address=(constants.Redis.host, constants.Redis.port),
+            )
 
         self.redis_closed = False
         self.redis_ready.set()
