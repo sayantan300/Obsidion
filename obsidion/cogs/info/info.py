@@ -32,6 +32,7 @@ class info(commands.Cog):
     @commands.command(
         aliases=["whois", "p", "names", "namehistory", "pastnames", "namehis"]
     )
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def profile(self, ctx: commands.Context, username: str):
         """View a players Minecraft UUID, Username history and skin."""
         await ctx.channel.trigger_typing()
@@ -88,6 +89,7 @@ class info(commands.Cog):
         return (ip, None)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def server(self, ctx: commands.Context, server_ip: str, port: int = None):
         """Get info on a minecraft server"""
         await ctx.channel.trigger_typing()
@@ -136,6 +138,7 @@ class info(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def serverpe(self, ctx: commands.Context, server_ip: str, port: int = None):
         """Get info on a minecraft server"""
         await ctx.channel.trigger_typing()
@@ -174,6 +177,7 @@ class info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.group(aliases=["uhcgg", "uhc.gg"])
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def uhc(self, ctx: commands.Context):
         """View info about uhc matches."""
         if ctx.invoked_subcommand is None:
@@ -219,6 +223,7 @@ class info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def status(self, ctx: commands.Context):
         """Check the status of all the Mojang services"""
         await ctx.channel.trigger_typing()
@@ -254,6 +259,7 @@ class info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def sales(self, ctx: commands.Context):
         """See the total sales of Minecraft"""
         await ctx.channel.trigger_typing()
@@ -289,6 +295,7 @@ class info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def mcbug(self, ctx: commands.Context, bug: str = None):
         """Gets info on a bug from bugs.mojang.com."""
         if not bug:
@@ -339,6 +346,7 @@ class info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def wiki(self, ctx: commands.Context, *, query: str):
         """Get an article from the minecraft wiki"""
         await ctx.channel.trigger_typing()

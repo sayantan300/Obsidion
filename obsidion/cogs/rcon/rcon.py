@@ -7,6 +7,7 @@ class rcon(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def rsend(self, ctx: commands.Context, addr: str, pw: str, message: str):
         """Send an rcon message to a minecraft server."""
         await ctx.trigger_typing()

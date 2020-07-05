@@ -14,6 +14,7 @@ class images(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=["ach", "advancement"])
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def achievement(
         self, ctx: commands.Context, block_name: str, title: str, *, text: str
     ):
@@ -27,6 +28,7 @@ class images(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def sign(
         self, ctx: commands.Context, *, text: str,
     ):
@@ -44,6 +46,7 @@ class images(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def avatar(self, ctx: commands.Context, username: str):
         """Renders a Minecraft players face."""
         await ctx.channel.trigger_typing()
@@ -62,6 +65,7 @@ class images(commands.Cog):
             )
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def skull(self, ctx: commands.Context, username: str = None):
         """Renders a Minecraft players skull."""
         await ctx.channel.trigger_typing()
@@ -80,6 +84,7 @@ class images(commands.Cog):
             )
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def skin(self, ctx: commands.Context, username: str):
         """Renders a Minecraft players skin."""
         await ctx.channel.trigger_typing()
@@ -98,6 +103,7 @@ class images(commands.Cog):
             )
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def render(self, ctx: commands.Context, render_type: str, username: str):
         """Renders a Minecraft players skin in 6 different ways. You can choose from these 6 render types: face, front, frontfull, head, bust & skin."""
         await ctx.channel.trigger_typing()

@@ -75,6 +75,7 @@ class miscellaneous(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["statistics", "botstats"])
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def stats(self, ctx):
         """View statistics about the bot."""
 
@@ -149,6 +150,7 @@ class miscellaneous(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def source(self, ctx, *, command: str = None):
         """
         Displays my full source code or for a specific command.
