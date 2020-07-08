@@ -1,13 +1,15 @@
-import logging
 import base64
 import io
+import json
+import logging
 from datetime import datetime
-
-from obsidion.utils.utils import get
-from obsidion import constants
 
 import discord
 from discord.ext import commands
+
+from obsidion import constants
+from obsidion.bot import Obsidion
+from obsidion.utils.utils import get
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +17,7 @@ log = logging.getLogger(__name__)
 class info(commands.Cog):
     """commands that are bot related."""
 
-    def __init__(self, bot):
+    def __init__(self, bot: Obsidion):
         """initialise the bot"""
         self.bot = bot
 
@@ -36,9 +38,13 @@ class info(commands.Cog):
     async def profile(self, ctx: commands.Context, username: str):
         """View a players Minecraft UUID, Username history and skin."""
         await ctx.channel.trigger_typing()
-        # await ctx.send(ctx.bot.http_session)
-        if username:
+        if await self.bot.redis_session.exists(f"username_{username}"):
+            uuid = await self.bot.redis_session.get(
+                f"username_{username}", encoding="utf-8"
+            )
+        else:
             uuid = await self.get_uuid(ctx.bot.http_session, username)
+            self.bot.redis_session.set(f"username_{username}", uuid, expire=28800)
 
         if not uuid:
             await ctx.send("That username is not been used.")
@@ -46,9 +52,14 @@ class info(commands.Cog):
 
         long_uuid = f"{uuid[0:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
 
-        names = await get(
-            ctx.bot.http_session, f"https://api.mojang.com/user/profiles/{uuid}/names"
-        )
+        if await self.bot.redis_session.exists(uuid):
+            names = json.loads(await self.bot.redis_session.get(uuid))
+        else:
+            names = await get(
+                ctx.bot.http_session,
+                f"https://api.mojang.com/user/profiles/{uuid}/names",
+            )
+            self.bot.redis_session.set(uuid, json.dumps(names), expire=28800)
 
         name_list = ""
         for name in names[::-1][:-1]:
@@ -95,14 +106,22 @@ class info(commands.Cog):
         await ctx.channel.trigger_typing()
         url = f"{constants.Bot.api}/server/java"
         server_ip, _port = self.get_server(server_ip, port)
+        if _port:
+            port = _port
         if port:
             payload = {"server": server_ip, "port": port}
-        elif _port:
-            payload = {"server": server_ip, "port": _port}
         else:
             payload = {"server": server_ip}
 
-        data = await get(ctx.bot.http_session, url, payload)
+        if port:
+            key = f"server_{server_ip}:ip"
+        else:
+            key = f"server_{server_ip}"
+        if await self.bot.redis_session.exists(key):
+            data = json.loads(await self.bot.redis_session.get(key))
+        else:
+            data = await get(ctx.bot.http_session, url, payload)
+            self.bot.redis_session.set(key, json.dumps(data), expire=300)
         if not data:
             await ctx.send(
                 f"{ctx.author}, :x: The Jave edition Minecraft server `{server_ip}` is currently not online or cannot be requested"
@@ -144,14 +163,22 @@ class info(commands.Cog):
         await ctx.channel.trigger_typing()
         url = f"{constants.Bot.api}/server/bedrock"
         server_ip, _port = self.get_server(server_ip, port)
+        if _port:
+            port = _port
         if port:
             payload = {"server": server_ip, "port": port}
-        elif _port:
-            payload = {"server": server_ip, "port": _port}
         else:
             payload = {"server": server_ip}
 
-        data = await get(ctx.bot.http_session, url, payload)
+        if port:
+            key = f"bserver_{server_ip}:ip"
+        else:
+            key = f"bserver_{server_ip}"
+        if await self.bot.redis_session.exists(key):
+            data = json.loads(await self.bot.redis_session.get(key))
+        else:
+            data = await get(ctx.bot.http_session, url, payload)
+            self.bot.redis_session.set(key, json.dumps(data), expire=300)
         if not data:
             await ctx.send(
                 f"{ctx.author}, :x: The Bedrock edition Minecraft server `{server_ip}` is currently not online or cannot be requested"
@@ -176,7 +203,7 @@ class info(commands.Cog):
             embed.add_field(name="Players Online", value=names, inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["sales"])
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def status(self, ctx: commands.Context):
         """Check the status of all the Mojang services"""
@@ -190,16 +217,15 @@ class info(commands.Cog):
         }
         payload = {"metricKeys": [k for (k, v) in sales_mapping.items() if v]}
 
-        url = "https://api.mojang.com/orders/statistics"
-        async with ctx.bot.http_session.post(url, json=payload) as resp:
-            if resp.status == 200:
-                sales_data = await resp.json()
+        if await self.bot.redis_session.exists("status"):
+            sales_data = json.loads(await self.bot.redis_session.get("status"))
+        else:
+            url = "https://api.mojang.com/orders/statistics"
+            async with ctx.bot.http_session.post(url, json=payload) as resp:
+                if resp.status == 200:
+                    sales_data = await resp.json()
+            await self.bot.redis_session.set("status", json.dumps(sales_data))
 
-        embed = discord.Embed(title="Minecraft Service Status", color=0x00FF00)
-        embed.add_field(
-            name="Minecraft Game Sales",
-            value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**",
-        )
         services = ""
         for service in data:
             if data[service] == "green":
@@ -208,43 +234,12 @@ class info(commands.Cog):
                 )
             else:
                 services += f":heart: - {service}: **This service is offline.** \n"
-        embed.add_field(name="Minecraft Services:", value=services, inline=False)
-
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
-    async def sales(self, ctx: commands.Context):
-        """See the total sales of Minecraft"""
-        await ctx.channel.trigger_typing()
-        sales_mapping = {
-            "item_sold_minecraft": True,
-            "prepaid_card_redeemed_minecraft": True,
-            "item_sold_cobalt": False,
-            "item_sold_scrolls": False,
-        }
-        payload = {"metricKeys": [k for (k, v) in sales_mapping.items() if v]}
-
-        url = "https://api.mojang.com/orders/statistics"
-        async with ctx.bot.http_session.post(url, json=payload) as resp:
-            if resp.status == 200:
-                sales_data = await resp.json()
-
-        if not sales_data:
-            ctx.send(
-                f"{ctx.author}, :x: the Mojang API is not currently available please try again soon"
-            )
-            return
-        embed = discord.Embed(color=0x00FF00)
-
-        sale = (
-            f"Total Sales: `{sales_data['total']:,}`\n"
-            f"Sales in the last 24 hours: `{sales_data['last24h']:,}`\n"
-            f"Sales per second: `{sales_data['saleVelocityPerSeconds']}`\n"
-            "[BUY MINECRAFT](https://my.minecraft.net/en-us/store/minecraft/)"
+        embed = discord.Embed(title="Minecraft Service Status", color=0x00FF00)
+        embed.add_field(
+            name="Minecraft Game Sales",
+            value=f"Total Sales: **{sales_data['total']:,}** Last 24 Hours: **{sales_data['last24h']:,}**",
         )
-
-        embed.add_field(name="Minecraft Sales", value=sale)
+        embed.add_field(name="Minecraft Services:", value=services, inline=False)
 
         await ctx.send(embed=embed)
 

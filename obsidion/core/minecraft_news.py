@@ -1,8 +1,6 @@
 import logging
 from datetime import datetime
 from time import mktime
-
-import bs4
 import discord
 import feedparser
 from discord.ext import commands, tasks

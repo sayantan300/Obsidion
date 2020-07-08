@@ -1,5 +1,4 @@
 from discord.ext import commands
-import discord
 import logging
 
 log = logging.getLogger(__name__)
