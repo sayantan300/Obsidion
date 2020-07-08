@@ -88,14 +88,8 @@ async def wyncraftClasses(username, session):
     data = {"classes": []}
     if json_new["code"] == 400:
         return False
-    json_len = len(json_new['data'][0]['classes'])
-    for i in range(json_len):
-        class_name = json_new['data'][0]['classes'][i]['name']
-        class_level = json_new['data'][0]['classes'][i]['level']
-        class_deaths = json_new['data'][0]['classes'][i]['deaths']
-        data['classes'].append({'class_name': class_name, 'class_level': class_level, 'class_deaths': class_deaths})
-    """wynClasses = json_new['data'][0]['classes']
-    data["classes"].append(wynClasses)"""
+    wynClasses = json_new["data"][0]["classes"]
+    data["classes"].append(wynClasses)
     return data
 
 
