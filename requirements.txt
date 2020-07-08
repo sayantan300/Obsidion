@@ -11,6 +11,6 @@ pyyaml==5.3.1
 aiodns==2.0.0
 fuzzywuzzy==0.18.0
 beautifulsoup4==4.9.1
-aiohypixel==0.2.1
+git+git://github.com/Obsidion-dev/asyncpixel@master#egg=asyncpixel
 lxml==4.5.1
 asyncrcon==1.1.3
