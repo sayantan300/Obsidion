@@ -23,12 +23,10 @@ async def get_json(url, session):
 async def hiveMCAchievements(username, session):
     url = f"http://api.hivemc.com/v1/player/{username}"
     json_data = await get_json(url, session)
-    str_json = json.dumps(json_data)
-    json_new = json.loads(str_json)
     data = {"all_achievements": []}
-    if json_new == False:
+    if json_data == False:
         return False
-    for ach in json_new["achievements"]:
+    for ach in json_data["achievements"]:
         data["all_achievements"].append(ach)
     return data
 
@@ -88,12 +86,18 @@ async def wyncraftClasses(username, session):
     data = {"classes": []}
     if json_new["code"] == 400:
         return False
-    json_len = len(json_new['data'][0]['classes'])
+    json_len = len(json_new["data"][0]["classes"])
     for i in range(json_len):
-        class_name = json_new['data'][0]['classes'][i]['name']
-        class_level = json_new['data'][0]['classes'][i]['level']
-        class_deaths = json_new['data'][0]['classes'][i]['deaths']
-        data['classes'].append({'class_name': class_name, 'class_level': class_level, 'class_deaths': class_deaths})
+        class_name = json_new["data"][0]["classes"][i]["name"]
+        class_level = json_new["data"][0]["classes"][i]["level"]
+        class_deaths = json_new["data"][0]["classes"][i]["deaths"]
+        data["classes"].append(
+            {
+                "class_name": class_name,
+                "class_level": class_level,
+                "class_deaths": class_deaths,
+            }
+        )
     """wynClasses = json_new['data'][0]['classes']
     data["classes"].append(wynClasses)"""
     return data
@@ -103,8 +107,6 @@ async def blocksmc(username, session):
     url = f"https://blocksmc.com/player/{username}"
     html = await get_html(url, session)
     soup = BeautifulSoup(html, "lxml")
-    if not soup.find("h1", {"class": "profile-header"}):
-        return False
     rank = (
         soup.find("p", {"class": ["profile-rank"]}).get_text().replace("\n", "").strip()
     )
@@ -126,9 +128,6 @@ async def blocksmc(username, session):
     return data
 
 
-# a bit of a time consumer will do later not finished yet
-
-
 async def universocraft(username, session):
     url = f"https://stats.universocraft.com/stats.php?player={username}"
     html = await get_html(url, session)
@@ -137,11 +136,11 @@ async def universocraft(username, session):
     for game in soup.find_all("div", {"class": "game"}):
         stats = {}
         game_name = game.find("h2").get_text().replace("\n", "").strip()
-        for stat in soup.find_all("div", {"class": "game-stat"}):
+        for stat in game.find_all("div", {"class": "game-stat"}):
             stat_val = stat.find("p", {"class": "game-stat-count"}).get_text()
             stat_name = stat.find("p", {"class": "game-stat-title"}).get_text()
             stats[stat_name] = stat_val
-            data["game_stats"].append({stat_name: stat_val})
+        data["game_stats"].append({game_name: stats})
     return data
 
 
@@ -157,7 +156,7 @@ async def minesaga(username, session):
         "joined": joined,
         "last_seen": last_seen,
         "play_time": play_time,
-        "game_stats": {},
+        "game_stats": [],
     }
 
     for game in soup.find_all("div", {"class": "dd-section col-md-4"}):

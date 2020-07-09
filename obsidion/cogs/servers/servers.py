@@ -118,4 +118,68 @@ class servers(commands.Cog):
             value=(f"Kills: `{data['game_stats'][0]['HCF']['Kills']}`\nDeaths: `{data['game_stats'][0]['HCF']['Deaths']}`\nKDR: `{data['game_stats'][0]['HCF']['KDR']}`"),
         )
         await ctx.send(embed=embed)
+    @commands.command()
+    async def blocksmc(self, ctx: commands.Context, username: str):
+        await ctx.trigger_typing()
+        data = await blocksmc(username, ctx.bot.http_session)
+        if not data:
+            await ctx.send(
+                f"`{username}` has not logged onto VeltPVP or their status is not available."
+            )
+            return
+        await ctx.send(data)
+        embed = discord.Embed(
+            title=f"`{username}`'s BlocksMC Stats", color=0xF1A90F
+        )
+        for game in data["game_stats"]:
+            value=""
+            name = list(game)
+            name_new = name[0]
+            scores = game[name_new]
+            for key in scores.keys():
+                value += f"{key}: {scores[key]}\n"
+            embed.add_field(name=name_new, value=value)
+        await ctx.send(embed=embed)
+    @commands.command()
+    async def universocraft(self, ctx: commands.Context, username: str):
+        await ctx.trigger_typing()
+        data = await universocraft(username, ctx.bot.http_session)
+        if not data:
+            await ctx.send(
+                f"`{username}` has not logged onto VeltPVP or their status is not available."
+            )
+            return
+        embed = discord.Embed(
+            title=f"`{username}`'s BlocksMC Stats", color=0xF1A90F
+        )
+        for game in data["game_stats"]:
+            value=""
+            name = list(game)
+            name_new = name[0]
+            scores = game[name_new]
+            for key in scores.keys():
+                value += f"{key}: {scores[key]}\n"
+            embed.add_field(name=name_new, value=value)
+        await ctx.send(embed=embed)
+    @commands.command()
+    async def minesaga(self, ctx: commands.Context, username: str):
+        await ctx.trigger_typing()
+        data = await minesaga(username, ctx.bot.http_session)
+        if not data:
+            await ctx.send(
+                f"`{username}` has not logged onto Minesaga or their status is not available."
+            )
+            return
+        embed = discord.Embed(
+            title=f"`{username}`'s Minesaga Stats", color=0xF1A90F
+        )
+        for game in data["game_stats"]:
+            value=""
+            name = list(game)
+            name_new = name[0]
+            scores = game[name_new]
+            for key in scores.keys():
+                value += f"{key}: {scores[key]}\n"
+            embed.add_field(name=name_new, value=value)
+        await ctx.send(embed=embed)
 
