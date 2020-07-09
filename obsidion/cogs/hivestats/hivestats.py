@@ -106,9 +106,15 @@ class hivestats(commands.Cog):
                 url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
             )
             embed.timestamp = ctx.message.created_at
+            del data["stats"][0]["UUID"]
+            del data["stats"][0]["cached"]
+            del data["stats"][0]["firstLogin"]
+            del data["stats"][0]["lastlogin"]
+            del data["stats"][0]["achievements"]
+            del data["stats"][0]["title"]
             value = ""
             for stat in data["stats"][0]:
-                value += f"`{stat.keys()[0]}`: {stat[stat.keys()[0]]}"
+                value += f"`{stat}`: {data['stats'][0][stat]}\n"
             embed.add_field(
                 name=f"{game.replace('_', ' ').upper()} Stats", value=value,
             )
