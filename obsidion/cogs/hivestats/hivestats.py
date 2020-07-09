@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from .utils import hiveMCGameStats
+from .utils import hiveMCGameStats, hiveMCStatus, hiveMCRank
 from obsidion.utils.utils import get_uuid
 
 hive_con = {
