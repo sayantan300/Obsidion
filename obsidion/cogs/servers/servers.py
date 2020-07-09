@@ -121,7 +121,7 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto VeltPVP or their status is not available."
             )
             return
-        embed = discord.Embed(color=0xF1A90F)
+        embed = discord.Embed(color=0x008CD3)
         embed.set_author(
             name=f"BlocksMC information for {username}",
             url=f"https://blocksmc.com/player/{username}",
@@ -150,7 +150,7 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto VeltPVP or their status is not available."
             )
             return
-        embed = discord.Embed(color=0xF1A90F)
+        embed = discord.Embed(color=0x82C228)
         embed.set_author(
             name=f"UniversoCraft information for {username}",
             url=f"https://www.universocraft.com/members/{username}",
@@ -179,7 +179,7 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto Minesaga or their status is not available."
             )
             return
-        embed = discord.Embed(color=0xF1A90F)
+        embed = discord.Embed(color=0x6696C2)
         embed.set_author(
             name=f"Minesaga information for {username}",
             url=f"https://www.minesaga.org/members/{username}",
