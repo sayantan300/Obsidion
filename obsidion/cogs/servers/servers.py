@@ -127,7 +127,6 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto VeltPVP or their status is not available."
             )
             return
-        await ctx.send(data)
         embed = discord.Embed(
             title=f"`{username}`'s BlocksMC Stats", color=0xF1A90F
         )
@@ -161,6 +160,7 @@ class servers(commands.Cog):
                 value += f"{key}: {scores[key]}\n"
             embed.add_field(name=name_new, value=value)
         await ctx.send(embed=embed)
+        
     @commands.command()
     async def minesaga(self, ctx: commands.Context, username: str):
         await ctx.trigger_typing()

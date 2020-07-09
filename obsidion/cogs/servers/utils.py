@@ -118,7 +118,7 @@ async def blocksmc(username, session):
         game_name = (
             game.find("div", {"class": "title"}).get_text().replace("\n", "").strip()
         )
-        for stat in game.find_all("ul"):
+        for stat in game.find_all("li"):
             stat_name = (
                 stat.find("div", {"class": "key"}).get_text().replace("\n", "").strip()
             )
