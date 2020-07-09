@@ -85,13 +85,16 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto Wynncraft or their status is not available."
             )
             return
-        await ctx.send(data)
-        """embed = discord.Embed(
-            title=f"`{username}`'s Wynncraft Classes", color=0xA4EC66
+        embed = discord.Embed(
+            title=f"`{username}`'s GommeHD Games", color=0xF1A90F
         )
-        embed.add_field(
-            name=data['classes'][i]['class_name'],
-            value=(f"Class Name: `{data['classes'][i]['class_name']}`\nClass Level: `{data['classes'][i]['class_level']}`\nClass Deaths: `{data['classes'][i]['class_deaths']}`"),
-        )
-        await ctx.send(embed=embed)"""
+        for game in data["game_stats"]:
+            value=""
+            name = list(game)
+            name_new = name[0]
+            scores = game[name_new]
+            for key in scores.keys():
+                value += f"{key}: {scores[key]}\n"
+            embed.add_field(name=name_new, value=value)
+        await ctx.send(embed=embed)
 
