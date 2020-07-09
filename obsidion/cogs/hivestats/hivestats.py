@@ -106,6 +106,8 @@ class hivestats(commands.Cog):
                 url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
             )
             embed.timestamp = ctx.message.created_at
+            if not data:
+                await ctx.send("No stats found")
             del data["stats"][0]["UUID"]
             if "cached" in data["stats"][0]:
                 del data["stats"][0]["cached"]
