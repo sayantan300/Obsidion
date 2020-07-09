@@ -111,8 +111,8 @@ class hivestats(commands.Cog):
                 del data["stats"][0]["cached"]
             if "firstLogin" in data["stats"][0]:
                 del data["stats"][0]["firstLogin"]
-            if "lastlogin" in data["stats"][0]:
-                del data["stats"][0]["lastlogin"]
+            if "lastLogin" in data["stats"][0]:
+                del data["stats"][0]["lastLogin"]
             if "achievements" in data["stats"][0]:
                 del data["stats"][0]["achievements"]
             if "title" in data["stats"][0]:
