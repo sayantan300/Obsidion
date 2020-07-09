@@ -53,7 +53,7 @@ class hivestats(commands.Cog):
         embed.set_author(
             name=f"Hive rank for {username}",
             url=f"https://www.hivemc.com/player/{username}",
-            icon_url="https://www.hivemc.com/favicon.ico",
+            icon_url="https://www.hivemc.com/img/white-logo.png",
         )
         embed.set_thumbnail(
             url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
@@ -75,7 +75,7 @@ class hivestats(commands.Cog):
         embed.set_author(
             name=f"Hive Status for {username}",
             url=f"https://www.hivemc.com/player/{username}",
-            icon_url="https://www.hivemc.com/favicon.ico",
+            icon_url="https://www.hivemc.com/img/white-logo.png",
         )
         embed.set_thumbnail(
             url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
@@ -100,7 +100,7 @@ class hivestats(commands.Cog):
             embed.set_author(
                 name=f"Hive Stats for {username}",
                 url=f"https://www.hivemc.com/player/{username}",
-                icon_url="https://www.hivemc.com/favicon.ico",
+                icon_url="https://www.hivemc.com/img/white-logo.png",
             )
             embed.set_thumbnail(
                 url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
