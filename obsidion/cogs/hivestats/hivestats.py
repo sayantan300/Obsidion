@@ -125,7 +125,8 @@ class hivestats(commands.Cog):
                     data["stats"][0][stat], dict
                 ):
                     pass
-                value += f"`{stat}`: {data['stats'][0][stat]}\n"
+                else:
+                    value += f"`{stat}`: {data['stats'][0][stat]}\n"
             embed.add_field(
                 name=f"{game.replace('_', ' ').upper()} Stats", value=value,
             )
