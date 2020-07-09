@@ -82,7 +82,7 @@ class servers(commands.Cog):
         data = await gommehd(username, ctx.bot.http_session)
         if not data:
             await ctx.send(
-                f"`{username}` has not logged onto Wynncraft or their status is not available."
+                f"`{username}` has not logged onto GommeHD or their status is not available."
             )
             return
         embed = discord.Embed(
@@ -96,5 +96,26 @@ class servers(commands.Cog):
             for key in scores.keys():
                 value += f"{key}: {scores[key]}\n"
             embed.add_field(name=name_new, value=value)
+        await ctx.send(embed=embed)
+    @commands.command()
+    async def veltpvp(self, ctx: commands.Context, username: str):
+        await ctx.trigger_typing()
+        data = await veltpvp(username, ctx.bot.http_session)
+        if not data:
+            await ctx.send(
+                f"`{username}` has not logged onto VeltPVP or their status is not available."
+            )
+            return
+        embed = discord.Embed(
+            title=f"`{username}`'s VeltPVP Stats", color=0x2E39A7
+        )
+        embed.add_field(
+            name=("VeltPVP Stats"),
+            value=(f"Rank: `{data['rank']}`\nLast Seen: `{data['last_seen']}`\nCurrent Status: `{data['current_status']}`\nFirst Joined: `{data['first_joined']}`\nTime Played: `{data['time_played']}`"),
+        )
+        embed.add_field(
+            name=("VeltPVP HCF Stats"),
+            value=(f"Kills: `{data['game_stats'][0]['HCF']['Kills']}`\nDeaths: `{data['game_stats'][0]['HCF']['Deaths']}`\nKDR: `{data['game_stats'][0]['HCF']['KDR']}`"),
+        )
         await ctx.send(embed=embed)
 
