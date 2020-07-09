@@ -109,7 +109,7 @@ class hivestats(commands.Cog):
             del data["stats"][0]["UUID"]
             if "cached" in data["stats"][0]:
                 del data["stats"][0]["cached"]
-            if "firstlogin" in data["stats"][0]:
+            if "firstLogin" in data["stats"][0]:
                 del data["stats"][0]["firstLogin"]
             if "lastlogin" in data["stats"][0]:
                 del data["stats"][0]["lastlogin"]
