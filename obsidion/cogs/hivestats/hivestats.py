@@ -108,11 +108,14 @@ class hivestats(commands.Cog):
             embed.timestamp = ctx.message.created_at
             del data["stats"][0]["UUID"]
             del data["stats"][0]["cached"]
-            del data["stats"][0]["firstLogin"]
+            if "firstlogin" in data["stats"][0]:
+                del data["stats"][0]["firstLogin"]
             if "lastlogin" in data["stats"][0]:
                 del data["stats"][0]["lastlogin"]
-            del data["stats"][0]["achievements"]
-            del data["stats"][0]["title"]
+            if "achievements" in data["stats"][0]:
+                del data["stats"][0]["achievements"]
+            if "title" in data["stats"][0]:
+                del data["stats"][0]["title"]
             value = ""
             for stat in data["stats"][0]:
                 value += f"`{stat}`: {data['stats'][0][stat]}\n"
