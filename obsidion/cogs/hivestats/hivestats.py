@@ -119,6 +119,10 @@ class hivestats(commands.Cog):
                 del data["stats"][0]["title"]
             value = ""
             for stat in data["stats"][0]:
+                if isinstance(data["stats"][0][stat], list) or isinstance(
+                    data["stats"][0][stat], dict
+                ):
+                    pass
                 value += f"`{stat}`: {data['stats'][0][stat]}\n"
             embed.add_field(
                 name=f"{game.replace('_', ' ').upper()} Stats", value=value,
