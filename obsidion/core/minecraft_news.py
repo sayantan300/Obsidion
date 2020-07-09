@@ -34,7 +34,7 @@ class MinecraftNews(commands.Cog):
 
         time = datetime.fromtimestamp(mktime(latest_post["published_parsed"]))
 
-        if time < self.last_data:
+        if time <= self.last_data:
             return
         # create discord embed
         description = f"Summary: {latest_post['summary']}"
@@ -59,6 +59,7 @@ class MinecraftNews(commands.Cog):
         # create footer
         embed.set_footer(text="Article Published")
         embed.timestamp = time
+        self.last_data = time
 
         # create title
         embed.set_author(
