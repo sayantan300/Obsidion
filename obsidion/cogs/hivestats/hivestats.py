@@ -108,6 +108,7 @@ class hivestats(commands.Cog):
             embed.timestamp = ctx.message.created_at
             if not data:
                 await ctx.send("No stats found")
+                return
             del data["stats"][0]["UUID"]
             if "cached" in data["stats"][0]:
                 del data["stats"][0]["cached"]
