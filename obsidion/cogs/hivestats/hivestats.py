@@ -109,7 +109,8 @@ class hivestats(commands.Cog):
             del data["stats"][0]["UUID"]
             del data["stats"][0]["cached"]
             del data["stats"][0]["firstLogin"]
-            del data["stats"][0]["lastlogin"]
+            if "lastlogin" in data["stats"][0]:
+                del data["stats"][0]["lastlogin"]
             del data["stats"][0]["achievements"]
             del data["stats"][0]["title"]
             value = ""
