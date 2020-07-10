@@ -12,8 +12,40 @@ from .utils import (
     gommehd,
     veltpvp,
 )
-from uuid import UUID
 from obsidion.utils.utils import usernameToUUID
+
+
+hive_con = {
+    # "survival_games": "SG",
+    "blockparty": "BP",
+    "cowboys_and_indians": "CAI",
+    "cranked": "CR",
+    "deathrun": "DR",
+    "the_herobrine": "HB",
+    "sg:heros": "HERO",
+    "hide_and_seek": "HIDE",
+    "one_in_the_chamber": "OITC",
+    "splegg": "SP",
+    "trouble_in_mineville": "TIMV",
+    "skywars": "SKY",
+    "the_lab": "LAB",
+    "draw_it": "DRAW",
+    "slaparoo": "SLAP",
+    "electric_floor": "EF",
+    "music_masters": "MM",
+    "gravity": "GRAV",
+    "restaurant_rush": "RR",
+    "skygiants": "GNT",
+    "skygiants:_mini": "GNTM",
+    "pumpkinfection": "PMK",
+    "survival_games_2": "SGN",
+    "batterydash": "BD",
+    "sploop": "SPL",
+    "murder_in_mineville": "MIMV",
+    "bedwars": "BED",
+    "survive_the_night": "SURV",
+    "explosive_eggs": "EE",
+}
 
 
 class servers(commands.Cog):
