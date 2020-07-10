@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from .utils import hiveMCGameStats, hiveMCStatus, hiveMCRank
-from obsidion.utils.utils import get_uuid
+from obsidion.utils.utils import usernameToUUID
 
 hive_con = {
     # "survival_games": "SG",
@@ -56,7 +56,7 @@ class hivestats(commands.Cog):
             icon_url="https://www.hivemc.com/img/white-logo.png",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         embed.add_field(name="rank", value=(f"Rank: `{data['rank'][0]}`"))
@@ -78,7 +78,7 @@ class hivestats(commands.Cog):
             icon_url="https://www.hivemc.com/img/white-logo.png",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         embed.add_field(
@@ -103,7 +103,7 @@ class hivestats(commands.Cog):
                 icon_url="https://www.hivemc.com/img/white-logo.png",
             )
             embed.set_thumbnail(
-                url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+                url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
             )
             embed.timestamp = ctx.message.created_at
             if not data:

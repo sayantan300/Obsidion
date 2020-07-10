@@ -9,16 +9,6 @@ class servers(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @staticmethod
-    def check_username(ctx, username):
-        try:
-            val = UUID(username, version=4)
-            return username
-        except ValueError:
-            # If it's a value error, then the string
-            # is not a valid hex code for a UUID.
-            return usernameToUUID()(username, ctx.bot.http_session)
-
     @commands.command()
     async def wyncraft(self, ctx: commands.Context, username: str):
         await ctx.trigger_typing()
@@ -36,7 +26,7 @@ class servers(commands.Cog):
             icon_url="https://cdn.wynncraft.com/img/wynn.png",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         for i in range(len_data):
@@ -66,7 +56,7 @@ class servers(commands.Cog):
             icon_url="https://www.gommehd.net/images/brandmark@3x.png",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         for game in data["game_stats"]:
@@ -95,7 +85,7 @@ class servers(commands.Cog):
             icon_url="https://www.veltpvp.com/resources/images/nav-logo.png",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         embed.add_field(
@@ -128,7 +118,7 @@ class servers(commands.Cog):
             icon_url="https://blocksmc.com/templates3/src/logo-gray-sm.png",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         for game in data["game_stats"]:
@@ -157,7 +147,7 @@ class servers(commands.Cog):
             icon_url="https://www.universocraft.com/favicon.ico",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         for game in data["game_stats"]:
@@ -186,7 +176,7 @@ class servers(commands.Cog):
             icon_url="https://www.minesaga.org/favicon.ico",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         for game in data["game_stats"]:
@@ -198,6 +188,7 @@ class servers(commands.Cog):
                 value += f"{key}: {scores[key]}\n"
             embed.add_field(name=name_new, value=value)
         await ctx.send(embed=embed)
+
     @commands.command()
     async def manacube(self, ctx: commands.Context, username: str):
         await ctx.trigger_typing()
@@ -214,14 +205,14 @@ class servers(commands.Cog):
             icon_url="https://manacube.com/styles/ndzn/manacube/img/logo-cube.png",
         )
         embed.set_thumbnail(
-            url=f"https://visage.surgeplay.com/bust/{await get_uuid(ctx.bot.http_session, username)}"
+            url=f"https://visage.surgeplay.com/bust/{await usernameToUUID(username, ctx.bot.http_session)}"
         )
         embed.timestamp = ctx.message.created_at
         embed.add_field(
             name=("Manacube Stats"),
             value=(
                 f"Rank: `{data['rank']}`\nCubits: `{data['cubits']}`\nFirst Seen: `{data['firstSeen']}`\nLast Seen: `{data['lastSeenAgo']}`"
-            )
+            ),
         )
         embed.add_field(
             name=("Manacube Parkour Stats"),
@@ -253,7 +244,7 @@ class servers(commands.Cog):
                 f"Playtime: `{data['survival']['playtime']}`\nMob Kills: `{data['survival']['mobKills']}`\nMoney: `{data['survival']['money']}`\nQuests: `{data['survival']['quests']}`"
             ),
         )
-        
+
         embed.add_field(
             name=("Manacube Aether Stats"),
             value=(
