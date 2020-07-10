@@ -54,6 +54,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def wyncraft(self, ctx: commands.Context, username: str):
+        """Get statistics of a player on wynncraft."""
         await ctx.trigger_typing()
         data = await wyncraftClasses(username, ctx.bot.http_session)
         if not data:
@@ -85,6 +86,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def gommehd(self, ctx: commands.Context, username: str):
+        """Get statistics of a player on gommehd."""
         await ctx.trigger_typing()
         data = await gommehd(username, ctx.bot.http_session)
         if not data:
@@ -114,6 +116,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def veltpvp(self, ctx: commands.Context, username: str):
+        """Get statistics of a player on veltpvp."""
         await ctx.trigger_typing()
         data = await veltpvp(username, ctx.bot.http_session)
         if not data:
@@ -147,6 +150,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def blocksmc(self, ctx: commands.Context, username: str):
+        """Get statistics of a player on blocksmc."""
         await ctx.trigger_typing()
         data = await blocksmc(username, ctx.bot.http_session)
         if not data:
@@ -176,6 +180,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def universocraft(self, ctx: commands.Context, username: str):
+        """Get statistics of a player on universocraft."""
         await ctx.trigger_typing()
         data = await universocraft(username, ctx.bot.http_session)
         if not data:
@@ -205,6 +210,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def minesaga(self, ctx: commands.Context, username: str):
+        """Get statistics of a player on minesaga."""
         await ctx.trigger_typing()
         data = await minesaga(username, ctx.bot.http_session)
         if not data:
@@ -234,6 +240,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def manacube(self, ctx: commands.Context, username: str):
+        """Get statistics of a player on manacube."""
         await ctx.trigger_typing()
         data = await manacube(username, ctx.bot.http_session)
         if not data:
@@ -316,6 +323,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def hiverank(self, ctx: commands.Context, username: str):
+        """View the rank of a player on hiverank."""
         await ctx.trigger_typing()
         data = await hiveMCRank(username, ctx.bot.http_session)
         if not data:
@@ -338,6 +346,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def hivestatus(self, ctx: commands.Context, username: str):
+        """View the status of a player on hive"""
         await ctx.trigger_typing()
         data = await hiveMCStatus(username, ctx.bot.http_session)
         if not data:
@@ -364,6 +373,7 @@ class servers(commands.Cog):
 
     @commands.command()
     async def hivestats(self, ctx: commands.Context, username: str, game: str):
+        """Get statistics of a player on hive."""
         await ctx.trigger_typing()
 
         if game.lower() in hive_con:
