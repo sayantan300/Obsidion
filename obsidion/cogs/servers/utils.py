@@ -76,16 +76,15 @@ async def manacube(username, session):
 async def wyncraftClasses(username, session):
     url = f"https://api.wynncraft.com/v2/player/{username}/stats"
     json_data = await get_json(url, session)
-    str_json = json.dumps(json_data)
-    json_new = json.loads(str_json)
     data = {"classes": []}
-    if json_new["code"] == 400:
+    if not json_data:
         return False
-    json_len = len(json_new["data"][0]["classes"])
-    for i in range(json_len):
-        class_name = json_new["data"][0]["classes"][i]["name"]
-        class_level = json_new["data"][0]["classes"][i]["level"]
-        class_deaths = json_new["data"][0]["classes"][i]["deaths"]
+    if json_data["code"] == 400:
+        return False
+    for i in range(json_data):
+        class_name = json_data["data"][0]["classes"][i]["name"]
+        class_level = json_data["data"][0]["classes"][i]["level"]
+        class_deaths = json_data["data"][0]["classes"][i]["deaths"]
         data["classes"].append(
             {
                 "class_name": class_name,
