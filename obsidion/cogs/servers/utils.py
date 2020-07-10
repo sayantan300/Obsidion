@@ -93,8 +93,6 @@ async def wyncraftClasses(username, session):
                 "class_deaths": class_deaths,
             }
         )
-    """wynClasses = json_new['data'][0]['classes']
-    data["classes"].append(wynClasses)"""
     return data
 
 
