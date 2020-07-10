@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from .utils import *
 from uuid import UUID
-from obsidion.utils.utils import get_uuid
+from obsidion.utils.utils import usernameToUUID
 
 
 class servers(commands.Cog):
@@ -17,7 +17,7 @@ class servers(commands.Cog):
         except ValueError:
             # If it's a value error, then the string
             # is not a valid hex code for a UUID.
-            return get_uuid(ctx.bot.http_session, username)
+            return usernameToUUID()(username, ctx.bot.http_session)
 
     @commands.command()
     async def wyncraft(self, ctx: commands.Context, username: str):

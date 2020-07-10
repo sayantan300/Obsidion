@@ -61,11 +61,12 @@ class fun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.pvp_mes = load_from_file("kill")
-        self.kill_mes = load_from_file("pvp")
+        self.pvp_mes = load_from_file("pvp")
+        self.kill_mes = load_from_file("kill")
         self.build_ideas_mes = load_from_file("build_ideas")
 
     @commands.command(aliases=["villagerspeak", "villagerspeech", "hmm"])
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def villager(self, ctx: commands.Context, *, speech: str):
         """Convert english to Villager speech hmm."""
         split = speech.split(" ")
@@ -76,6 +77,7 @@ class fun(commands.Cog):
         await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def enchant(self, ctx: commands.Context, *, msg: str):
         """Enchant a message"""
         response = ""
@@ -87,6 +89,7 @@ class fun(commands.Cog):
         await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def unenchant(self, ctx: commands.Context, *, msg: str):
         """Disenchant a message"""
         response = ""
@@ -98,11 +101,13 @@ class fun(commands.Cog):
         await ctx.send(f"{ctx.message.author.mention}, `{response}`")
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def creeper(self, ctx):
         """Aw man"""
         await ctx.send("Aw man")
 
     @commands.command(aliases=["idea", "bidea"])
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def buildidea(self, ctx: commands.Context):
         """Get an idea for a new idea"""
         # await ctx.send(self.build_ideas)
@@ -111,6 +116,7 @@ class fun(commands.Cog):
         )
 
     @commands.command(aliases=["slay"])
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def kill(self, ctx, member=None):
         """Kill that pesky friend in a fun and stylish way"""
         if (
@@ -127,6 +133,7 @@ class fun(commands.Cog):
         await ctx.send(choice(self.kill_mes).replace("member", member))
 
     @commands.command(aliases=["battle"])
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def pvp(self, ctx, member1=None, member2=None):
         """Duel someone"""
         if member1:
@@ -142,6 +149,7 @@ class fun(commands.Cog):
             await ctx.send("Please provide 2 people to fight")
 
     @commands.command()
+    @commands.cooldown(rate=1, per=1.0, type=commands.BucketType.user)
     async def rps(self, ctx, user_choice=None):
         """play Rock Paper Shears"""
         options = ["rock", "paper", "shears"]

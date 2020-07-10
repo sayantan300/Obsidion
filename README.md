@@ -49,6 +49,8 @@
   <a href="#join-the-community">Community</a>
   •
   <a href="#license">License</a>
+  •
+  <a href="developing">Developing</a>
 </p>
 
 # Overview
@@ -57,23 +59,11 @@ Obsidion is a flexible, reliable Minecraft Bot. This means that msot aspects of 
 
 # Commands
 
-## Information
-Information based commands, this includes viewing the profile of a player, with full username history - to a lookup on the Minecraft Wiki.
+TODO
 
-## Images
-Generate some cool images, these can be signs, books, custom achievments or just view your friends awesome new skin.
+# Developing
 
-## Fun
-PVP, KILL, Buld Ideas - do I need to go on? A number of fun commands wether for the discord server or for your minecraft world.
-
-## Redstone
-This is to help with all those complex redstone contraptions, work out the size of your storage system, the output of the comparator for a chest or just help convert between seconds and ticks.
-
-## Configurable
-This is for all the Server Admins. Change the bots prefix, setup Minecraft welcome messages, or just link a Minecraft account to your Discord one to have a smoother experience.
-
-## Misc
-If it doesn't fit into one of the other categories its here, this includes help, feedback and all of those commands.
+TODO
 
 # Join the community!
 

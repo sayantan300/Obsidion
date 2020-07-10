@@ -19,7 +19,7 @@ class hypixel(commands.Cog):
 
     @commands.command()
     async def watchdogstats(self, ctx: commands.Context):
-        """Get the current watchdog statistics"""
+        """Get the current watchdog statistics."""
         await ctx.channel.trigger_typing()
         data = await self.hypixel_session.get_watchdog_stats()
         embed = discord.Embed(title="Watchdog Stats", colour=0x00FF00)

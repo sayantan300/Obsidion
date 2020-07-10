@@ -11,6 +11,7 @@ import aioredis
 import discord
 import fakeredis.aioredis
 from discord.ext import commands
+import asyncpg
 
 from obsidion import constants
 
@@ -32,6 +33,8 @@ class Obsidion(commands.AutoShardedBot):
         self.redis_session: Optional[aioredis.Redis] = None
         self.redis_ready = asyncio.Event()
         self.redis_closed = False
+        self.db_pool = None
+        self.db_ready = asyncio.Event()
 
         self._connector = None
         self._resolver = None
@@ -51,6 +54,20 @@ class Obsidion(commands.AutoShardedBot):
         # Do basic checks on every command
         init_global_checks(self)
 
+    async def _create_db_pool(self) -> None:
+        """
+        Create the postgres connection pool.
+        """
+        self.db_pool = await asyncpg.create_pool(
+            database=constants.Database.database,
+            user=constants.Database.username,
+            password=constants.Database.password,
+            host=constants.Database.host,
+            port=constants.Database.port,
+        )
+
+        self.db_ready.set()
+
     async def _create_redis_session(self) -> None:
         """
         Create the Redis connection pool, and then open the redis event gate.
@@ -67,9 +84,15 @@ class Obsidion(commands.AutoShardedBot):
             )
             self.redis_session = await fakeredis.aioredis.create_redis_pool()
         else:
+            # print(constants.Redis.password == None)
+            # if constants.Redis.password is not None:
+            #     self.redis_session = await aioredis.create_redis_pool(
+            #         address=(constants.Redis.host, constants.Redis.port),
+            #         password=constants.Redis.password,
+            #     )
+            # else:
             self.redis_session = await aioredis.create_redis_pool(
                 address=(constants.Redis.host, constants.Redis.port),
-                password=constants.Redis.password,
             )
 
         self.redis_closed = False
@@ -123,6 +146,9 @@ class Obsidion(commands.AutoShardedBot):
 
         # Create the redis session
         self.loop.create_task(self._create_redis_session())
+
+        # Create the postgres pool
+        self.loop.create_task(self._create_db_pool())
 
         # Use AF_INET as its socket family to prevent HTTPS related problems both locally
         # and in production.

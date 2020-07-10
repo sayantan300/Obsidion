@@ -2,10 +2,25 @@ import logging
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import Command
 from obsidion import constants
 from obsidion.bot import Obsidion
+from fuzzywuzzy import fuzz, process
 
 log = logging.getLogger(__name__)
+
+
+class HelpQueryNotFound(ValueError):
+    """
+    Raised when a HelpSession Query doesn't match a command or cog.
+    Contains the custom attribute of ``possible_matches``.
+    Instances of this object contain a dictionary of any command(s) that were close to matching the
+    query, where keys are the possible matched command names and values are the likeness match scores.
+    """
+
+    def __init__(self, arg: str, possible_matches: dict = None):
+        super().__init__(arg)
+        self.possible_matches = possible_matches
 
 
 class MyHelpCommand(commands.HelpCommand):
@@ -17,7 +32,77 @@ class MyHelpCommand(commands.HelpCommand):
             }
         )
 
-    def get_command_signature(self, command):
+    async def get_all_help_choices(self) -> set:
+        """
+        Get all the possible options for getting help in the bot.
+        This will only display commands the author has permission to run.
+        These include:
+        - Category names
+        - Cog names
+        - Group command names (and aliases)
+        - Command names (and aliases)
+        - Subcommand names (with parent group and aliases for subcommand, but not including aliases for group)
+        Options and choices are case sensitive.
+        """
+        # first get all commands including subcommands and full command name aliases
+        choices = set()
+        for command in await self.filter_commands(self.context.bot.walk_commands()):
+            # the the command or group name
+            choices.add(str(command))
+
+            if isinstance(command, Command):
+                # all aliases if it's just a command
+                choices.update(command.aliases)
+            else:
+                # otherwise we need to add the parent name in
+                choices.update(
+                    f"{command.full_parent_name} {alias}" for alias in command.aliases
+                )
+
+        # all cog names
+        choices.update(self.context.bot.cogs)
+
+        # all category names
+        choices.update(
+            cog.category
+            for cog in self.context.bot.cogs.values()
+            if hasattr(cog, "category")
+        )
+        return choices
+
+    async def subcommand_not_found(
+        self, command: Command, string: str
+    ) -> "HelpQueryNotFound":
+        """
+        Redirects the error to `command_not_found`.
+        `command_not_found` deals with searching and getting best choices for both commands and subcommands.
+        """
+        return await self.command_not_found(f"{command.qualified_name} {string}")
+
+    async def send_error_message(self, error: HelpQueryNotFound) -> None:
+        """Send the error message to the channel."""
+        embed = discord.Embed(colour=discord.Colour.red(), title=str(error))
+
+        if getattr(error, "possible_matches", None):
+            matches = "\n".join(f"`{match}`" for match in error.possible_matches)
+            embed.description = f"**Did you mean:**\n{matches}"
+
+            await self.context.send(embed=embed)
+
+    async def command_not_found(self, string: str) -> "HelpQueryNotFound":
+        """
+        Handles when a query does not match a valid command, group, cog or category.
+        Will return an instance of the `HelpQueryNotFound` exception with the error message and possible matches.
+        """
+        choices = await self.get_all_help_choices()
+        result = process.extractBests(
+            string, choices, scorer=fuzz.ratio, score_cutoff=60
+        )
+
+        return HelpQueryNotFound(f'Query "{string}" not found.', dict(result))
+
+    @staticmethod
+    def get_command_signature(command):
         parent = command.full_parent_name
         if len(command.aliases) > 0:
             aliases = "|".join(command.aliases)
@@ -29,16 +114,25 @@ class MyHelpCommand(commands.HelpCommand):
             alias = command.name if not parent else f"{parent} {command.name}"
         return f"{alias} {command.signature}"
 
+    async def generate_embed(self, ctx, prefix=None):
+        embed = discord.Embed(color=0x00FF00)
+        if not prefix:
+            prefix = ctx.prefix
+        embed.set_author(name="Obsidion Help", icon_url=ctx.me.avatar_url)
+        embed.set_footer(
+            text=f"Type {prefix}help <command> for more info on a command. You can also type {prefix}help <category> for more info on a category."
+        )
+        return embed
+
     async def send_bot_help(self, mapping):
         bot = self.context.bot
-        embed = discord.Embed(
-            title="Bot support",
-            description=f"Below is a list of commands you can use",
-            colour=0x00FF00,
-        )
-        embed.set_footer(
-            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
-        )
+        if "@" in str(self.context.prefix):
+            prefix = f"@{self.context.bot.user.name}"
+        else:
+            prefix = self.context.prefix
+        embed = await self.generate_embed(self.context, prefix)
+        embed.title = "Bot Help"
+        embed.description = "Categories and commands enabled on the bot."
 
         for cog in bot.cogs:
             cog_commands = bot.get_cog(cog).get_commands()
@@ -54,19 +148,17 @@ class MyHelpCommand(commands.HelpCommand):
         embed.add_field(
             inline=False,
             name="Support",
-            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
+            value=f"**[ADD TO SERVER](https://discord.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
         await self.context.send(embed=embed)
 
     async def send_cog_help(self, cog):
-        embed = discord.Embed(
-            title=f"{cog.qualified_name} Help",
-            description="Below is a list of all the commands and their desriptions that belong to this module.",
-            colour=0x00FF00,
-        )
-        embed.set_footer(
-            text=f'Use "{self.context.prefix}help command" for more info on a command.'
-        )
+        if "@" in str(self.context.prefix):
+            prefix = f"@{self.context.bot.user.name}"
+        else:
+            prefix = self.context.prefix
+        embed = await self.generate_embed(self.context, prefix)
+        embed.title = f"{cog.qualified_name.capitalize()} Help"
 
         cog_commands = cog.get_commands()
         command_list = [(c.name, c.help, c.hidden) for c in cog_commands]
@@ -81,25 +173,19 @@ class MyHelpCommand(commands.HelpCommand):
         embed.add_field(
             inline=False,
             name="Support",
-            value=f"**[ADD TO SERVER](https://discordapp.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
+            value=f"**[ADD TO SERVER](https://discord.com/oauth2/authorize?client_id={constants.Bot.clientid}&scope=bot&permissions=314448) | [SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)** | **[GITHUB](https://github.com/Darkflame72/Obsidion/)** | **[WEBSITE](http://obsidion.bowie-co.nz)** | **[PATREON](https://www.patreon.com/obsidion)**",
         )
-        embed.set_footer(
-            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
-        )
+
         await self.context.send(embed=embed)
 
-    def common_command_formatting(self, page_or_embed: discord.Embed, command):
-        # page_or_embed.author = "Obsidion Help Menu"
-        _help = f"`Syntax: {self.context.prefix}{command.qualified_name} {command.signature}`"
-        if command.description:
-            page_or_embed.description = _help
-        else:
-            page_or_embed.description = _help or "No help found..."
-
     async def send_command_help(self, command):
-        embed = discord.Embed(colour=0x00FF00)
-
-        self.common_command_formatting(embed, command)
+        if "@" in str(self.context.prefix):
+            prefix = f"@{self.context.bot.user.name}"
+        else:
+            prefix = self.context.prefix
+        embed = await self.generate_embed(self.context, prefix)
+        embed.title = f"{command.qualified_name.capitalize()} Help"
+        embed.description = f"`Syntax: {prefix}{command.qualified_name} {command.signature}`\n\n{command.help}"
         if len(command.aliases) > 0:
             embed.add_field(
                 name=command.name,
@@ -110,20 +196,13 @@ class MyHelpCommand(commands.HelpCommand):
             )
         else:
             embed.add_field(
-                name=command.name,
-                value=f"""
-            Name: `{command.name}`
-            Category: `{command.cog_name}`""",
+                name="Info",
+                value=f"Name: `{command.name}`\nCategory: `{command.cog_name}`",
             )
-        embed.set_footer(
-            text=f"Type {self.context.prefix}help <command> for more info on a command. You can also type {self.context.prefix}help <category> for more info on a category."
-        )
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
         embed = discord.Embed(colour=0x00FF00)
-
-        self.common_command_formatting(embed, group)
 
         subcommands = group.commands
         if len(subcommands) == 0:

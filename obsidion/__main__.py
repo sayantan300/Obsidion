@@ -8,7 +8,7 @@ from discord.ext.commands import when_mentioned_or
 # Set the event loop policies here so any subsequent `new_event_loop()`
 # calls, in particular those as a result of the following imports,
 # return the correct loop object.
-from obsidion import __version__, _update_event_loop_policy, constants
+from obsidion import _update_event_loop_policy, constants
 from obsidion.bot import Obsidion
 
 _update_event_loop_policy()
@@ -35,20 +35,22 @@ bot.load_extension("obsidion.core.help")
 bot.load_extension("obsidion.core.error_handler")
 
 # extensions and main features
-bot.load_extension("obsidion.cogs.misc")
-bot.load_extension("obsidion.cogs.redstone")
 bot.load_extension("obsidion.cogs.fun")
-bot.load_extension("obsidion.cogs.info")
-bot.load_extension("obsidion.cogs.images")
 bot.load_extension("obsidion.cogs.hypixel")
+bot.load_extension("obsidion.cogs.images")
+bot.load_extension("obsidion.cogs.info")
+bot.load_extension("obsidion.cogs.misc")
+bot.load_extension("obsidion.cogs.rcon")
+bot.load_extension("obsidion.cogs.redstone")
 bot.load_extension("obsidion.cogs.servers")
-bot.load_extension("obsidion.cogs.hivestats")
+bot.load_extension("obsidion.cogs.servertracking")
+bot.load_extension("obsidion.cogs.events")
+bot.load_extension("obsidion.cogs.config")
+# bot.load_extension("obsidion.cogs.minecraft")
 
 if constants.Discord_bot_list.voting_enabled:
     bot.load_extension("cogs.botlist")
 
-# TODO
-# bot.load_extension("obsidion.cogs.config")
-
 # run bot
 bot.run(constants.Bot.discord_token)
+
