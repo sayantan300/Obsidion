@@ -53,6 +53,7 @@ class servers(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def wyncraft(self, ctx: commands.Context, username: str):
         """Get statistics of a player on wynncraft."""
         await ctx.trigger_typing()
@@ -85,6 +86,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def gommehd(self, ctx: commands.Context, username: str):
         """Get statistics of a player on gommehd."""
         await ctx.trigger_typing()
@@ -115,6 +117,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def veltpvp(self, ctx: commands.Context, username: str):
         """Get statistics of a player on veltpvp."""
         await ctx.trigger_typing()
@@ -149,6 +152,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def blocksmc(self, ctx: commands.Context, username: str):
         """Get statistics of a player on blocksmc."""
         await ctx.trigger_typing()
@@ -179,6 +183,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def universocraft(self, ctx: commands.Context, username: str):
         """Get statistics of a player on universocraft."""
         await ctx.trigger_typing()
@@ -209,6 +214,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def minesaga(self, ctx: commands.Context, username: str):
         """Get statistics of a player on minesaga."""
         await ctx.trigger_typing()
@@ -239,6 +245,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def manacube(self, ctx: commands.Context, username: str):
         """Get statistics of a player on manacube."""
         await ctx.trigger_typing()
@@ -322,6 +329,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def hiverank(self, ctx: commands.Context, username: str):
         """View the rank of a player on hiverank."""
         await ctx.trigger_typing()
@@ -345,6 +353,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def hivestatus(self, ctx: commands.Context, username: str):
         """View the status of a player on hive"""
         await ctx.trigger_typing()
@@ -372,6 +381,7 @@ class servers(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def hivestats(self, ctx: commands.Context, username: str, game: str):
         """Get statistics of a player on hive."""
         await ctx.trigger_typing()
