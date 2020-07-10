@@ -207,7 +207,7 @@ class servers(commands.Cog):
                 f"`{username}` has not logged onto Minesaga or their status is not available."
             )
             return
-        embed = discord.Embed(color=0x6696C2)
+        embed = discord.Embed(color=0x11B7C4)
         embed.set_author(
             name=f"Manacube information for {username}",
             url=f"https://manacube.com/stats/player/{username}/",
