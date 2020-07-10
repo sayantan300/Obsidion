@@ -13,7 +13,7 @@ from .utils import (
     veltpvp,
 )
 from obsidion.utils.utils import usernameToUUID
-
+import json
 
 hive_con = {
     # "survival_games": "SG",
@@ -57,7 +57,13 @@ class servers(commands.Cog):
     async def wyncraft(self, ctx: commands.Context, username: str):
         """Get statistics of a player on wynncraft."""
         await ctx.trigger_typing()
-        data = await wyncraftClasses(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"wyncraft_{username}"):
+            data = json.loads(await self.bot.redis_session.get(f"wyncraft_{username}"))
+        else:
+            data = await wyncraftClasses(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"wyncraft_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto Wynncraft or their status is not available."
@@ -90,7 +96,13 @@ class servers(commands.Cog):
     async def gommehd(self, ctx: commands.Context, username: str):
         """Get statistics of a player on gommehd."""
         await ctx.trigger_typing()
-        data = await gommehd(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"gommehd_{username}"):
+            data = json.loads(await self.bot.redis_session.get(f"gommehd_{username}"))
+        else:
+            data = await gommehd(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"gommehd_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto GommeHD or their status is not available."
@@ -121,7 +133,13 @@ class servers(commands.Cog):
     async def veltpvp(self, ctx: commands.Context, username: str):
         """Get statistics of a player on veltpvp."""
         await ctx.trigger_typing()
-        data = await veltpvp(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"veltpvp_{username}"):
+            data = json.loads(await self.bot.redis_session.get(f"veltpvp_{username}"))
+        else:
+            data = await veltpvp(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"veltpvp_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto VeltPVP or their status is not available."
@@ -156,7 +174,13 @@ class servers(commands.Cog):
     async def blocksmc(self, ctx: commands.Context, username: str):
         """Get statistics of a player on blocksmc."""
         await ctx.trigger_typing()
-        data = await blocksmc(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"blocksmc_{username}"):
+            data = json.loads(await self.bot.redis_session.get(f"blocksmc_{username}"))
+        else:
+            data = await blocksmc(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"blocksmc_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto VeltPVP or their status is not available."
@@ -187,7 +211,15 @@ class servers(commands.Cog):
     async def universocraft(self, ctx: commands.Context, username: str):
         """Get statistics of a player on universocraft."""
         await ctx.trigger_typing()
-        data = await universocraft(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"universocraft_{username}"):
+            data = json.loads(
+                await self.bot.redis_session.get(f"universocraft_{username}")
+            )
+        else:
+            data = await universocraft(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"universocraft_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto VeltPVP or their status is not available."
@@ -218,7 +250,13 @@ class servers(commands.Cog):
     async def minesaga(self, ctx: commands.Context, username: str):
         """Get statistics of a player on minesaga."""
         await ctx.trigger_typing()
-        data = await minesaga(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"minesaga_{username}"):
+            data = json.loads(await self.bot.redis_session.get(f"minesaga_{username}"))
+        else:
+            data = await minesaga(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"minesaga_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto Minesaga or their status is not available."
@@ -249,7 +287,13 @@ class servers(commands.Cog):
     async def manacube(self, ctx: commands.Context, username: str):
         """Get statistics of a player on manacube."""
         await ctx.trigger_typing()
-        data = await manacube(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"manacube_{username}"):
+            data = json.loads(await self.bot.redis_session.get(f"manacube_{username}"))
+        else:
+            data = await manacube(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"manacube_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto Minesaga or their status is not available."
@@ -333,7 +377,15 @@ class servers(commands.Cog):
     async def hiverank(self, ctx: commands.Context, username: str):
         """View the rank of a player on hiverank."""
         await ctx.trigger_typing()
-        data = await hiveMCRank(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"hiveMCRank_{username}"):
+            data = json.loads(
+                await self.bot.redis_session.get(f"hiveMCRank_{username}")
+            )
+        else:
+            data = await hiveMCRank(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"hiveMCRank_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto Hive or there are no ranks available."
@@ -357,7 +409,15 @@ class servers(commands.Cog):
     async def hivestatus(self, ctx: commands.Context, username: str):
         """View the status of a player on hive"""
         await ctx.trigger_typing()
-        data = await hiveMCStatus(username, ctx.bot.http_session)
+        if await self.bot.redis_session.exists(f"hiveMCStatus_{username}"):
+            data = json.loads(
+                await self.bot.redis_session.get(f"hiveMCStatus_{username}")
+            )
+        else:
+            data = await hiveMCStatus(username, ctx.bot.http_session)
+            self.bot.redis_session.set(
+                f"hiveMCStatus_{username}", json.dumps(data), expire=28800
+            )
         if not data:
             await ctx.send(
                 f"`{username}` has not logged onto Hive or their status is not available."
@@ -387,9 +447,23 @@ class servers(commands.Cog):
         await ctx.trigger_typing()
 
         if game.lower() in hive_con:
-            data = await hiveMCGameStats(
-                username, hive_con[game.lower()], ctx.bot.http_session
-            )
+            if await self.bot.redis_session.exists(
+                f"hiveMCGameStats_{hive_con[game.lower()]}_{username}"
+            ):
+                data = json.loads(
+                    await self.bot.redis_session.get(
+                        f"hiveMCGameStats_{hive_con[game.lower()]}_{username}"
+                    )
+                )
+            else:
+                data = await hiveMCGameStats(
+                    username, hive_con[game.lower()], ctx.bot.http_session
+                )
+                self.bot.redis_session.set(
+                    f"hiveMCGameStats_{hive_con[game.lower()]}_{username}",
+                    json.dumps(data),
+                    expire=28800,
+                )
             embed = discord.Embed(color=0xFFAF03)
             embed.set_author(
                 name=f"Hive Stats for {username}",
