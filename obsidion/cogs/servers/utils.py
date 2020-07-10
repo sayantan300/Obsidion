@@ -68,13 +68,10 @@ async def hiveMCRank(username, session):
     return data
 
 
-async def manacube(username, session, game):
+async def manacube(username, session):
     url = f"https://manacube.com/stats_data/fetch.php?username={username}"
-    json_data = await get_json(url, session)
-    str_json = json.dumps(json_data)
-    json_new = json.loads(str_json)
-    game_stat = json_new[game]
-    data = {"game_stats": [game_stat]}
+    json_data = await get_html(url, session)
+    data = json.loads(json_data)
     return data
 
 
