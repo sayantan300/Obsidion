@@ -124,7 +124,7 @@ class info(commands.Cog):
             self.bot.redis_session.set(key, json.dumps(data), expire=300)
         if not data:
             await ctx.send(
-                f"{ctx.author}, :x: The Jave edition Minecraft server `{server_ip}` is currently not online or cannot be requested"
+                f"{ctx.author}, :x: The Java edition Minecraft server `{server_ip}` is currently not online or cannot be requested"
             )
             return
         embed = discord.Embed(title=f"Java Server: {server_ip}", color=0x00FF00)
