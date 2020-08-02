@@ -1,3 +1,5 @@
+import aiohttp
+import asyncio
 import json
 from bs4 import BeautifulSoup
 
@@ -48,7 +50,7 @@ async def hiveMCGameStats(username, game, session):
     json_data = await get_json(url, session)
     str_json = json.dumps(json_data)
     json_new = json.loads(str_json)
-    if json_new == False:
+    if not json_new:
         return False
     data = {"stats": [json_new]}
     return data
@@ -70,21 +72,24 @@ async def manacube(username, session):
     url = f"https://manacube.com/stats_data/fetch.php?username={username}"
     json_data = await get_html(url, session)
     data = json.loads(json_data)
+    if data["exists"] == False:
+        return False
     return data
 
 
 async def wyncraftClasses(username, session):
     url = f"https://api.wynncraft.com/v2/player/{username}/stats"
     json_data = await get_json(url, session)
+    str_json = json.dumps(json_data)
+    json_new = json.loads(str_json)
     data = {"classes": []}
-    if not json_data:
+    if json_new["code"] == 400:
         return False
-    if json_data["code"] == 400:
-        return False
-    for i in range(json_data):
-        class_name = json_data["data"][0]["classes"][i]["name"]
-        class_level = json_data["data"][0]["classes"][i]["level"]
-        class_deaths = json_data["data"][0]["classes"][i]["deaths"]
+    json_len = len(json_new["data"][0]["classes"])
+    for i in range(json_len):
+        class_name = json_new["data"][0]["classes"][i]["name"]
+        class_level = json_new["data"][0]["classes"][i]["level"]
+        class_deaths = json_new["data"][0]["classes"][i]["deaths"]
         data["classes"].append(
             {
                 "class_name": class_name,
@@ -92,6 +97,8 @@ async def wyncraftClasses(username, session):
                 "class_deaths": class_deaths,
             }
         )
+    """wynClasses = json_new['data'][0]['classes']
+    data["classes"].append(wynClasses)"""
     return data
 
 
@@ -99,9 +106,13 @@ async def blocksmc(username, session):
     url = f"https://blocksmc.com/player/{username}"
     html = await get_html(url, session)
     soup = BeautifulSoup(html, "lxml")
-    rank = (
+    try:
+        rank = (
         soup.find("p", {"class": ["profile-rank"]}).get_text().replace("\n", "").strip()
     )
+    except:
+        return False
+    
     timeplayed = soup.find("h1", {"dir": ["ltr"]}).get_text().replace("\n", "").strip()
     data = {"rank": rank, "timeplayed": timeplayed, "game_stats": []}
 
@@ -125,6 +136,8 @@ async def universocraft(username, session):
     html = await get_html(url, session)
     soup = BeautifulSoup(html, "lxml")
     data = {"game_stats": []}
+    if soup.find("p").get_text() == "¡No se ha encontrado ningún usuario con ese nombre!":
+        return False
     for game in soup.find_all("div", {"class": "game"}):
         stats = {}
         game_name = game.find("h2").get_text().replace("\n", "").strip()
@@ -141,7 +154,10 @@ async def minesaga(username, session):
     html = await get_html(url, session)
     soup = BeautifulSoup(html, "lxml")
     main_info = soup.find("div", {"class": ["dd-profile-details"]})
-    joined = main_info.find("h4").get_text().strip()
+    try:
+        joined = main_info.find("h4").get_text().strip()
+    except:
+        return False
     last_seen = main_info.findAll("span")[1].get_text().strip()
     play_time = main_info.findAll("span")[2].get_text().strip()
     data = {
@@ -173,6 +189,8 @@ async def gommehd(username, session):
     html = await get_html(url, session)
     soup = BeautifulSoup(html, "lxml")
     data = {"game_stats": []}
+    if soup.find("title").get_text() == "Statistiken":
+        return False
     for game in soup.find_all("div", {"class": "stat-table"}):
         stats = {}
         game_name = game.find("h5").get_text().replace("\n", "").strip()
@@ -187,6 +205,8 @@ async def gommehd(username, session):
 async def veltpvp(username, session):
     url = f"https://www.veltpvp.com/u/{username}"
     html = await get_html(url, session)
+    if html == False:
+        return False
     soup = BeautifulSoup(html, "lxml")
     rank = soup.find("div", {"id": "profile"}).find("h2").get_text().strip()
     last_seen = (

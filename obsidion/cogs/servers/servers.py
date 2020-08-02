@@ -103,7 +103,7 @@ class servers(commands.Cog):
             self.bot.redis_session.set(
                 f"gommehd_{username}", json.dumps(data), expire=28800
             )
-        if not data:
+        if data == False:
             await ctx.send(
                 f"`{username}` has not logged onto GommeHD or their status is not available."
             )
@@ -183,7 +183,7 @@ class servers(commands.Cog):
             )
         if not data:
             await ctx.send(
-                f"`{username}` has not logged onto VeltPVP or their status is not available."
+                f"`{username}` has not logged onto BlocksMC or their status is not available."
             )
             return
         embed = discord.Embed(color=0x008CD3)
@@ -222,7 +222,7 @@ class servers(commands.Cog):
             )
         if not data:
             await ctx.send(
-                f"`{username}` has not logged onto VeltPVP or their status is not available."
+                f"`{username}` has not logged onto UniversoCraft or their status is not available."
             )
             return
         embed = discord.Embed(color=0x82C228)
