@@ -108,11 +108,14 @@ async def blocksmc(username, session):
     soup = BeautifulSoup(html, "lxml")
     try:
         rank = (
-        soup.find("p", {"class": ["profile-rank"]}).get_text().replace("\n", "").strip()
-    )
+            soup.find("p", {"class": ["profile-rank"]})
+            .get_text()
+            .replace("\n", "")
+            .strip()
+        )
     except:
         return False
-    
+
     timeplayed = soup.find("h1", {"dir": ["ltr"]}).get_text().replace("\n", "").strip()
     data = {"rank": rank, "timeplayed": timeplayed, "game_stats": []}
 
@@ -136,7 +139,10 @@ async def universocraft(username, session):
     html = await get_html(url, session)
     soup = BeautifulSoup(html, "lxml")
     data = {"game_stats": []}
-    if soup.find("p").get_text() == "¡No se ha encontrado ningún usuario con ese nombre!":
+    if (
+        soup.find("p").get_text()
+        == "¡No se ha encontrado ningún usuario con ese nombre!"
+    ):
         return False
     for game in soup.find_all("div", {"class": "game"}):
         stats = {}

@@ -502,4 +502,3 @@ class servers(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send("Sorry that game was not recognized as a Hive game")
-
