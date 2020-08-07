@@ -1,5 +1,0 @@
-base_path: ./obsidion/
-preserve_hierarchy: true
-files:
-  - source: cogs/**/messages.pot
-    translation: /%original_path%/%locale%.po
