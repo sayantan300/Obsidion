@@ -349,14 +349,14 @@ class info(commands.Cog):
         except KeyError:
             await ctx.send(f"I'm sorry, I couldn't find \"{query}\" on Gamepedia")
 
-    @commands.command()
+    #@commands.command()
     async def version(self, ctx):
         await ctx.send("TODO")
 
-    @commands.command()
+    #@commands.command()
     async def colourcodes(self, ctx):
         await ctx.send("TODO")
 
-    @commands.command()
+    #@commands.command()
     async def news(self, ctx):
         await ctx.send("TODO")
