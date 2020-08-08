@@ -104,7 +104,6 @@ class miscellaneous(commands.Cog):
             "[GITHUB](https://github.com/Darkflame72/Obsidion)\n"
             "[SUPPORT SERVER](https://discord.gg/invite/7BRD7s6)\n"
             "[VOTE](https://top.gg/bot/691589447074054224)\n"
-            "[TRELLO](https://trello.com/b/qZhxHkTq/obsidion)\n"
             "[WEBSITE](http://discord.obsidion-dev.com)"
         )
 
