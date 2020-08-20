@@ -70,7 +70,8 @@ class MinecraftNews(commands.Cog):
 
         # send embed
         channel = self.bot.get_channel(725790318938685520)
-        await channel.send(embed=embed)
+        message = await channel.send(embed=embed)
+        await message.publish()
 
     def cog_unload(self) -> None:
         """Stop news posting tasks on cog unload."""
